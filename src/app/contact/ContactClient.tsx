@@ -1,6 +1,6 @@
 "use client";
 
-import { Mail, MessageSquare, Github, Twitter, Zap } from "lucide-react";
+import { Mail, MessageSquare, Zap } from "lucide-react";
 
 export default function ContactClient() {
     return (
@@ -105,19 +105,7 @@ export default function ContactClient() {
                     </div>
                 </div>
 
-                <div className="p-5 rounded-2xl bg-[rgb(10,10,15)] border border-[rgb(30,30,46)]">
-                    <h3 className="text-sm font-semibold text-white mb-3">🌐 Follow Us</h3>
-                    <div className="flex gap-2">
-                        <a href="https://github.com/Abdelkhalek2/rapidkit" target="_blank" rel="noopener noreferrer"
-                            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] text-[rgb(120,120,160)] hover:text-white hover:border-violet-500/40 transition-all text-sm">
-                            <Github className="w-4 h-4" /> GitHub
-                        </a>
-                        <a href="#"
-                            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] text-[rgb(120,120,160)] hover:text-white hover:border-cyan-500/40 transition-all text-sm">
-                            <Twitter className="w-4 h-4" /> Twitter
-                        </a>
-                    </div>
-                </div>
+
             </div>
         </div>
     );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Share2, Bookmark, Check, Twitter, Link2 } from "lucide-react";
+import { Share2, Bookmark, Check, Link2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -30,11 +30,6 @@ export function ShareCTA({ toolName, toolSlug, categoryId }: Props) {
         setTimeout(() => setBookmarked(false), 3000);
     };
 
-    const handleTwitterShare = () => {
-        const url = typeof window !== "undefined" ? window.location.href : toolUrl;
-        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}`;
-        window.open(twitterUrl, "_blank", "noopener,noreferrer,width=600,height=400");
-    };
 
     const handleNativeShare = async () => {
         const url = typeof window !== "undefined" ? window.location.href : toolUrl;
@@ -68,14 +63,7 @@ export function ShareCTA({ toolName, toolSlug, categoryId }: Props) {
                     {copiedLink ? "Link Copied!" : "Copy Link"}
                 </button>
 
-                {/* Twitter / X Share */}
-                <button
-                    onClick={handleTwitterShare}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium border bg-[rgb(24,24,37)] border-[rgb(45,45,65)] text-[rgb(148,148,186)] hover:border-sky-500/40 hover:text-sky-400 transition-all"
-                >
-                    <Twitter className="w-3.5 h-3.5" />
-                    Share on X
-                </button>
+
 
                 {/* Native Share / More */}
                 <button
