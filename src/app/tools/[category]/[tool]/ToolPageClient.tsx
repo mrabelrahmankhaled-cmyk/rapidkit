@@ -148,6 +148,11 @@ const BoxShadowGeneratorTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const SignaturePadTool = dynamic(
+    () => import("@/components/tools/SignaturePadTool").then((m) => ({ default: m.SignaturePadTool })),
+    { loading: Spinner, ssr: false }
+);
+
 const MarkdownEditorTool = dynamic(
     () => import("@/components/tools/MarkdownEditorTool").then((m) => ({ default: m.MarkdownEditorTool })),
     { loading: Spinner, ssr: false }
@@ -187,6 +192,7 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "cron-job-generator": CronJobTool,
     "uuid-generator": UuidGeneratorTool,
     "box-shadow-generator": BoxShadowGeneratorTool,
+    "signature-pad": SignaturePadTool,
     "markdown-editor": MarkdownEditorTool,
     "pomodoro-timer": PomodoroTimerTool,
 };

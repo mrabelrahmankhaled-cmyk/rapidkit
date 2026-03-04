@@ -608,6 +608,24 @@ export const TOOLS: Tool[] = [
         },
     },
     {
+        id: "signature-pad",
+        name: "Digital Signature Pad",
+        slug: "signature-pad",
+        description: "Create and download professional digital signatures as transparent PNGs.",
+        longDescription:
+            "The fastest way to sign documents digitally. Draw your signature using your mouse or touch screen, customize the pen color and thickness, and download the resulting signature as a high-quality transparent PNG. Perfect for PDF forms, electronic contracts, and professional emails. No data is stored; everything happens in your browser.",
+        categoryId: "design",
+        icon: "PenTool",
+        tags: ["design", "signature", "office", "productivity", "png"],
+        isNew: true,
+        seo: {
+            title: "Online Digital Signature Pad — Create Transparent Signatures | RapidKit",
+            description:
+                "Create your digital signature online for free. Draw with touch or mouse, adjust style, and download as a transparent PNG. Fast, secure, and private.",
+            keywords: ["digital signature pad", "online signature maker", "draw signature online", "signature png generator", "electronic signature"],
+        },
+    },
+    {
         id: "screen-recorder",
         name: "Online Screen Recorder",
         slug: "screen-recorder",
