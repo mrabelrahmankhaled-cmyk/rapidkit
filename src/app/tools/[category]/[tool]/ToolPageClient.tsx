@@ -38,6 +38,11 @@ const WebpConverterTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const WhatIsMyIpTool = dynamic(
+    () => import("@/components/tools/WhatIsMyIpTool").then((m) => ({ default: m.WhatIsMyIpTool })),
+    { loading: Spinner, ssr: false }
+);
+
 const CssGradientTool = dynamic(
     () => import("@/components/tools/CssGradientTool").then((m) => ({ default: m.CssGradientTool })),
     { loading: Spinner, ssr: false }
@@ -181,6 +186,7 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "json-formatter": JsonFormatterTool,
     "word-counter": WordCounterTool,
     "webp-converter": WebpConverterTool,
+    "what-is-my-ip": WhatIsMyIpTool,
     "css-gradient-generator": CssGradientTool,
     "text-case-converter": TextCaseConverterTool,
     "unit-converter": UnitConverterTool,

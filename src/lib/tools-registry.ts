@@ -588,6 +588,24 @@ export const TOOLS: Tool[] = [
         },
     },
     {
+        id: "what-is-my-ip",
+        name: "What Is My IP Address?",
+        slug: "what-is-my-ip",
+        description: "Instantly detect your IPv4/IPv6 address, geolocation, and system details.",
+        longDescription:
+            "A fast and reliable tool to find your public IP address. Instantly detect your IPv4 or IPv6 address, along with detailed geolocation data including your city, country, and ISP. It also provides information about your browser and operating system. Perfect for troubleshooting network issues or verifying VPN connections. No data is logged; everything happens dynamically.",
+        categoryId: "developer",
+        icon: "Globe",
+        tags: ["developer", "ip", "network", "geolocation", "system"],
+        isNew: true,
+        seo: {
+            title: "What Is My IP Address? — IPv4, IPv6 & Geolocation | RapidKit",
+            description:
+                "Find your public IP address instantly. Detect IPv4/IPv6, location, country, and ISP. Free fast IP lookup tool with browser details.",
+            keywords: ["what is my ip", "my ip address", "ip lookup", "geolocation by ip", "ipv4 vs ipv6"],
+        },
+    },
+    {
         id: "svg-shape-generator",
         name: "SVG Blob & Wave Generator",
         slug: "svg-shape-generator",
