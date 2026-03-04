@@ -426,6 +426,25 @@ export const TOOLS: Tool[] = [
         },
     },
     {
+        id: "favicon-generator",
+        name: "Favicon Generator",
+        slug: "favicon-generator",
+        description: "Generate professional favicons and app icons in all sizes from a single image.",
+        longDescription:
+            "The ultimate favicon kit for developers. Upload your logo and instantly generate all the necessary files for your website: favicon.ico, apple-touch-icon, and various PNG sizes. We even provide the HTML code to copy-paste directly into your <head> tag. 100% private and runs entirely in your browser.",
+        categoryId: "developer",
+        icon: "Globe",
+        tags: ["developer", "favicon", "icon", "web-dev", "assets"],
+        isNew: true,
+        isFeatured: false,
+        seo: {
+            title: "Favicon Generator — Convert Logo to .ico & App Icons | RapidKit",
+            description:
+                "Create a professional favicon kit for your website. Generate .ico, .png, and apple-touch-icons in seconds. Free, easy, and private.",
+            keywords: ["favicon generator", "convert logo to ico", "create favicon", "apple touch icon generator", "web icon maker"],
+        },
+    },
+    {
         id: "json-csv-converter",
         name: "JSON to CSV / CSV to JSON",
         slug: "json-csv-converter",
