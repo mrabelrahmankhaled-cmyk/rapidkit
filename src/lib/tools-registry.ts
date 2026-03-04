@@ -391,6 +391,24 @@ export const TOOLS: Tool[] = [
             keywords: ["meta tag generator", "social media preview", "og tag generator", "seo tags", "twitter card generator"],
         },
     },
+    {
+        id: "base64-converter",
+        name: "Base64 Image/Text Converter",
+        slug: "base64-converter",
+        description: "Convert images to Base64 strings or decode Base64 back to text and images instantly.",
+        longDescription:
+            "A must-have tool for developers. Easily convert icons, small images, and text into Base64 format for use in CSS, HTML, or JSON. Our converter supports various image formats and provides multi-tab functionality for both encoding and decoding. All transformations happen locally for speed and privacy.",
+        categoryId: "developer",
+        icon: "FileCode",
+        tags: ["base64", "converter", "image", "developer", "encoding"],
+        isPopular: true,
+        seo: {
+            title: "Base64 Image/Text Converter — Encoder & Decoder Online | RapidKit",
+            description:
+                "Free online Base64 converter. Convert images to Base64 data URIs or encode/decode text strings. Fast, secure, and developer-friendly.",
+            keywords: ["base64 converter", "image to base64", "base64 encoder", "base64 decoder", "data uri generator"],
+        },
+    },
 ];
 
 // ─── Helper Functions ────────────────────────────────────────────

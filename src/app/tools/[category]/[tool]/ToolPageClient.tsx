@@ -98,6 +98,11 @@ const MetaTagGeneratorTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const Base64ConverterTool = dynamic(
+    () => import("@/components/tools/Base64ConverterTool").then((m) => ({ default: m.Base64ConverterTool })),
+    { loading: Spinner, ssr: false }
+);
+
 // ─── Map slug → Component ────────────────────────────────────────
 const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "youtube-thumbnail-downloader": YoutubeThumbnailTool,
@@ -117,6 +122,7 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "text-diff-checker": TextDiffCheckerTool,
     "image-metadata-remover": ImageMetadataRemoverTool,
     "meta-tag-generator": MetaTagGeneratorTool,
+    "base64-converter": Base64ConverterTool,
 };
 
 type Props = {
