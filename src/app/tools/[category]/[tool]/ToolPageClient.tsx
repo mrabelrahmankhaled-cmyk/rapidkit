@@ -138,6 +138,11 @@ const CronJobTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const BoxShadowGeneratorTool = dynamic(
+    () => import("@/components/tools/BoxShadowGeneratorTool").then((m) => ({ default: m.BoxShadowGeneratorTool })),
+    { loading: Spinner, ssr: false }
+);
+
 // ─── Map slug → Component ────────────────────────────────────────
 const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "youtube-thumbnail-downloader": YoutubeThumbnailTool,
@@ -165,6 +170,7 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "screen-recorder": ScreenRecorderTool,
     "svg-shape-generator": SvgShapeGeneratorTool,
     "cron-job-generator": CronJobTool,
+    "box-shadow-generator": BoxShadowGeneratorTool,
 };
 
 type Props = {

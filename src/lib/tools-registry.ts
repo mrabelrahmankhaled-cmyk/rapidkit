@@ -545,6 +545,25 @@ export const TOOLS: Tool[] = [
         },
     },
     {
+        id: "box-shadow-generator",
+        name: "CSS Box Shadow Generator",
+        slug: "box-shadow-generator",
+        description: "Create beautiful CSS box shadows visually with real-time preview and code export.",
+        longDescription:
+            "Design the perfect depth for your UI elements. Our CSS Box Shadow Generator provides full control over horizontal and vertical offsets, blur radius, spread, and color. Experiment with inset shadows and opacity to create professional, modern effects. Get clean, production-ready CSS code instantly.",
+        categoryId: "design",
+        icon: "Box",
+        tags: ["design", "css", "shadow", "frontend", "ui"],
+        isNew: true,
+        isFeatured: true,
+        seo: {
+            title: "CSS Box Shadow Generator — Visual Shadow Builder | RapidKit",
+            description:
+                "Build professional CSS box shadows visually. Adjust offsets, blur, and spread with a live preview. Copy clean CSS code for your projects. Free and online.",
+            keywords: ["css box shadow generator", "box shadow maker", "css shadow builder", "ui depth tool", "frontend design"],
+        },
+    },
+    {
         id: "screen-recorder",
         name: "Online Screen Recorder",
         slug: "screen-recorder",
