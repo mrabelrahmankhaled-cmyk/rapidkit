@@ -508,6 +508,25 @@ export const TOOLS: Tool[] = [
         },
     },
     {
+        id: "svg-shape-generator",
+        name: "SVG Blob & Wave Generator",
+        slug: "svg-shape-generator",
+        description: "Create unique SVG blobs and organic waves for your web designs and backgrounds.",
+        longDescription:
+            "Design custom organic shapes and waves for modern website backgrounds and UI elements. Adjust complexity, contrast, and colors to generate unique SVG blobs or layered waves. Export as raw SVG code or download as an SVG file. Perfect for designers looking to add a professional, fluid aesthetic to their projects.",
+        categoryId: "design",
+        icon: "Shapes",
+        tags: ["design", "svg", "blob", "wave", "background", "generator"],
+        isNew: true,
+        isFeatured: true,
+        seo: {
+            title: "SVG Blob & Wave Generator — Create Organic Shapes & Waves | RapidKit",
+            description:
+                "Generate custom SVG blobs and waves for free. Customize complexity and colors, then copy the SVG code or download the file. Perfect for modern web design.",
+            keywords: ["svg blob generator", "svg wave maker", "organic shapes generator", "web design backgrounds", "css blobs"],
+        },
+    },
+    {
         id: "screen-recorder",
         name: "Online Screen Recorder",
         slug: "screen-recorder",

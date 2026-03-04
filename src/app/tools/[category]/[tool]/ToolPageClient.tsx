@@ -128,6 +128,11 @@ const ScreenRecorderTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const SvgShapeGeneratorTool = dynamic(
+    () => import("@/components/tools/SvgShapeGeneratorTool").then((m) => ({ default: m.SvgShapeGeneratorTool })),
+    { loading: Spinner, ssr: false }
+);
+
 // ─── Map slug → Component ────────────────────────────────────────
 const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "youtube-thumbnail-downloader": YoutubeThumbnailTool,
@@ -153,6 +158,7 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "favicon-generator": FaviconGeneratorTool,
     "lorem-ipsum-generator": LoremIpsumGeneratorTool,
     "screen-recorder": ScreenRecorderTool,
+    "svg-shape-generator": SvgShapeGeneratorTool,
 };
 
 type Props = {
