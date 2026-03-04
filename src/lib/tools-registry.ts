@@ -91,6 +91,14 @@ export const CATEGORIES: ToolCategory[] = [
         color: "#F43F5E",
         gradient: "from-rose-500 to-pink-600",
     },
+    {
+        id: "video",
+        name: "Video Tools",
+        slug: "video",
+        icon: "Video",
+        color: "#F43F5E",
+        gradient: "from-rose-500 to-red-600",
+    },
 ];
 
 export const TOOLS: Tool[] = [
@@ -497,6 +505,25 @@ export const TOOLS: Tool[] = [
             description:
                 "Extract professional color palettes from your photos for free. Get dominant colors and hex codes instantly. 100% private and web-based tool.",
             keywords: ["color palette generator", "extract colors from image", "image color picker", "hex code extractor", "palette from photo"],
+        },
+    },
+    {
+        id: "screen-recorder",
+        name: "Online Screen Recorder",
+        slug: "screen-recorder",
+        description: "Record your screen, camera, and audio directly in the browser. No installation, no watermarks.",
+        longDescription:
+            "The professional way to capture your screen. Whether you're creating a tutorial, reporting a bug, or recording a presentation, our online screen recorder works entirely in your browser. Record your full screen, specific windows, or browser tabs with high-quality audio. No software to install, no time limits, and absolutely no watermarks. 100% private and secure.",
+        categoryId: "video",
+        icon: "Monitor",
+        tags: ["video", "screen record", "tutorial", "presentation", "productivity"],
+        isNew: true,
+        isFeatured: true,
+        seo: {
+            title: "Free Online Screen Recorder — No Watermark & Unlimited Time | RapidKit",
+            description:
+                "Record your screen online for free. High-quality video capture for tutorials and presentations. No software installation, no watermarks, unlimited recording time.",
+            keywords: ["screen recorder online", "free screen recorder", "no watermark screen recorder", "record screen browser", "video capture tool"],
         },
     },
 ];
