@@ -83,6 +83,11 @@ const PasswordGeneratorTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const TextDiffCheckerTool = dynamic(
+    () => import("@/components/tools/TextDiffCheckerTool").then((m) => ({ default: m.TextDiffCheckerTool })),
+    { loading: Spinner, ssr: false }
+);
+
 // ─── Map slug → Component ────────────────────────────────────────
 const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "youtube-thumbnail-downloader": YoutubeThumbnailTool,
@@ -99,6 +104,7 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "code-to-image": CodeToImageTool,
     "whatsapp-link-generator": WhatsappLinkGeneratorTool,
     "password-generator": PasswordGeneratorTool,
+    "text-diff-checker": TextDiffCheckerTool,
 };
 
 type Props = {

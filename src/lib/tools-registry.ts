@@ -337,6 +337,24 @@ export const TOOLS: Tool[] = [
             keywords: ["password generator", "secure password", "random password", "strong password", "password strength"],
         },
     },
+    {
+        id: "text-diff-checker",
+        name: "Text Diff Checker",
+        slug: "text-diff-checker",
+        description: "Compare two pieces of text and find differences in lines or characters instantly.",
+        longDescription:
+            "Find what changed between two versions of text. Our tool provides a side-by-side or inline view of additions and deletions. Perfect for comparing code snippets, checking document versions, or identifying plagiarism. Secure and fast character-level analysis.",
+        categoryId: "text",
+        icon: "FileSearch",
+        tags: ["text", "diff", "compare", "code", "editing"],
+        isPopular: true,
+        seo: {
+            title: "Text Diff Checker — Compare Text and Find Differences | RapidKit",
+            description:
+                "Free online text comparison tool. Highlight differences between two texts easily. Side-by-side view for additions and deletions.",
+            keywords: ["text diff checker", "compare text online", "text difference finder", "diff tool", "check differences"],
+        },
+    },
 ];
 
 // ─── Helper Functions ────────────────────────────────────────────
