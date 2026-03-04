@@ -387,6 +387,24 @@ export const TOOLS: Tool[] = [
         },
     },
     {
+        id: "url-parser",
+        name: "URL Parser & Debugger",
+        slug: "url-parser",
+        description: "Deconstruct complex URLs into readable components, including protocol, host, path, and query parameters.",
+        longDescription:
+            "A powerful utility for web developers and SEO specialists. Paste any complex URL (like tracking links or API endpoints) and instantly see a structured breakdown of its components. It separates the protocol, domain, port, and path, and provides a clean table of all query parameters. Perfect for debugging routing issues, analyzing UTM tags, or understanding API requests.",
+        categoryId: "developer",
+        icon: "Link",
+        tags: ["developer", "url", "parser", "debugging", "web-dev"],
+        isNew: true,
+        seo: {
+            title: "URL Parser & Debugger — Break Down Complex Links Online | RapidKit",
+            description:
+                "Instantly parse and deconstruct URLs. See protocol, host, path, and query parameters in a clean, structured table. Free developer tool for debugging links.",
+            keywords: ["url parser", "query string decoder", "url debugger", "parse url parameters", "utm tag analyzer"],
+        },
+    },
+    {
         id: "markdown-editor",
         name: "Markdown Editor & Preview",
         slug: "markdown-editor",
