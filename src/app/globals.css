@@ -3,24 +3,33 @@
 @layer base {
   :root {
     /* ─── Color Palette ──────────────────────────────── */
-    --background: 10 10 15;          /* #0A0A0F */
-    --surface: 17 17 27;             /* #11111B */
-    --surface-2: 24 24 37;           /* #181825 */
-    --border: 45 45 65;              /* #2D2D41 */
-    --border-subtle: 30 30 46;       /* #1E1E2E */
+    --background: 10 10 15;
+    /* #0A0A0F */
+    --surface: 17 17 27;
+    /* #11111B */
+    --surface-2: 24 24 37;
+    /* #181825 */
+    --border: 45 45 65;
+    /* #2D2D41 */
+    --border-subtle: 30 30 46;
+    /* #1E1E2E */
 
-    --primary: 139 92 246;           /* violet-500 */
+    --primary: 139 92 246;
+    /* violet-500 */
     --primary-glow: 139 92 246;
-    --accent: 6 182 212;             /* cyan-500 */
+    --accent: 6 182 212;
+    /* cyan-500 */
     --accent-glow: 6 182 212;
 
-    --text-primary: 240 240 255;     /* near-white */
-    --text-secondary: 148 148 186;   /* muted */
+    --text-primary: 240 240 255;
+    /* near-white */
+    --text-secondary: 148 148 186;
+    /* muted */
     --text-muted: 80 80 120;
 
     /* ─── Gradients ──────────────────────────────────── */
     --gradient-hero: linear-gradient(135deg, #0A0A0F 0%, #11111B 50%, #0d0d1a 100%);
-    --gradient-card: linear-gradient(135deg, rgba(139,92,246,0.05) 0%, rgba(6,182,212,0.05) 100%);
+    --gradient-card: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(6, 182, 212, 0.05) 100%);
 
     /* ─── Glow Effects ───────────────────────────────── */
     --glow-primary: 0 0 40px rgba(139, 92, 246, 0.3);
@@ -72,18 +81,41 @@ body {
 }
 
 /* ─── CSS Variables as Tailwind Utilities ─────────────────────── */
-.bg-background    { background-color: rgb(var(--background)); }
-.bg-surface       { background-color: rgb(var(--surface)); }
-.bg-surface-2     { background-color: rgb(var(--surface-2)); }
-.border-subtle    { border-color: rgb(var(--border-subtle)); }
-.border-default   { border-color: rgb(var(--border)); }
-.text-primary-c   { color: rgb(var(--text-primary)); }
-.text-secondary-c { color: rgb(var(--text-secondary)); }
-.text-muted-c     { color: rgb(var(--text-muted)); }
+.bg-background {
+  background-color: rgb(var(--background));
+}
+
+.bg-surface {
+  background-color: rgb(var(--surface));
+}
+
+.bg-surface-2 {
+  background-color: rgb(var(--surface-2));
+}
+
+.border-subtle {
+  border-color: rgb(var(--border-subtle));
+}
+
+.border-default {
+  border-color: rgb(var(--border));
+}
+
+.text-primary-c {
+  color: rgb(var(--text-primary));
+}
+
+.text-secondary-c {
+  color: rgb(var(--text-secondary));
+}
+
+.text-muted-c {
+  color: rgb(var(--text-muted));
+}
 
 /* ─── Glassmorphism Card ─────────────────────────────────────── */
 .glass-card {
-  background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
   border: 1px solid rgb(var(--border-subtle));
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -125,9 +157,23 @@ body {
   letter-spacing: 0.05em;
 }
 
-.pill-new    { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
-.pill-hot    { background: rgba(239, 68, 68, 0.15);  color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
-.pill-popular{ background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+.pill-new {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.pill-hot {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.pill-popular {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
 
 /* ─── Glow Button ────────────────────────────────────────────── */
 .btn-primary {
@@ -148,7 +194,7 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
   opacity: 0;
   transition: opacity 0.25s ease;
 }
@@ -176,8 +222,13 @@ body {
 
 /* ─── Shimmer / Skeleton ─────────────────────────────────────── */
 @keyframes shimmer {
-  0%   { background-position: -200% center; }
-  100% { background-position:  200% center; }
+  0% {
+    background-position: -200% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
 }
 
 .shimmer {
@@ -188,27 +239,54 @@ body {
 
 /* ─── Floating animation ─────────────────────────────────────── */
 @keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-6px); }
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
 }
 
-.float { animation: float 4s ease-in-out infinite; }
+.float {
+  animation: float 4s ease-in-out infinite;
+}
 
 /* ─── Fade In Up ─────────────────────────────────────────────── */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.fade-in-up { animation: fadeInUp 0.6s ease forwards; }
+.fade-in-up {
+  animation: fadeInUp 0.6s ease forwards;
+}
 
 /* ─── Pulse Glow ─────────────────────────────────────────────── */
 @keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.2); }
-  50%       { box-shadow: 0 0 40px rgba(139, 92, 246, 0.5); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+  }
+
+  50% {
+    box-shadow: 0 0 40px rgba(139, 92, 246, 0.5);
+  }
 }
 
-.pulse-glow { animation: pulseGlow 2s ease-in-out infinite; }
+.pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
 
 /* ─── Tool Page Layout ───────────────────────────────────────── */
 .tool-wrapper {
@@ -233,4 +311,125 @@ body {
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 1.5rem;
+}
+
+/* ─── Blog Article Prose ─────────────────────────────────────── */
+.prose-content h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: rgb(240, 240, 255);
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgb(30, 30, 46);
+}
+
+.prose-content h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: rgb(200, 200, 230);
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.prose-content p {
+  color: rgb(140, 140, 180);
+  line-height: 1.85;
+  margin-bottom: 1.25rem;
+}
+
+.prose-content ul,
+.prose-content ol {
+  color: rgb(140, 140, 180);
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.prose-content li {
+  margin-bottom: 0.5rem;
+  line-height: 1.75;
+}
+
+.prose-content ul li {
+  list-style-type: disc;
+}
+
+.prose-content ol li {
+  list-style-type: decimal;
+}
+
+.prose-content strong {
+  color: rgb(200, 200, 240);
+  font-weight: 600;
+}
+
+.prose-content a {
+  color: rgb(139, 92, 246);
+  text-decoration: underline;
+  text-decoration-color: rgba(139, 92, 246, 0.4);
+  transition: color 0.2s;
+}
+
+.prose-content a:hover {
+  color: rgb(167, 139, 250);
+  text-decoration-color: rgba(167, 139, 250, 0.6);
+}
+
+.prose-content pre,
+.prose-content code {
+  font-family: var(--font-geist-mono), 'Courier New', monospace;
+}
+
+.prose-content pre {
+  background: rgb(10, 10, 15);
+  border: 1px solid rgb(45, 45, 65);
+  border-radius: 12px;
+  padding: 1.25rem;
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+  color: rgb(180, 180, 220);
+  line-height: 1.7;
+}
+
+.prose-content code {
+  background: rgb(17, 17, 27);
+  border: 1px solid rgb(45, 45, 65);
+  border-radius: 5px;
+  padding: 0.15em 0.45em;
+  font-size: 0.85em;
+  color: rgb(167, 139, 250);
+}
+
+.prose-content pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+}
+
+.prose-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.prose-content th {
+  background: rgb(17, 17, 27);
+  color: rgb(200, 200, 240);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgb(45, 45, 65);
+}
+
+.prose-content td {
+  padding: 0.65rem 1rem;
+  border: 1px solid rgb(30, 30, 46);
+  color: rgb(140, 140, 180);
+}
+
+.prose-content tr:nth-child(even) td {
+  background: rgb(10, 10, 15);
 }
