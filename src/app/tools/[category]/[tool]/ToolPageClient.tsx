@@ -53,6 +53,11 @@ const YoutubeTagExtractorTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const UnixTimestampConverterTool = dynamic(
+    () => import("@/components/tools/UnixTimestampConverterTool").then((m) => ({ default: m.UnixTimestampConverterTool })),
+    { loading: Spinner, ssr: false }
+);
+
 const UnitConverterTool = dynamic(
     () => import("@/components/tools/UnitConverterTool").then((m) => ({ default: m.UnitConverterTool })),
     { loading: Spinner, ssr: false }
@@ -191,6 +196,7 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "svg-shape-generator": SvgShapeGeneratorTool,
     "cron-job-generator": CronJobTool,
     "uuid-generator": UuidGeneratorTool,
+    "unix-timestamp-converter": UnixTimestampConverterTool,
     "box-shadow-generator": BoxShadowGeneratorTool,
     "signature-pad": SignaturePadTool,
     "markdown-editor": MarkdownEditorTool,

@@ -351,6 +351,24 @@ export const TOOLS: Tool[] = [
         },
     },
     {
+        id: "unix-timestamp-converter",
+        name: "Unix Timestamp Converter",
+        slug: "unix-timestamp-converter",
+        description: "Convert Unix timestamps to human-readable dates and vice versa with live epoch tracking.",
+        longDescription:
+            "A must-have tool for backend developers and sysadmins. Effortlessly convert Unix epoch timestamps (seconds and milliseconds) to readable date formats and back. Features a real-time live timestamp clock, timezone awareness (Local and UTC), and quick copy for debugging and logging. Perfect for troubleshooting API responses and database records.",
+        categoryId: "developer",
+        icon: "Hash",
+        tags: ["developer", "unix", "timestamp", "epoch", "backend"],
+        isNew: true,
+        seo: {
+            title: "Unix Timestamp Converter — Epoch Time & Date Tool | RapidKit",
+            description:
+                "Convert Unix timestamps to human-readable dates online. Real-time live epoch clock, UTC support, and date-to-timestamp conversion. Free for developers.",
+            keywords: ["unix timestamp converter", "epoch converter", "unix time to date", "current unix timestamp", "timestamp to utc"],
+        },
+    },
+    {
         id: "uuid-generator",
         name: "UUID / GUID Generator",
         slug: "uuid-generator",
