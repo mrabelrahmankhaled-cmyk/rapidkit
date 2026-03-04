@@ -355,6 +355,24 @@ export const TOOLS: Tool[] = [
             keywords: ["text diff checker", "compare text online", "text difference finder", "diff tool", "check differences"],
         },
     },
+    {
+        id: "image-metadata-remover",
+        name: "Image Metadata (EXIF) Remover",
+        slug: "image-metadata-remover",
+        description: "Strip sensitive EXIF data, GPS location, and camera settings from your photos instantly.",
+        longDescription:
+            "Protect your privacy before sharing photos online. Our tool removes hidden EXIF data like GPS coordinates, camera model, lens settings, and exposure details. Your image is processed entirely on your device, ensuring your original file never leaves your computer. Download a 'clean' version in seconds.",
+        categoryId: "image",
+        icon: "ShieldCheck",
+        tags: ["image", "privacy", "exif", "metadata", "security"],
+        isFeatured: true,
+        seo: {
+            title: "Private Image Metadata Remover — Strip EXIF & GPS from Photos | RapidKit",
+            description:
+                "Quickly remove GPS location and camera data from your images. Protect your privacy with our 100% local EXIF cleaner. Supporting JPEG and PNG.",
+            keywords: ["exif remover", "remove photo metadata", "strip gps from image", "clean image metadata", "private photo sharer"],
+        },
+    },
 ];
 
 // ─── Helper Functions ────────────────────────────────────────────

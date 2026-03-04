@@ -88,6 +88,11 @@ const TextDiffCheckerTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const ImageMetadataRemoverTool = dynamic(
+    () => import("@/components/tools/ImageMetadataRemoverTool").then((m) => ({ default: m.ImageMetadataRemoverTool })),
+    { loading: Spinner, ssr: false }
+);
+
 // ─── Map slug → Component ────────────────────────────────────────
 const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "youtube-thumbnail-downloader": YoutubeThumbnailTool,
@@ -105,6 +110,7 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "whatsapp-link-generator": WhatsappLinkGeneratorTool,
     "password-generator": PasswordGeneratorTool,
     "text-diff-checker": TextDiffCheckerTool,
+    "image-metadata-remover": ImageMetadataRemoverTool,
 };
 
 type Props = {
