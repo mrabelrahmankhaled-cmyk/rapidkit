@@ -274,6 +274,24 @@ export const TOOLS: Tool[] = [
             keywords: ["qr code generator", "create qr code", "qr code with logo", "wifi qr code", "custom qr code"],
         },
     },
+    {
+        id: "code-to-image",
+        name: "Code to Image (Prettify)",
+        slug: "code-to-image",
+        description: "Transform your source code into beautiful, shareable images with syntax highlighting and gradients.",
+        longDescription:
+            "Create professional code snippets for your social media or blog posts. Simply paste your code, select your language and theme, and customize the background with stunning gradients. Export as high-quality PNG images instantly. Perfect for developers, bloggers, and tech influencers.",
+        categoryId: "developer",
+        icon: "FileCode",
+        tags: ["code", "image", "developer", "marketing", "syntax highlighting"],
+        isFeatured: true,
+        seo: {
+            title: "Code to Image — Create Beautiful Code Snippets Online | RapidKit",
+            description:
+                "Convert your source code into elegant images with syntax highlighting. Choose from multiple themes and gradient backgrounds. Free online tool.",
+            keywords: ["code to image", "code snippet generator", "pretty code", "source code screenshot", "prettify code"],
+        },
+    },
 ];
 
 // ─── Helper Functions ────────────────────────────────────────────
