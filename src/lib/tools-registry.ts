@@ -99,6 +99,14 @@ export const CATEGORIES: ToolCategory[] = [
         color: "#F43F5E",
         gradient: "from-rose-500 to-red-600",
     },
+    {
+        id: "productivity",
+        name: "Productivity",
+        slug: "productivity",
+        icon: "Clock",
+        color: "#F97316",
+        gradient: "from-orange-500 to-amber-600",
+    },
 ];
 
 export const TOOLS: Tool[] = [
@@ -598,6 +606,25 @@ export const TOOLS: Tool[] = [
             description:
                 "Record your screen online for free. High-quality video capture for tutorials and presentations. No software installation, no watermarks, unlimited recording time.",
             keywords: ["screen recorder online", "free screen recorder", "no watermark screen recorder", "record screen browser", "video capture tool"],
+        },
+    },
+    {
+        id: "pomodoro-timer",
+        name: "Pomodoro Study Timer",
+        slug: "pomodoro-timer",
+        description: "Boost your productivity with the classic 25/5 Pomodoro technique. Focus more, stress less.",
+        longDescription:
+            "Master your time with our professional Pomodoro Timer. Designed for students, developers, and creators, this tool uses the proven 25-minute focus followed by a 5-minute break cycle. Features customizable intervals, browser notifications, and ambient sound alerts to keep you on track without constantly checking the clock. 100% free and works in any browser.",
+        categoryId: "productivity",
+        icon: "Timer",
+        tags: ["productivity", "timer", "pomodoro", "focus", "study"],
+        isNew: true,
+        isFeatured: true,
+        seo: {
+            title: "Online Pomodoro Timer — Focus & Study Productivity Tool | RapidKit",
+            description:
+                "Boost your focus with our free online Pomodoro timer. Classic 25/5 intervals, customizable settings, and break alerts. The ultimate productivity tool for deep work.",
+            keywords: ["pomodoro timer", "study timer", "focus timer", "online productivity tool", "pomodoro technique website"],
         },
     },
 ];

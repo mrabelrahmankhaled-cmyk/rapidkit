@@ -148,6 +148,11 @@ const BoxShadowGeneratorTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const PomodoroTimerTool = dynamic(
+    () => import("@/components/tools/PomodoroTimerTool").then((m) => ({ default: m.PomodoroTimerTool })),
+    { loading: Spinner, ssr: false }
+);
+
 // ─── Map slug → Component ────────────────────────────────────────
 const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "youtube-thumbnail-downloader": YoutubeThumbnailTool,
@@ -177,6 +182,7 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "cron-job-generator": CronJobTool,
     "uuid-generator": UuidGeneratorTool,
     "box-shadow-generator": BoxShadowGeneratorTool,
+    "pomodoro-timer": PomodoroTimerTool,
 };
 
 type Props = {
