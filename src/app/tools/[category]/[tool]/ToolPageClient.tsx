@@ -93,6 +93,11 @@ const ImageMetadataRemoverTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const MetaTagGeneratorTool = dynamic(
+    () => import("@/components/tools/MetaTagGeneratorTool").then((m) => ({ default: m.MetaTagGeneratorTool })),
+    { loading: Spinner, ssr: false }
+);
+
 // ─── Map slug → Component ────────────────────────────────────────
 const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "youtube-thumbnail-downloader": YoutubeThumbnailTool,
@@ -111,6 +116,7 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "password-generator": PasswordGeneratorTool,
     "text-diff-checker": TextDiffCheckerTool,
     "image-metadata-remover": ImageMetadataRemoverTool,
+    "meta-tag-generator": MetaTagGeneratorTool,
 };
 
 type Props = {

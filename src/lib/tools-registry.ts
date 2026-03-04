@@ -373,6 +373,24 @@ export const TOOLS: Tool[] = [
             keywords: ["exif remover", "remove photo metadata", "strip gps from image", "clean image metadata", "private photo sharer"],
         },
     },
+    {
+        id: "meta-tag-generator",
+        name: "Meta Tag Generator",
+        slug: "meta-tag-generator",
+        description: "Generate SEO-ready Meta Tags and Open Graph tags with real-time social media previews.",
+        longDescription:
+            "Optimize your website's social sharing and SEO. This tool generates all essential meta tags, including Open Graph for Facebook and Twitter Cards. See exactly how your site will look on Google, Facebook, and Twitter as you type. Boost your click-through rates with professional link previews.",
+        categoryId: "marketing",
+        icon: "Search",
+        tags: ["seo", "marketing", "meta tags", "open graph", "web development"],
+        isFeatured: true,
+        seo: {
+            title: "Meta Tag Generator — SEO & Social Media Preview Tool | RapidKit",
+            description:
+                "Create perfect meta tags for your website. Preview how your site appears on Google, Facebook, and Twitter. Generate SEO-optimized code instantly.",
+            keywords: ["meta tag generator", "social media preview", "og tag generator", "seo tags", "twitter card generator"],
+        },
+    },
 ];
 
 // ─── Helper Functions ────────────────────────────────────────────
