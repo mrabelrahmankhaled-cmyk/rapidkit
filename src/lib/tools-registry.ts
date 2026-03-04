@@ -255,6 +255,25 @@ export const TOOLS: Tool[] = [
             keywords: ["color converter", "hex to rgb", "rgb to hex", "color code converter", "hex color converter"],
         },
     },
+    {
+        id: "qr-code-generator",
+        name: "QR Code Generator",
+        slug: "qr-code-generator",
+        description: "Generate highly customizable QR codes for URLs, Wi-Fi, and text with custom colors and logo support.",
+        longDescription:
+            "Create professional QR codes in seconds. Our tool supports standard URLs, Wi-Fi configuration (scan-to-join), and plain text. Fully customize your QR code with your brand colors and add a custom logo in the center. High-quality PNG and SVG export supported.",
+        categoryId: "developer",
+        icon: "QrCode",
+        tags: ["qr code", "generator", "marketing", "wifi", "design"],
+        isFeatured: true,
+        isNew: true,
+        seo: {
+            title: "Free QR Code Generator — Create Custom QR Codes with Logo | RapidKit",
+            description:
+                "Generate custom QR codes online for free. Support for URLs, Wi-Fi, and text. Customize colors and add logos. High-quality downloads.",
+            keywords: ["qr code generator", "create qr code", "qr code with logo", "wifi qr code", "custom qr code"],
+        },
+    },
 ];
 
 // ─── Helper Functions ────────────────────────────────────────────

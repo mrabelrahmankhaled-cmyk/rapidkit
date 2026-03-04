@@ -63,6 +63,11 @@ const ColorConverterTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const QrCodeGeneratorTool = dynamic(
+    () => import("@/components/tools/QrCodeGeneratorTool").then((m) => ({ default: m.QrCodeGeneratorTool })),
+    { loading: Spinner, ssr: false }
+);
+
 // ─── Map slug → Component ────────────────────────────────────────
 const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "youtube-thumbnail-downloader": YoutubeThumbnailTool,
@@ -75,6 +80,7 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "text-case-converter": TextCaseConverterTool,
     "unit-converter": UnitConverterTool,
     "color-converter": ColorConverterTool,
+    "qr-code-generator": QrCodeGeneratorTool,
 };
 
 type Props = {
