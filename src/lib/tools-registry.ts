@@ -369,6 +369,24 @@ export const TOOLS: Tool[] = [
         },
     },
     {
+        id: "markdown-editor",
+        name: "Markdown Editor & Preview",
+        slug: "markdown-editor",
+        description: "Write and preview Markdown in real-time. GitHub-style styling and HTML export.",
+        longDescription:
+            "The perfect documentation companion. Our Markdown Editor provides a professional split-screen experience where you can write Markdown on the left and see the beautifully rendered HTML on the right in real-time. Supports GitHub Flavored Markdown (GFM), including tables, task lists, and code blocks. Export your work as raw HTML or copy it to your clipboard instantly.",
+        categoryId: "developer",
+        icon: "FileText",
+        tags: ["developer", "markdown", "editor", "preview", "documentation"],
+        isNew: true,
+        seo: {
+            title: "Markdown Editor & Real-Time Preview Online | RapidKit",
+            description:
+                "Free online Markdown editor with live preview. Write GitHub-style documentation, convert Markdown to HTML, and export instantly. Fast and developer-friendly.",
+            keywords: ["markdown editor", "markdown preview", "online markdown editor", "convert markdown to html", "readme editor"],
+        },
+    },
+    {
         id: "code-to-image",
         name: "Code to Image (Prettify)",
         slug: "code-to-image",

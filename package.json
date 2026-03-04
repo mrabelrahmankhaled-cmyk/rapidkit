@@ -17,6 +17,7 @@
     "html-to-image": "^1.11.13",
     "jszip": "^3.10.1",
     "lucide-react": "^0.576.0",
+    "marked": "^17.0.3",
     "next": "16.1.6",
     "node-vibrant": "^4.0.4",
     "papaparse": "^5.5.3",
@@ -29,6 +30,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/diff": "^7.0.2",
+    "@types/marked": "^5.0.2",
     "@types/node": "^20",
     "@types/papaparse": "^5.5.2",
     "@types/react": "^19",
