@@ -103,6 +103,11 @@ const Base64ConverterTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const JsonCsvConverterTool = dynamic(
+    () => import("@/components/tools/JsonCsvConverterTool").then((m) => ({ default: m.JsonCsvConverterTool })),
+    { loading: Spinner, ssr: false }
+);
+
 // ─── Map slug → Component ────────────────────────────────────────
 const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "youtube-thumbnail-downloader": YoutubeThumbnailTool,
@@ -123,6 +128,7 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "image-metadata-remover": ImageMetadataRemoverTool,
     "meta-tag-generator": MetaTagGeneratorTool,
     "base64-converter": Base64ConverterTool,
+    "json-csv-converter": JsonCsvConverterTool,
 };
 
 type Props = {

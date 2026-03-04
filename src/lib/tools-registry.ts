@@ -75,6 +75,14 @@ export const CATEGORIES: ToolCategory[] = [
         color: "#EC4899",
         gradient: "from-pink-500 to-rose-600",
     },
+    {
+        id: "data",
+        name: "Data Tools",
+        slug: "data",
+        icon: "Database",
+        color: "#6366F1",
+        gradient: "from-indigo-500 to-blue-600",
+    },
 ];
 
 export const TOOLS: Tool[] = [
@@ -407,6 +415,24 @@ export const TOOLS: Tool[] = [
             description:
                 "Free online Base64 converter. Convert images to Base64 data URIs or encode/decode text strings. Fast, secure, and developer-friendly.",
             keywords: ["base64 converter", "image to base64", "base64 encoder", "base64 decoder", "data uri generator"],
+        },
+    },
+    {
+        id: "json-csv-converter",
+        name: "JSON to CSV / CSV to JSON",
+        slug: "json-csv-converter",
+        description: "Convert JSON data to CSV format or vice versa with a live editable table view.",
+        longDescription:
+            "Seamlessly transform your data between JSON and CSV formats. Perfect for developers, accountants, and data analysts. Features a live table preview where you can view and edit your data before exporting. Handles complex JSON structures and large CSV files with ease, all within your browser.",
+        categoryId: "data",
+        icon: "Table",
+        tags: ["json", "csv", "data", "converter", "excel"],
+        isFeatured: true,
+        seo: {
+            title: "JSON to CSV & CSV to JSON Converter — Editable Table View | RapidKit",
+            description:
+                "Free online JSON to CSV converter. Convert Excel/CSV to JSON instantly. Includes a live editable table preview. 100% private local processing.",
+            keywords: ["json to csv", "csv to json", "excel to json", "convert json to csv", "data converter"],
         },
     },
 ];
