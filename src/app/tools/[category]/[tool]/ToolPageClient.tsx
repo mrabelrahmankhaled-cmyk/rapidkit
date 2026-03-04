@@ -73,6 +73,11 @@ const CodeToImageTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const WhatsappLinkGeneratorTool = dynamic(
+    () => import("@/components/tools/WhatsappLinkGeneratorTool").then((m) => ({ default: m.WhatsappLinkGeneratorTool })),
+    { loading: Spinner, ssr: false }
+);
+
 // ─── Map slug → Component ────────────────────────────────────────
 const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "youtube-thumbnail-downloader": YoutubeThumbnailTool,
@@ -87,6 +92,7 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "color-converter": ColorConverterTool,
     "qr-code-generator": QrCodeGeneratorTool,
     "code-to-image": CodeToImageTool,
+    "whatsapp-link-generator": WhatsappLinkGeneratorTool,
 };
 
 type Props = {

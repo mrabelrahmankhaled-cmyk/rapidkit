@@ -67,6 +67,14 @@ export const CATEGORIES: ToolCategory[] = [
         color: "#F59E0B",
         gradient: "from-amber-500 to-orange-600",
     },
+    {
+        id: "marketing",
+        name: "Marketing Tools",
+        slug: "marketing",
+        icon: "Megaphone",
+        color: "#EC4899",
+        gradient: "from-pink-500 to-rose-600",
+    },
 ];
 
 export const TOOLS: Tool[] = [
@@ -290,6 +298,25 @@ export const TOOLS: Tool[] = [
             description:
                 "Convert your source code into elegant images with syntax highlighting. Choose from multiple themes and gradient backgrounds. Free online tool.",
             keywords: ["code to image", "code snippet generator", "pretty code", "source code screenshot", "prettify code"],
+        },
+    },
+    {
+        id: "whatsapp-link-generator",
+        name: "WhatsApp Link Generator",
+        slug: "whatsapp-link-generator",
+        description: "Generate instant chat links for WhatsApp with custom messages. Perfect for business ads and social media.",
+        longDescription:
+            "Create direct WhatsApp chat links easily. Enter your phone number and an optional pre-filled message, and get a shareable link instantly. Includes a live preview of how the message will look to your customers. High-performing tool for entrepreneurs and marketers.",
+        categoryId: "marketing",
+        icon: "MessageCircle",
+        tags: ["whatsapp", "marketing", "link generator", "business", "social media"],
+        isFeatured: true,
+        isPopular: true,
+        seo: {
+            title: "WhatsApp Link Generator — Create Direct Chat Links Free | RapidKit",
+            description:
+                "Generate WhatsApp direct chat links with custom messages. Boost your business sales with easy-to-use WhatsApp links. No signup required.",
+            keywords: ["whatsapp link generator", "create whatsapp link", "whatsapp direct link", "wa link", "whatsapp message link"],
         },
     },
 ];
