@@ -43,6 +43,11 @@ const CssGradientTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const GlassmorphismGeneratorTool = dynamic(
+    () => import("@/components/tools/GlassmorphismGeneratorTool").then((m) => ({ default: m.GlassmorphismGeneratorTool })),
+    { loading: Spinner, ssr: false }
+);
+
 const TextCaseConverterTool = dynamic(
     () => import("@/components/tools/TextCaseConverterTool").then((m) => ({ default: m.TextCaseConverterTool })),
     { loading: Spinner, ssr: false }

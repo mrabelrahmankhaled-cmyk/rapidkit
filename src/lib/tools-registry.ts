@@ -644,6 +644,24 @@ export const TOOLS: Tool[] = [
         },
     },
     {
+        id: "glassmorphism-generator",
+        name: "CSS Glassmorphism Generator",
+        slug: "glassmorphism-generator",
+        description: "Create modern frosted-glass effects with real-time preview and clean CSS export.",
+        longDescription:
+            "Master the hottest UI trend with our Glassmorphism Generator. Effortlessly adjust backdrop blur, transparency, saturation, and border frost to create stunning glass effects for your web projects. Features an interactive preview with dynamic moving backgrounds to visualize the transparency and blur in real-time. Get production-ready CSS code instantly.",
+        categoryId: "design",
+        icon: "Layers",
+        tags: ["design", "css", "glassmorphism", "ui", "ux"],
+        isNew: true,
+        seo: {
+            title: "CSS Glassmorphism Generator — Design Modern Glass UI Effects | RapidKit",
+            description:
+                "Build professional frosted-glass UI effects visually. Adjust blur, transparency, and borders with a live moving background preview. Copy clean CSS code instantly.",
+            keywords: ["glassmorphism generator", "css glass effect", "frosted glass css", "ui design trends", "backdrop blur generator"],
+        },
+    },
+    {
         id: "screen-recorder",
         name: "Online Screen Recorder",
         slug: "screen-recorder",
