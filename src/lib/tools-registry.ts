@@ -319,6 +319,24 @@ export const TOOLS: Tool[] = [
             keywords: ["whatsapp link generator", "create whatsapp link", "whatsapp direct link", "wa link", "whatsapp message link"],
         },
     },
+    {
+        id: "password-generator",
+        name: "Secure Password Generator",
+        slug: "password-generator",
+        description: "Generate ultra-secure, random passwords instantly with customizable length and character types.",
+        longDescription:
+            "Protect your accounts with strong, unpredictable passwords. Our generator allows you to include uppercase letters, numbers, and special symbols. It features a real-time strength meter and all generation happens locally in your browser for maximum privacy. Never reuse a weak password again.",
+        categoryId: "developer",
+        icon: "ShieldAlert",
+        tags: ["password", "security", "generator", "random", "privacy"],
+        isFeatured: true,
+        seo: {
+            title: "Secure Password Generator — Create Strong Passwords Online | RapidKit",
+            description:
+                "Generate highly secure random passwords for free. Customizable length, symbols, and numbers. 100% private and local generation.",
+            keywords: ["password generator", "secure password", "random password", "strong password", "password strength"],
+        },
+    },
 ];
 
 // ─── Helper Functions ────────────────────────────────────────────

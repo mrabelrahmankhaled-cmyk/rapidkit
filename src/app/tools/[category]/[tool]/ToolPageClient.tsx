@@ -78,6 +78,11 @@ const WhatsappLinkGeneratorTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const PasswordGeneratorTool = dynamic(
+    () => import("@/components/tools/PasswordGeneratorTool").then((m) => ({ default: m.PasswordGeneratorTool })),
+    { loading: Spinner, ssr: false }
+);
+
 // ─── Map slug → Component ────────────────────────────────────────
 const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "youtube-thumbnail-downloader": YoutubeThumbnailTool,
@@ -93,6 +98,7 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "qr-code-generator": QrCodeGeneratorTool,
     "code-to-image": CodeToImageTool,
     "whatsapp-link-generator": WhatsappLinkGeneratorTool,
+    "password-generator": PasswordGeneratorTool,
 };
 
 type Props = {
