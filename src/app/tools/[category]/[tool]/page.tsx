@@ -19,16 +19,28 @@ type Props = {
 
 // ─── Cross-category Related Tools Map ─────────────────────────────
 const RELATED_MAP: Record<string, string[]> = {
-    "image-compressor": ["webp-converter", "youtube-thumbnail-downloader"],
-    "webp-converter": ["image-compressor", "css-gradient-generator"],
+    "image-compressor": ["webp-converter", "svg-shape-generator"],
+    "webp-converter": ["image-compressor", "favicon-generator"],
     "youtube-thumbnail-downloader": ["youtube-tag-extractor", "image-compressor"],
     "youtube-tag-extractor": ["youtube-thumbnail-downloader", "word-counter"],
-    "json-formatter": ["css-gradient-generator", "text-case-converter"],
-    "css-gradient-generator": ["json-formatter", "color-converter"],
-    "word-counter": ["text-case-converter", "json-formatter"],
-    "text-case-converter": ["word-counter", "json-formatter"],
-    "unit-converter": ["color-converter", "text-case-converter"],
+    "json-formatter": ["url-parser", "uuid-generator"],
+    "css-gradient-generator": ["glassmorphism-generator", "box-shadow-generator"],
+    "glassmorphism-generator": ["css-gradient-generator", "box-shadow-generator"],
+    "box-shadow-generator": ["glassmorphism-generator", "css-gradient-generator"],
+    "word-counter": ["markdown-editor", "text-case-converter"],
+    "text-case-converter": ["word-counter", "markdown-editor"],
+    "unit-converter": ["aspect-ratio-calculator", "color-converter"],
     "color-converter": ["css-gradient-generator", "unit-converter"],
+    "unix-timestamp-converter": ["cron-job-generator", "uuid-generator"],
+    "cron-job-generator": ["unix-timestamp-converter", "json-formatter"],
+    "uuid-generator": ["unix-timestamp-converter", "json-formatter"],
+    "url-parser": ["json-formatter", "what-is-my-ip"],
+    "what-is-my-ip": ["url-parser", "unix-timestamp-converter"],
+    "aspect-ratio-calculator": ["unit-converter", "svg-shape-generator"],
+    "svg-shape-generator": ["aspect-ratio-calculator", "glassmorphism-generator"],
+    "signature-pad": ["image-compressor", "word-counter"],
+    "markdown-editor": ["word-counter", "text-case-converter"],
+    "pomodoro-timer": ["word-counter", "signature-pad"],
 };
 
 // ─── HowToUse steps per tool ──────────────────────────────────────
@@ -70,10 +82,10 @@ const HOW_TO: Record<string, string[]> = {
         "Click 'Copy CSS' to copy the ready-to-use CSS code to your clipboard.",
     ],
     "word-counter": [
-        "Paste or type your text into the text area below the stats panel.",
-        "Statistics update in real-time — words, characters, sentences, paragraphs.",
-        "Check the estimated Reading Time and Speaking Time for your content.",
-        "Scroll down to see the most frequently used words in your text.",
+        "Paste or type your text into the professional editor surface.",
+        "Watch real-time stats for words, characters, sentences, and paragraphs.",
+        "Check the Speaking Time evaluation if you are preparing a video script.",
+        "Review the Keyword Density table to optimize your text for SEO.",
     ],
     "text-case-converter": [
         "Select your desired case format from the style grid (UPPERCASE, camelCase, etc.).",
@@ -91,6 +103,66 @@ const HOW_TO: Record<string, string[]> = {
         "All other formats update automatically in real-time.",
         "Use the color picker for visual selection.",
         "Click 'Copy' next to any format to copy the value to your clipboard.",
+    ],
+    "glassmorphism-generator": [
+        "Adjust the 'Backdrop Blur' and 'Transparency' sliders to find your desired glass look.",
+        "Use 'Saturation' to make the colors behind the glass pop or fade.",
+        "Toggle 'Border Frost' to add a realistic glass edge effect.",
+        "Copy the generated CSS code instantly for your project.",
+    ],
+    "signature-pad": [
+        "Use your mouse, trackpad, or touchscreen to draw your signature in the designated area.",
+        "Customize the pen color and line thickness using the controls on the right.",
+        "If you make a mistake, click 'Clear' to start over.",
+        "Download your final signature as a high-quality transparent PNG file.",
+    ],
+    "aspect-ratio-calculator": [
+        "Enter the Width or Height of your media to see its current simplified ratio.",
+        "Click 'Ratio Locked' if you want to scale the dimensions proportionally.",
+        "Use one of the presets (like TikTok 9:16 or HD 16:9) to automatically set the base ratio.",
+        "The visual preview box will update in real-time to show the physical shape.",
+    ],
+    "url-parser": [
+        "Paste any complex URL into the search field.",
+        "Review the 'Debugger' card to see the protocol, host, and origin breakdown.",
+        "Look at the Query Parameters table to see all key-value pairs decoded.",
+        "Check the SSL Audit section to verify if the link is secure (HTTPS).",
+    ],
+    "what-is-my-ip": [
+        "Simply open the page and wait 1-2 seconds for the network scan to complete.",
+        "Your public IPv4 address will be displayed in large, clear typography.",
+        "Review the geolocation cards to see your city, ISP, and country.",
+        "Click 'Show on Map' to see your approximate network location in Google Maps.",
+    ],
+    "cron-job-generator": [
+        "Choose a preset from the common tasks list (e.g., 'Every hour') to begin.",
+        "Manually adjust minute, hour, day, and month selectors for precise scheduling.",
+        "Read the human-friendly explanation to ensure the schedule matches your intent.",
+        "Copy the generated Cron expression for use in your server or cloud environment.",
+    ],
+    "svg-shape-generator": [
+        "Choose between 'Blob' (organic shapes) or 'Wave' (background dividers) mode.",
+        "Adjust complexity, contrast, and fluidity using the range sliders.",
+        "Change the color to match your brand palette with the color picker.",
+        "Copy the SVG code to your clipboard or download the .svg file directly.",
+    ],
+    "markdown-editor": [
+        "Type your Markdown content into the left editor panel.",
+        "Watch the GitHub-style preview render in real-time on the right.",
+        "Use the toolbar to quickly insert formatting like Bold, Code, or Links.",
+        "Export your work as a .md file or copy the raw HTML for your blog.",
+    ],
+    "pomodoro-timer": [
+        "Select your mode: 'Focus' (25 min), 'Short Break' (5 min), or 'Long Break' (15 min).",
+        "Click the center of the timer to start the countdown.",
+        "Enable browser notifications to stay alerted even when you're in another tab.",
+        "Listen for the synthesized audio chime that signals the end of your session.",
+    ],
+    "uuid-generator": [
+        "Select how many UUIDs you need to generate (up to 100 at a time).",
+        "Click 'Generate New IDs' to create fresh, cryptographically strong unique identifiers.",
+        "Copy individual IDs or use 'Copy All' for bulk tasks.",
+        "Export the list as a .txt file for easy database seeding or documentation.",
     ],
 };
 
