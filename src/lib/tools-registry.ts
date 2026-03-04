@@ -226,20 +226,20 @@ export const TOOLS: Tool[] = [
     // ─── Text Tools ────────────────────────────────────────────────
     {
         id: "word-counter",
-        name: "Word & Character Counter",
+        name: "Advanced Word Counter",
         slug: "word-counter",
-        description: "Count words, characters, sentences, and paragraphs. Estimate reading time instantly.",
+        description: "Analyze word count, character count, keyword density, and estimated reading/speaking time.",
         longDescription:
-            "A comprehensive text analysis tool. Get real-time word count, character count (with and without spaces), sentence count, paragraph count, and estimated reading time. Perfect for writers, students, and content creators.",
+            "A professional text analysis laboratory. Beyond simple word and character counts, our Advanced Word Counter provides keyword density analysis, sentence and paragraph tracking, and precise time estimates for both reading and public speaking. Essential for content creators, scriptwriters, students, and SEO specialists who need an exact breakdown of their writing.",
         categoryId: "text",
         icon: "AlignLeft",
-        tags: ["text", "word count", "character count", "writing"],
+        tags: ["text", "word count", "character count", "writing", "analysis", "seo"],
         isPopular: true,
         seo: {
-            title: "Word Counter — Free Online Word & Character Count Tool | RapidKit",
+            title: "Advanced Word Counter — Professional Text Analysis & Time Estimation | RapidKit",
             description:
-                "Count words, characters, sentences & paragraphs instantly. Get reading time estimates. Free online word counter.",
-            keywords: ["word counter", "character counter", "word count online", "text character counter"],
+                "Free online word counter with advanced analysis. Track keyword density, reading time, and speaking time (WPM). Perfect for writers, scripters, and SEO.",
+            keywords: ["advanced word counter", "word count with speaking time", "keyword density checker", "reading time calculator", "character counter online"],
         },
     },
     {
