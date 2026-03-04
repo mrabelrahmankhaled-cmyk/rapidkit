@@ -343,6 +343,24 @@ export const TOOLS: Tool[] = [
         },
     },
     {
+        id: "uuid-generator",
+        name: "UUID / GUID Generator",
+        slug: "uuid-generator",
+        description: "Generate bulk unique IDs (v4) for your database keys and development needs.",
+        longDescription:
+            "Create cryptographically strong unique identifiers instantly. Whether you need a single UUID v4 for a database record or a bulk list of 100 IDs for testing, our tool handles it with ease. Featuring copy-to-clipboard functionality and text file exports, it is the perfect companion for backend developers and database administrators.",
+        categoryId: "developer",
+        icon: "Fingerprint",
+        tags: ["developer", "uuid", "guid", "database", "security"],
+        isNew: true,
+        seo: {
+            title: "Online UUID / GUID Generator — Bulk V4 Unique IDs | RapidKit",
+            description:
+                "Generate unique UUID v4 identifiers online for free. Support for bulk generation, copy to clipboard, and text file export. Fast, secure, and developer-friendly.",
+            keywords: ["uuid generator", "guid generator", "v4 uuid", "generate unique ids", "bulk uuid maker"],
+        },
+    },
+    {
         id: "code-to-image",
         name: "Code to Image (Prettify)",
         slug: "code-to-image",

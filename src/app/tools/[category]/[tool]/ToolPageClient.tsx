@@ -138,6 +138,11 @@ const CronJobTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const UuidGeneratorTool = dynamic(
+    () => import("@/components/tools/UuidGeneratorTool").then((m) => ({ default: m.UuidGeneratorTool })),
+    { loading: Spinner, ssr: false }
+);
+
 const BoxShadowGeneratorTool = dynamic(
     () => import("@/components/tools/BoxShadowGeneratorTool").then((m) => ({ default: m.BoxShadowGeneratorTool })),
     { loading: Spinner, ssr: false }
@@ -170,6 +175,7 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "screen-recorder": ScreenRecorderTool,
     "svg-shape-generator": SvgShapeGeneratorTool,
     "cron-job-generator": CronJobTool,
+    "uuid-generator": UuidGeneratorTool,
     "box-shadow-generator": BoxShadowGeneratorTool,
 };
 
