@@ -325,6 +325,24 @@ export const TOOLS: Tool[] = [
         },
     },
     {
+        id: "cron-job-generator",
+        name: "Cron Job Generator",
+        slug: "cron-job-generator",
+        description: "Visual editor to create Cron schedules and expressions with human-readable explanations.",
+        longDescription:
+            "Never struggle with crontab syntax again. Our visual Cron Job Generator allows you to easily create complex schedules—from simple 'every minute' to specific times like 'every Friday at 5 PM'. Get the exact cron expression and a clear human-readable description of what your job will do. Essential for sysadmins and backend developers.",
+        categoryId: "developer",
+        icon: "Clock",
+        tags: ["developer", "cron", "backend", "sysadmin", "scheduler"],
+        isNew: true,
+        seo: {
+            title: "Cron Job Generator — Visual Crontab Expression Builder | RapidKit",
+            description:
+                "Create Cron schedules visually. Generate cron expressions for Linux, AWS, and server tasks. Human-readable explanations included. Fast, free, and online.",
+            keywords: ["cron job generator", "crontab generator", "cron expression builder", "schedular tool", "cron syntax"],
+        },
+    },
+    {
         id: "code-to-image",
         name: "Code to Image (Prettify)",
         slug: "code-to-image",

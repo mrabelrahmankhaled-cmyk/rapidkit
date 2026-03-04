@@ -133,6 +133,11 @@ const SvgShapeGeneratorTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const CronJobTool = dynamic(
+    () => import("@/components/tools/CronJobTool").then((m) => ({ default: m.CronJobTool })),
+    { loading: Spinner, ssr: false }
+);
+
 // ─── Map slug → Component ────────────────────────────────────────
 const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "youtube-thumbnail-downloader": YoutubeThumbnailTool,
@@ -159,6 +164,7 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "lorem-ipsum-generator": LoremIpsumGeneratorTool,
     "screen-recorder": ScreenRecorderTool,
     "svg-shape-generator": SvgShapeGeneratorTool,
+    "cron-job-generator": CronJobTool,
 };
 
 type Props = {
