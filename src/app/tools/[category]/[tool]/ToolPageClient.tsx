@@ -108,6 +108,11 @@ const JsonCsvConverterTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const ColorPaletteTool = dynamic(
+    () => import("@/components/tools/ColorPaletteTool").then((m) => ({ default: m.ColorPaletteTool })),
+    { loading: Spinner, ssr: false }
+);
+
 // ─── Map slug → Component ────────────────────────────────────────
 const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "youtube-thumbnail-downloader": YoutubeThumbnailTool,
@@ -129,6 +134,7 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "meta-tag-generator": MetaTagGeneratorTool,
     "base64-converter": Base64ConverterTool,
     "json-csv-converter": JsonCsvConverterTool,
+    "color-palette-generator": ColorPaletteTool,
 };
 
 type Props = {

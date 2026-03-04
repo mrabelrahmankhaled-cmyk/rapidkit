@@ -83,6 +83,14 @@ export const CATEGORIES: ToolCategory[] = [
         color: "#6366F1",
         gradient: "from-indigo-500 to-blue-600",
     },
+    {
+        id: "design",
+        name: "Design Tools",
+        slug: "design",
+        icon: "Palette",
+        color: "#F43F5E",
+        gradient: "from-rose-500 to-pink-600",
+    },
 ];
 
 export const TOOLS: Tool[] = [
@@ -433,6 +441,25 @@ export const TOOLS: Tool[] = [
             description:
                 "Free online JSON to CSV converter. Convert Excel/CSV to JSON instantly. Includes a live editable table preview. 100% private local processing.",
             keywords: ["json to csv", "csv to json", "excel to json", "convert json to csv", "data converter"],
+        },
+    },
+    {
+        id: "color-palette-generator",
+        name: "Color Palette from Image",
+        slug: "color-palette-generator",
+        description: "Extract beautiful color palettes and hex codes from any image or photo instantly.",
+        longDescription:
+            "Designers' favorite tool. Upload any image and automatically extract its dominant colors and a full harmonious palette. Get HEX, RGB, and HSL codes for every color. Perfect for branding, UI design, and finding inspiration from photography. 100% private and runs in your browser.",
+        categoryId: "design",
+        icon: "Droplets",
+        tags: ["design", "color", "palette", "image", "extraction"],
+        isNew: true,
+        isFeatured: true,
+        seo: {
+            title: "Color Palette Generator from Image — Extract Hex Codes | RapidKit",
+            description:
+                "Extract professional color palettes from your photos for free. Get dominant colors and hex codes instantly. 100% private and web-based tool.",
+            keywords: ["color palette generator", "extract colors from image", "image color picker", "hex code extractor", "palette from photo"],
         },
     },
 ];
