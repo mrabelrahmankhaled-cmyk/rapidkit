@@ -118,6 +118,11 @@ const FaviconGeneratorTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const LoremIpsumGeneratorTool = dynamic(
+    () => import("@/components/tools/LoremIpsumGeneratorTool").then((m) => ({ default: m.LoremIpsumGeneratorTool })),
+    { loading: Spinner, ssr: false }
+);
+
 // ─── Map slug → Component ────────────────────────────────────────
 const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "youtube-thumbnail-downloader": YoutubeThumbnailTool,
@@ -141,6 +146,7 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "json-csv-converter": JsonCsvConverterTool,
     "color-palette-generator": ColorPaletteTool,
     "favicon-generator": FaviconGeneratorTool,
+    "lorem-ipsum-generator": LoremIpsumGeneratorTool,
 };
 
 type Props = {

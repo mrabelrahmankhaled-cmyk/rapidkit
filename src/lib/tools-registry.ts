@@ -243,6 +243,24 @@ export const TOOLS: Tool[] = [
             keywords: ["text case converter", "uppercase converter", "lowercase converter", "title case converter", "camelcase converter"],
         },
     },
+    {
+        id: "lorem-ipsum-generator",
+        name: "Lorem Ipsum Generator",
+        slug: "lorem-ipsum-generator",
+        description: "Generate professional placeholder text with a twist: Classic, Funny, Football, or Egyptian styles.",
+        longDescription:
+            "The ultimate placeholder text generator for developers and designers. Choose between the classic Latin Lorem Ipsum or have some fun with themed text like Funny, Football, or Egyptian styles. Customize the number of paragraphs, sentences, or words to fit your project exactly.",
+        categoryId: "text",
+        icon: "FileText",
+        tags: ["text", "placeholder", "lorem ipsum", "generator", "design"],
+        isNew: true,
+        seo: {
+            title: "Lorem Ipsum Generator — Professional & Theme Placeholder Text | RapidKit",
+            description:
+                "Generate custom Lorem Ipsum placeholder text for your designs. Choose from Classic, Funny, or Egyptian themes. Web-based, fast, and free.",
+            keywords: ["lorem ipsum generator", "placeholder text", "filler text maker", "funny lorem ipsum", "egyptian lorem ipsum"],
+        },
+    },
     // ─── Converters ────────────────────────────────────────────────
     {
         id: "unit-converter",
