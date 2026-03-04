@@ -53,6 +53,11 @@ const GlassmorphismGeneratorTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const AspectRatioCalculatorTool = dynamic(
+    () => import("@/components/tools/AspectRatioCalculatorTool").then((m) => ({ default: m.AspectRatioCalculatorTool })),
+    { loading: Spinner, ssr: false }
+);
+
 const TextCaseConverterTool = dynamic(
     () => import("@/components/tools/TextCaseConverterTool").then((m) => ({ default: m.TextCaseConverterTool })),
     { loading: Spinner, ssr: false }
@@ -205,6 +210,7 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "lorem-ipsum-generator": LoremIpsumGeneratorTool,
     "screen-recorder": ScreenRecorderTool,
     "svg-shape-generator": SvgShapeGeneratorTool,
+    "aspect-ratio-calculator": AspectRatioCalculatorTool,
     "cron-job-generator": CronJobTool,
     "uuid-generator": UuidGeneratorTool,
     "unix-timestamp-converter": UnixTimestampConverterTool,

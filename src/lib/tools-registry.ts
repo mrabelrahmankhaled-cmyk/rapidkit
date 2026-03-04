@@ -680,6 +680,24 @@ export const TOOLS: Tool[] = [
         },
     },
     {
+        id: "aspect-ratio-calculator",
+        name: "Aspect Ratio Calculator",
+        slug: "aspect-ratio-calculator",
+        description: "Calculate dimensions and ratios for video, images, and UI layouts instantly.",
+        longDescription:
+            "A precise utility for designers, video editors, and developers. Easily identify the aspect ratio of any resolution or calculate the missing width or height based on a target ratio (like 16:9 or 4:3). Includes presets for social media, cinema, and photography, plus a real-time visual preview of the calculated frame.",
+        categoryId: "design",
+        icon: "Maximize",
+        tags: ["design", "aspect ratio", "video", "image", "resolution"],
+        isNew: true,
+        seo: {
+            title: "Aspect Ratio Calculator — Identify Ratios & Calculate Dimensions | RapidKit",
+            description:
+                "Free online aspect ratio calculator. Identify 16:9, 4:3, 9:16 ratios and calculate missing dimensions for video and images instantly.",
+            keywords: ["aspect ratio calculator", "16:9 calculator", "calculate resolution", "video aspect ratio", "image ratio finder"],
+        },
+    },
+    {
         id: "screen-recorder",
         name: "Online Screen Recorder",
         slug: "screen-recorder",
