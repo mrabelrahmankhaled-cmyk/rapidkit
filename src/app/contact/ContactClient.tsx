@@ -1,6 +1,6 @@
 "use client";
 
-import { Mail, MessageSquare, Zap } from "lucide-react";
+import { Mail } from "lucide-react";
 
 export default function ContactClient() {
     return (
@@ -71,8 +71,8 @@ export default function ContactClient() {
 
                     <p className="text-xs text-center text-[rgb(60,60,90)]">
                         Or email us directly at{" "}
-                        <a href="mailto:hello@rapidkit.tools" className="text-violet-400 hover:text-violet-300 transition-colors">
-                            hello@rapidkit.tools
+                        <a href="mailto:hello@getrapidkit.me" className="text-violet-400 hover:text-violet-300 transition-colors">
+                            hello@getrapidkit.me
                         </a>
                     </p>
                 </form>
@@ -91,9 +91,9 @@ export default function ContactClient() {
                     <h3 className="text-sm font-semibold text-white mb-3">📬 Direct Email</h3>
                     <div className="space-y-3">
                         {[
-                            { label: "General", email: "hello@rapidkit.tools" },
-                            { label: "Privacy", email: "privacy@rapidkit.tools" },
-                            { label: "Legal", email: "legal@rapidkit.tools" },
+                            { label: "General", email: "hello@getrapidkit.me" },
+                            { label: "Privacy", email: "privacy@getrapidkit.me" },
+                            { label: "Legal", email: "legal@getrapidkit.me" },
                         ].map((item) => (
                             <div key={item.email}>
                                 <p className="text-xs text-[rgb(60,60,90)] mb-0.5">{item.label}</p>

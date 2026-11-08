@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { SITE_URL, SITE_NAME, canonicalUrl } from "@/lib/seo";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,33 +16,55 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+const gscVerification = process.env.NEXT_PUBLIC_GSC_VERIFICATION;
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "RapidKit — Free Online Tools for Everyone",
+    default: "RapidKit — Free Online Tools for Developers & Marketers",
     template: "%s | RapidKit",
   },
   description:
-    "RapidKit is your all-in-one toolkit. Free online tools for YouTube, images, developers, text, and unit conversion. Fast, private, and no sign-up needed.",
-  keywords: ["online tools", "free tools", "youtube tools", "image tools", "developer tools", "text tools"],
-  authors: [{ name: "RapidKit" }],
-  creator: "RapidKit",
+    "RapidKit is your all-in-one toolkit. Free online tools for developers, digital marketers, images, YouTube, and text. Fast, private, and no sign-up needed.",
+  keywords: [
+    "online tools",
+    "free developer tools",
+    "marketing tools",
+    "youtube tools",
+    "image compressor",
+    "json formatter",
+    "text tools",
+  ],
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  alternates: {
+    canonical: canonicalUrl("/"),
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://rapidkit.tools",
-    siteName: "RapidKit",
-    title: "RapidKit — Free Online Tools for Everyone",
+    url: canonicalUrl("/"),
+    siteName: SITE_NAME,
+    title: "RapidKit — Free Online Tools for Developers & Marketers",
     description: "Your all-in-one free online toolkit. Fast, private, and no sign-up required.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "RapidKit — Free Online Tools for Everyone",
+    title: "RapidKit — Free Online Tools for Developers & Marketers",
     description: "Your all-in-one free online toolkit. Fast, private, and no sign-up required.",
   },
   robots: {
     index: true,
     follow: true,
   },
+  ...(gscVerification
+    ? {
+        verification: {
+          google: gscVerification,
+        },
+      }
+    : {}),
 };
 
 export default function RootLayout({
@@ -51,6 +75,24 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        {gaMeasurementId && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${gaMeasurementId}', {
+                  anonymize_ip: true
+                });
+              `}
+            </Script>
+          </>
+        )}
         <div className="min-h-screen flex flex-col bg-background">
           <Header />
           <main className="flex-1">{children}</main>

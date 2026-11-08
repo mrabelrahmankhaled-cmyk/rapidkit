@@ -1,10 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import {
-    MessageCircle,
     Phone,
-    MessageSquare,
     Copy,
     ExternalLink,
     Check,
@@ -17,19 +15,16 @@ import { cn } from "@/lib/utils";
 export function WhatsappLinkGeneratorTool() {
     const [phone, setPhone] = useState("");
     const [message, setMessage] = useState("");
-    const [generatedLink, setGeneratedLink] = useState("");
     const [copied, setCopied] = useState(false);
 
     // ─── Generate Link Logic ─────────────────────────────────────────
-    useEffect(() => {
+    const generatedLink = useMemo(() => {
         const cleanPhone = phone.replace(/\D/g, ""); // Remove non-digits
         if (cleanPhone) {
             const encodedMessage = encodeURIComponent(message);
-            const link = `https://wa.me/${cleanPhone}${message ? `?text=${encodedMessage}` : ""}`;
-            setGeneratedLink(link);
-        } else {
-            setGeneratedLink("");
+            return `https://wa.me/${cleanPhone}${message ? `?text=${encodedMessage}` : ""}`;
         }
+        return "";
     }, [phone, message]);
 
     // ─── Handlers ───────────────────────────────────────────────────
@@ -146,12 +141,14 @@ export function WhatsappLinkGeneratorTool() {
 
                     {/* Chat Area */}
                     <div className="p-4 h-full bg-[#e5ddd5] relative overflow-hidden">
-                        {/* WhatsApp Chat Background Pattern */}
+                        {/* WhatsApp Chat Background Pattern (pure CSS, no external asset) */}
                         <div
-                            className="absolute inset-0 opacity-[0.05] pointer-events-none"
+                            className="absolute inset-0 opacity-[0.07] pointer-events-none"
                             style={{
-                                backgroundImage: "url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')",
-                                backgroundSize: "400px"
+                                backgroundImage:
+                                    "radial-gradient(#075e54 1px, transparent 1px), radial-gradient(#128c7e 1px, transparent 1px)",
+                                backgroundSize: "24px 24px",
+                                backgroundPosition: "0 0, 12px 12px",
                             }}
                         />
                         {/* Status Tip */}

@@ -23,7 +23,6 @@ export function Footer() {
                     <p className="text-sm text-[rgb(80,80,120)] leading-relaxed mb-4">
                         Free online tools for everyone. Fast, private, and no sign-up required. Built by developers, for everyone.
                     </p>
-
                 </div>
 
                 {/* Categories */}
@@ -48,10 +47,10 @@ export function Footer() {
                     </ul>
                 </div>
 
-                {/* Popular Tools */}
+                {/* Popular Tools & Guides */}
                 <div>
                     <h3 className="text-sm font-semibold text-white mb-4">Popular Tools</h3>
-                    <ul className="space-y-2">
+                    <ul className="space-y-2 mb-6">
                         {popularTools.map((tool) => (
                             <li key={tool.id}>
                                 <Link
@@ -63,6 +62,40 @@ export function Footer() {
                             </li>
                         ))}
                     </ul>
+
+                    <h3 className="text-sm font-semibold text-white mb-3">Comparisons &amp; Guides</h3>
+                    <ul className="space-y-2">
+                        <li>
+                            <Link href="/compare/hostinger-vs-cloudways" className="text-sm text-[rgb(80,80,120)] hover:text-[rgb(148,148,186)] transition-colors">
+                                Hostinger vs Cloudways
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href="/compare/beehiiv-vs-kit" className="text-sm text-[rgb(80,80,120)] hover:text-[rgb(148,148,186)] transition-colors">
+                                beehiiv vs Kit
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href="/compare/vidiq-vs-tubebuddy" className="text-sm text-[rgb(80,80,120)] hover:text-[rgb(148,148,186)] transition-colors">
+                                vidIQ vs TubeBuddy
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href="/alternatives/tinypng-alternatives" className="text-sm text-[rgb(80,80,120)] hover:text-[rgb(148,148,186)] transition-colors">
+                                TinyPNG Alternatives
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href="/alternatives/canva-alternatives" className="text-sm text-[rgb(80,80,120)] hover:text-[rgb(148,148,186)] transition-colors">
+                                Canva Alternatives
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href="/alternatives/semrush-alternatives" className="text-sm text-[rgb(80,80,120)] hover:text-[rgb(148,148,186)] transition-colors">
+                                Semrush Alternatives
+                            </Link>
+                        </li>
+                    </ul>
                 </div>
 
                 {/* Company */}
@@ -71,9 +104,12 @@ export function Footer() {
                     <ul className="space-y-2">
                         {[
                             { href: "/about", label: "About" },
+                            { href: "/compare", label: "Software Comparisons" },
+                            { href: "/alternatives", label: "Software Alternatives" },
                             { href: "/blog", label: "Blog" },
                             { href: "/privacy", label: "Privacy Policy" },
                             { href: "/terms", label: "Terms of Service" },
+                            { href: "/affiliate-disclosure", label: "Affiliate Disclosure" },
                             { href: "/contact", label: "Contact" },
                         ].map((link) => (
                             <li key={link.href}>
@@ -89,15 +125,24 @@ export function Footer() {
                 </div>
             </div>
 
-            {/* ─── Bottom Bar ───────────────────────────────── */}
-            <div className="border-t border-[rgb(30,30,46)] py-4">
-                <div className="container-wide flex flex-col sm:flex-row items-center justify-between gap-2">
-                    <p className="text-xs text-[rgb(80,80,120)]">
-                        © {new Date().getFullYear()} RapidKit. All rights reserved.
+            {/* ─── Disclosure & Bottom Bar ───────────────────── */}
+            <div className="border-t border-[rgb(30,30,46)] py-5">
+                <div className="container-wide space-y-3">
+                    <p className="text-xs text-[rgb(80,80,120)] leading-relaxed text-center sm:text-left">
+                        Disclosure: RapidKit is reader-supported. Some links on our site are affiliate links, meaning we may earn a small commission if you make a purchase through them — at no extra cost to you.{" "}
+                        <Link href="/affiliate-disclosure" className="text-[rgb(148,148,186)] hover:text-white underline">
+                            Learn more
+                        </Link>
+                        .
                     </p>
-                    <p className="text-xs text-[rgb(80,80,120)] flex items-center gap-1">
-                        Made with <Heart className="w-3 h-3 text-rose-500 fill-rose-500" /> for the web
-                    </p>
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-2 border-t border-[rgb(24,24,37)]">
+                        <p className="text-xs text-[rgb(80,80,120)]">
+                            © {new Date().getFullYear()} RapidKit. All rights reserved.
+                        </p>
+                        <p className="text-xs text-[rgb(80,80,120)] flex items-center gap-1">
+                            Made with <Heart className="w-3 h-3 text-rose-500 fill-rose-500" /> for the web
+                        </p>
+                    </div>
                 </div>
             </div>
         </footer>

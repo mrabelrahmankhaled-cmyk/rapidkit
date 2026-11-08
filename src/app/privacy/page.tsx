@@ -1,12 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { canonicalUrl, SITE_DOMAIN } from "@/lib/seo";
 
 export const metadata: Metadata = {
-    title: "Privacy Policy | RapidKit",
+    title: "Privacy Policy",
     description:
-        "RapidKit's Privacy Policy. Learn how we handle your data — spoiler: we barely collect any. All tools run in your browser. No accounts, no tracking, no data sales.",
+        "RapidKit's Privacy Policy. Learn how we handle your data — most browser tools run locally on your device, alongside anonymized Google Analytics and transparent affiliate links.",
     robots: { index: true, follow: true },
-    alternates: { canonical: "https://rapidkit.tools/privacy" },
+    alternates: { canonical: canonicalUrl("/privacy") },
+    openGraph: {
+        title: "Privacy Policy | RapidKit",
+        description:
+            "Learn how RapidKit handles your privacy, client-side tool execution, Google Analytics, and affiliate cookies.",
+        url: canonicalUrl("/privacy"),
+        type: "website",
+    },
 };
 
 const LAST_UPDATED = "March 1, 2026";
@@ -31,16 +39,16 @@ export default function PrivacyPage() {
                 <div className="p-5 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 border border-emerald-500/20">
                     <h2 className="text-lg font-bold text-white mb-2">TL;DR — The Short Version</h2>
                     <ul className="space-y-1.5 text-sm text-[rgb(140,140,180)]">
-                        <li>✅ All tools run <strong className="text-white">100% in your browser</strong> — files are never uploaded to our servers.</li>
-                        <li>✅ We <strong className="text-white">do not sell</strong> your data to anyone, ever.</li>
+                        <li>✅ <strong className="text-white">Most tools run locally in your browser</strong> — files, images, and text you process are never uploaded to our servers.</li>
+                        <li>✅ We <strong className="text-white">do not sell</strong> your personal data to anyone, ever.</li>
                         <li>✅ No account or sign-up is required to use any tool.</li>
-                        <li>✅ We use basic, anonymized analytics to improve the site.</li>
+                        <li>✅ We use Google Analytics for aggregated traffic insights and partner affiliate links to fund the site.</li>
                     </ul>
                 </div>
 
                 <Section title="1. Who We Are">
-                    <p>RapidKit (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) operates the website located at <strong>rapidkit.tools</strong>. We provide free online tools for productivity, image editing, developer utilities, and more.</p>
-                    <p>If you have any questions about this policy, contact us at: <a href="mailto:privacy@rapidkit.tools" className="text-violet-400 hover:text-violet-300">privacy@rapidkit.tools</a></p>
+                    <p>RapidKit (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) operates the website located at <strong>{SITE_DOMAIN}</strong>. We provide free online tools for productivity, image editing, developer utilities, and digital marketing.</p>
+                    <p>If you have any questions about this policy, contact us at: <a href={`mailto:privacy@${SITE_DOMAIN}`} className="text-violet-400 hover:text-violet-300">privacy@{SITE_DOMAIN}</a></p>
                 </Section>
 
                 <Section title="2. Information We Collect">
@@ -51,51 +59,55 @@ export default function PrivacyPage() {
                         <li><strong className="text-[rgb(180,180,220)]">Contact form:</strong> If you contact us, we collect your name and email.</li>
                     </ul>
 
-                    <h3 className="text-base font-semibold text-white mb-2 mt-5">2.2 Automatically Collected Information</h3>
-                    <p>When you visit RapidKit, we may automatically collect:</p>
+                    <h3 className="text-base font-semibold text-white mb-2 mt-5">2.2 Automatically Collected Information (Google Analytics)</h3>
+                    <p>When you visit RapidKit, we use Google Analytics (GA4) to collect aggregated usage metrics, such as:</p>
                     <ul className="list-disc pl-5 space-y-1 text-[rgb(120,120,160)]">
-                        <li>Browser type and version</li>
-                        <li>Operating system</li>
-                        <li>Pages visited and time spent</li>
-                        <li>Referring website</li>
-                        <li>Country-level location (not precise location)</li>
+                        <li>Browser type, device category, and operating system</li>
+                        <li>Pages visited, time spent, and outbound click events</li>
+                        <li>Referring website or search query</li>
+                        <li>Approximate country/city-level location (IP addresses are anonymized by GA4)</li>
                     </ul>
-                    <p className="mt-3">This data is collected in <strong className="text-white">aggregated, anonymized form</strong> and cannot be used to identify you personally.</p>
+                    <p className="mt-3">This data is collected in <strong className="text-white">aggregated, anonymized form</strong> to understand which tools are most useful and cannot be used by us to identify you personally.</p>
 
-                    <h3 className="text-base font-semibold text-white mb-2 mt-5">2.3 What We Do NOT Collect</h3>
+                    <h3 className="text-base font-semibold text-white mb-2 mt-5">2.3 Tool Execution &amp; Network Requests</h3>
                     <ul className="list-disc pl-5 space-y-1 text-[rgb(120,120,160)]">
-                        <li>Files you process with our tools (images, text, JSON) — these <strong className="text-white">never leave your browser</strong>.</li>
-                        <li>YouTube URLs you enter (processed client-side only, except for the Tag Extractor API which fetches publicly available data).</li>
-                        <li>Payment information (all tools are free).</li>
+                        <li><strong className="text-[rgb(180,180,220)]">Local browser tools (all other tools):</strong> Files, images, and text you process (such as image compression, WebP conversion, EXIF removal, JSON/CSV formatting, signatures, passwords, and screen recordings) run locally in your browser and <strong className="text-white">never leave your device</strong>.</li>
+                        <li><strong className="text-[rgb(180,180,220)]">YouTube Tag Extractor:</strong> When you submit a video, your browser sends the 11-character YouTube video ID to our server endpoint (<code className="text-violet-300">/api/youtube-tags</code>), which fetches the public YouTube watch page metadata, and your browser loads the preview thumbnail from <code className="text-violet-300">img.youtube.com</code>.</li>
+                        <li><strong className="text-[rgb(180,180,220)]">YouTube Thumbnail Downloader:</strong> Extracts the video ID in your browser and fetches public thumbnail files directly from YouTube&apos;s image CDN (<code className="text-violet-300">img.youtube.com</code>).</li>
+                        <li><strong className="text-[rgb(180,180,220)]">What Is My IP Address?:</strong> On page load, your browser makes a direct request to <code className="text-violet-300">ipapi.co</code> to detect your public IP address, ISP, and approximate city/country location.</li>
+                        <li><strong className="text-[rgb(180,180,220)]">Meta Tag Generator (Social Preview):</strong> All HTML tag generation is local; if you switch to the Facebook or Twitter/X card preview tab, your browser renders the <code className="text-violet-300">Preview Image URL</code> you entered in an <code className="text-violet-300">&lt;img&gt;</code> tag.</li>
+                        <li><strong className="text-[rgb(180,180,220)]">Payment information:</strong> We do not collect any payment details because all tools on RapidKit are free.</li>
                     </ul>
                 </Section>
 
                 <Section title="3. How We Use Your Information">
                     <p>We use the information we collect to:</p>
                     <ul className="list-disc pl-5 space-y-1 text-[rgb(120,120,160)]">
-                        <li>Operate and improve the RapidKit website and tools.</li>
-                        <li>Send newsletters to subscribers (only with your consent).</li>
+                        <li>Operate, maintain, and improve the RapidKit website and tools.</li>
+                        <li>Send newsletters to subscribers (only with your explicit consent).</li>
                         <li>Respond to your inquiries and support requests.</li>
-                        <li>Understand which tools are most used so we can build better ones.</li>
+                        <li>Measure aggregate tool usage and outbound partner link clicks.</li>
                         <li>Comply with legal obligations.</li>
                     </ul>
                     <p className="mt-3"><strong className="text-white">We never sell your personal data to third parties.</strong></p>
                 </Section>
 
-                <Section title="4. Cookies">
-                    <p>RapidKit uses minimal cookies:</p>
+                <Section title="4. Cookies & Affiliate Tracking">
+                    <p>RapidKit and our third-party partners use the following types of cookies:</p>
                     <ul className="list-disc pl-5 space-y-2 text-[rgb(120,120,160)]">
-                        <li><strong className="text-[rgb(180,180,220)]">Essential cookies:</strong> Required for the website to function. Cannot be disabled.</li>
-                        <li><strong className="text-[rgb(180,180,220)]">Analytics cookies:</strong> Help us understand how visitors use the site. Data is anonymized.</li>
+                        <li><strong className="text-[rgb(180,180,220)]">Essential cookies / local storage:</strong> Used only when a tool needs to remember your local preferences in your browser.</li>
+                        <li><strong className="text-[rgb(180,180,220)]">Google Analytics cookies:</strong> First-party cookies (such as <code className="text-violet-300">_ga</code>) used by Google Analytics 4 to distinguish unique visits and measure site performance.</li>
+                        <li><strong className="text-[rgb(180,180,220)]">Affiliate referral cookies:</strong> Some pages contain affiliate links to recommended third-party products. If you click an affiliate link, the destination partner or affiliate network may place a referral cookie on your browser to attribute any resulting purchase to RapidKit (at no extra cost to you). RapidKit does not set third-party affiliate cookies until you actively click an external partner link. See our <Link href="/affiliate-disclosure" className="text-violet-400 hover:text-violet-300 underline">Affiliate Disclosure</Link> for full details.</li>
                     </ul>
-                    <p className="mt-3">You can control cookies through your browser settings. Disabling cookies may affect some website functionality.</p>
+                    <p className="mt-3">You can control or block cookies at any time through your browser settings or by using the <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer" className="text-violet-400 hover:text-violet-300">Google Analytics Opt-out Browser Add-on</a>.</p>
                 </Section>
 
-                <Section title="5. Third-Party Services">
-                    <p>We use the following third-party services, each with their own privacy policies:</p>
+                <Section title="5. Third-Party Services & Affiliate Links">
+                    <p>We use the following third-party services, each governed by their own privacy policies:</p>
                     <ul className="list-disc pl-5 space-y-2 text-[rgb(120,120,160)]">
-                        <li><strong className="text-[rgb(180,180,220)]">Vercel:</strong> Website hosting. <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-violet-400 hover:text-violet-300">Vercel Privacy Policy</a></li>
-                        <li><strong className="text-[rgb(180,180,220)]">Google AdSense:</strong> We display ads from Google AdSense. Google may use cookies to serve relevant ads. <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-violet-400 hover:text-violet-300">Google Privacy Policy</a></li>
+                        <li><strong className="text-[rgb(180,180,220)]">Vercel:</strong> Website hosting and edge delivery. <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-violet-400 hover:text-violet-300">Vercel Privacy Policy</a></li>
+                        <li><strong className="text-[rgb(180,180,220)]">Google Analytics & Google AdSense:</strong> Traffic analytics and optional display advertising. <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-violet-400 hover:text-violet-300">Google Privacy Policy</a></li>
+                        <li><strong className="text-[rgb(180,180,220)]">Affiliate Partners:</strong> When you click a link marked as a partner/affiliate recommendation, you are taken to an external vendor&apos;s website governed by that vendor&apos;s privacy policy.</li>
                     </ul>
                 </Section>
 
@@ -103,13 +115,13 @@ export default function PrivacyPage() {
                     <p>We retain personal data only as long as necessary:</p>
                     <ul className="list-disc pl-5 space-y-1 text-[rgb(120,120,160)]">
                         <li><strong className="text-[rgb(180,180,220)]">Newsletter emails:</strong> Until you unsubscribe.</li>
-                        <li><strong className="text-[rgb(180,180,220)]">Analytics data:</strong> 13 months (anonymized).</li>
+                        <li><strong className="text-[rgb(180,180,220)]">Analytics data:</strong> Up to 14 months (anonymized).</li>
                         <li><strong className="text-[rgb(180,180,220)]">Contact inquiries:</strong> Up to 2 years.</li>
                     </ul>
                 </Section>
 
-                <Section title="7. Your Rights (GDPR)">
-                    <p>If you are in the European Economic Area (EEA), you have the following rights:</p>
+                <Section title="7. Your Rights (GDPR & CCPA)">
+                    <p>If you are in the European Economic Area (EEA), UK, or California, you have the following rights:</p>
                     <ul className="list-disc pl-5 space-y-1 text-[rgb(120,120,160)]">
                         <li><strong className="text-[rgb(180,180,220)]">Right to access:</strong> Request a copy of the data we hold about you.</li>
                         <li><strong className="text-[rgb(180,180,220)]">Right to rectification:</strong> Request correction of inaccurate data.</li>
@@ -117,7 +129,7 @@ export default function PrivacyPage() {
                         <li><strong className="text-[rgb(180,180,220)]">Right to object:</strong> Object to certain uses of your data.</li>
                         <li><strong className="text-[rgb(180,180,220)]">Right to withdraw consent:</strong> Unsubscribe from newsletters at any time.</li>
                     </ul>
-                    <p className="mt-3">To exercise any of these rights, email us at <a href="mailto:privacy@rapidkit.tools" className="text-violet-400 hover:text-violet-300">privacy@rapidkit.tools</a></p>
+                    <p className="mt-3">To exercise any of these rights, email us at <a href={`mailto:privacy@${SITE_DOMAIN}`} className="text-violet-400 hover:text-violet-300">privacy@{SITE_DOMAIN}</a></p>
                 </Section>
 
                 <Section title="8. Children's Privacy">
@@ -131,7 +143,7 @@ export default function PrivacyPage() {
                 <Section title="10. Contact Us">
                     <p>For privacy-related questions:</p>
                     <ul className="list-none space-y-1 text-[rgb(120,120,160)]">
-                        <li>📧 <a href="mailto:privacy@rapidkit.tools" className="text-violet-400 hover:text-violet-300">privacy@rapidkit.tools</a></li>
+                        <li>📧 <a href={`mailto:privacy@${SITE_DOMAIN}`} className="text-violet-400 hover:text-violet-300">privacy@{SITE_DOMAIN}</a></li>
                         <li>🌐 <Link href="/contact" className="text-violet-400 hover:text-violet-300">Contact Form</Link></li>
                     </ul>
                 </Section>
@@ -140,6 +152,7 @@ export default function PrivacyPage() {
                 <div className="pt-4 border-t border-[rgb(30,30,46)] flex gap-4">
                     <Link href="/" className="text-sm text-[rgb(60,60,90)] hover:text-white transition-colors">← Back to Home</Link>
                     <Link href="/terms" className="text-sm text-[rgb(60,60,90)] hover:text-white transition-colors">Terms of Service →</Link>
+                    <Link href="/affiliate-disclosure" className="text-sm text-[rgb(60,60,90)] hover:text-white transition-colors">Affiliate Disclosure →</Link>
                 </div>
             </div>
         </div>

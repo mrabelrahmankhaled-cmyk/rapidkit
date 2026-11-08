@@ -1,16 +1,48 @@
 import Link from "next/link";
 import {
-  Zap, ArrowRight, Star, Users, Globe,
+  Zap, ArrowRight, ShieldCheck, Globe,
   Download, Braces, Minimize2, AlignLeft,
-  ArrowLeftRight, Droplets, Palette, Tags, CaseSensitive
+  ArrowLeftRight, Droplets, Palette, Tags, CaseSensitive,
+  QrCode, Clock, Hash, Fingerprint, Link as LinkIcon,
+  FileText, FileCode, MessageCircle, ShieldAlert,
+  FileSearch, Search, Table, Shapes, Box,
+  PenTool, Layers, Maximize, Monitor, Timer,
 } from "lucide-react";
-import { CATEGORIES, getFeaturedTools, getNewTools, TOOLS } from "@/lib/tools-registry";
+import { CATEGORIES, getFeaturedTools, getNewTools, TOOLS } from "@/data/tools";
 import { cn } from "@/lib/utils";
 
 const ICON_MAP: Record<string, React.ElementType> = {
-  Download, Braces, Minimize2, AlignLeft,
-  ArrowLeftRight, Droplets, Palette, Tags,
-  CaseSensitive, Zap,
+  Download,
+  Braces,
+  Minimize2,
+  AlignLeft,
+  ArrowLeftRight,
+  Droplets,
+  Palette,
+  Tags,
+  CaseSensitive,
+  Zap,
+  QrCode,
+  Clock,
+  Hash,
+  Fingerprint,
+  Link: LinkIcon,
+  FileText,
+  FileCode,
+  MessageCircle,
+  ShieldAlert,
+  FileSearch,
+  ShieldCheck,
+  Search,
+  Globe,
+  Table,
+  Shapes,
+  Box,
+  PenTool,
+  Layers,
+  Maximize,
+  Monitor,
+  Timer,
 };
 
 function ToolCard({ tool, index }: { tool: ReturnType<typeof getFeaturedTools>[0]; index: number }) {
@@ -82,7 +114,7 @@ export default function HomePage() {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-sm font-medium mb-6">
             <Zap className="w-4 h-4" fill="currentColor" />
-            {TOOLS.length}+ Free Online Tools — No Sign-up Required
+            {TOOLS.length} Free Online Tools — No Sign-up Required
           </div>
 
           {/* Headline */}
@@ -126,9 +158,9 @@ export default function HomePage() {
       <section className="py-10 border-y border-[rgb(30,30,46)]">
         <div className="container-wide">
           <div className="grid grid-cols-3 divide-x divide-[rgb(30,30,46)]">
-            <StatCard value={`${TOOLS.length}+`} label="Free Tools" icon={Zap} />
-            <StatCard value="100%" label="Privacy-First" icon={Globe} />
-            <StatCard value="4.9★" label="User Rating" icon={Star} />
+            <StatCard value={`${TOOLS.length}`} label="Free Browser Tools" icon={Zap} />
+            <StatCard value="Browser-First" label="Most Tools Run Locally" icon={Globe} />
+            <StatCard value="Zero" label="Sign-up Required" icon={ShieldCheck} />
           </div>
         </div>
       </section>
@@ -160,13 +192,7 @@ export default function HomePage() {
                   className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl transition-transform group-hover:scale-110"
                   style={{ background: `linear-gradient(135deg, ${cat.color}20, ${cat.color}40)` }}
                 >
-                  <span style={{ color: cat.color }}>
-                    {cat.id === "youtube" && "▶"}
-                    {cat.id === "image" && "🖼"}
-                    {cat.id === "developer" && "⚡"}
-                    {cat.id === "text" && "Aa"}
-                    {cat.id === "converter" && "⇄"}
-                  </span>
+                  <span style={{ color: cat.color }}>{cat.symbol}</span>
                 </div>
                 <div>
                   <div className="text-sm font-semibold text-white">{cat.name}</div>
@@ -237,8 +263,8 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { icon: "🚀", title: "Lightning Fast", desc: "Tools process instantly in your browser. No waiting, no uploads to slow servers." },
-              { icon: "🔒", title: "100% Private", desc: "Your files and data never leave your device. We can't see what you process." },
+              { icon: "🚀", title: "Lightning Fast", desc: "Most tools process directly in your browser with no file uploads to slow servers." },
+              { icon: "🔒", title: "Privacy-First", desc: "Files, images, and text stay on your device for all local browser utilities." },
               { icon: "💸", title: "Always Free", desc: "Every tool is completely free. No hidden fees, no premium plan, no credit card needed." },
               { icon: "📱", title: "Works Everywhere", desc: "Optimized for desktop and mobile. Use RapidKit from any device, any browser." },
               { icon: "🎯", title: "No Sign-up", desc: "Just open a tool and use it. No accounts, no emails, no friction." },
@@ -265,7 +291,7 @@ export default function HomePage() {
             Ready to work <span className="gradient-text">smarter</span>?
           </h2>
           <p className="text-[rgb(148,148,186)] mb-8 max-w-md mx-auto">
-            Join thousands of developers, creators, and marketers who use RapidKit every day.
+            Use RapidKit&apos;s browser-native utilities for development, design, and digital marketing.
           </p>
           <Link
             href="/tools"

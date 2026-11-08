@@ -20,8 +20,8 @@ type PreviewMode = "google" | "facebook" | "twitter";
 export function MetaTagGeneratorTool() {
     const [title, setTitle] = useState("RapidKit — Professional Web Tools");
     const [description, setDescription] = useState("Free online tools for everyone. Fast, private, and no sign-up required. Built by developers, for everyone.");
-    const [url, setUrl] = useState("https://rapidkit.tools");
-    const [imageUrl, setImageUrl] = useState("https://rapidkit.tools/og-image.png");
+    const [url, setUrl] = useState("https://getrapidkit.me");
+    const [imageUrl, setImageUrl] = useState("https://getrapidkit.me/opengraph-image");
     const [siteName, setSiteName] = useState("RapidKit");
     const [previewMode, setPreviewMode] = useState<PreviewMode>("google");
     const [copied, setCopied] = useState(false);

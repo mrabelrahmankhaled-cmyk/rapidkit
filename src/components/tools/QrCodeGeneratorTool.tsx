@@ -21,7 +21,7 @@ type QrType = "url" | "wifi" | "text";
 
 export function QrCodeGeneratorTool() {
     const [qrType, setQrType] = useState<QrType>("url");
-    const [url, setUrl] = useState("https://rapidkit.tools");
+    const [url, setUrl] = useState("https://getrapidkit.me");
     const [text, setText] = useState("");
 
     // Wi-Fi State
@@ -45,7 +45,7 @@ export function QrCodeGeneratorTool() {
 
     // ─── Computed QR Value ───────────────────────────────────────────
     const qrValue = useCallback(() => {
-        if (qrType === "url") return url || "https://rapidkit.tools";
+        if (qrType === "url") return url || "https://getrapidkit.me";
         if (qrType === "text") return text || "RapidKit";
         if (qrType === "wifi") {
             // Format: WIFI:S:SSID;T:WPA;P:PASSWORD;;

@@ -1,17 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BLOG_POSTS, BLOG_CATEGORIES } from "@/lib/blog-registry";
+import { canonicalUrl } from "@/lib/seo";
 import { Clock, ArrowRight, BookOpen, Tag } from "lucide-react";
 
 export const metadata: Metadata = {
-    title: "Blog — How-to Guides & Tool Tutorials | RapidKit",
+    title: "Blog — How-to Guides & Tool Tutorials",
     description:
         "Free how-to guides, tutorials, and tips for YouTube tools, image optimization, developer tools, text tools, and unit converters. Learn how to work smarter online.",
     keywords: ["how-to guides", "tool tutorials", "image optimization guide", "youtube tools guide", "developer tools tutorial"],
+    alternates: {
+        canonical: canonicalUrl("/blog"),
+    },
     openGraph: {
         title: "RapidKit Blog — Free How-to Guides & Tutorials",
         description: "Practical how-to guides for every tool in RapidKit's toolkit.",
-        url: "https://rapidkit.tools/blog",
+        url: canonicalUrl("/blog"),
         type: "website",
     },
 };

@@ -221,6 +221,7 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "uuid-generator": UuidGeneratorTool,
     "unix-timestamp-converter": UnixTimestampConverterTool,
     "box-shadow-generator": BoxShadowGeneratorTool,
+    "glassmorphism-generator": GlassmorphismGeneratorTool,
     "signature-pad": SignaturePadTool,
     "markdown-editor": MarkdownEditorTool,
     "pomodoro-timer": PomodoroTimerTool,

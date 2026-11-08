@@ -1,16 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Zap, Search, Menu, X, ChevronDown } from "lucide-react";
-import { CATEGORIES, searchTools } from "@/lib/tools-registry";
+import { CATEGORIES, TOOLS, searchTools } from "@/lib/tools-registry";
 import { cn } from "@/lib/utils";
 
 export function Header() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
-    const [searchResults, setSearchResults] = useState<ReturnType<typeof searchTools>>([]);
     const [showSearch, setShowSearch] = useState(false);
     const searchRef = useRef<HTMLDivElement>(null);
 
@@ -20,12 +19,11 @@ export function Header() {
         return () => window.removeEventListener("scroll", onScroll);
     }, []);
 
-    useEffect(() => {
+    const searchResults = useMemo(() => {
         if (searchQuery.length > 1) {
-            setSearchResults(searchTools(searchQuery).slice(0, 6));
-        } else {
-            setSearchResults([]);
+            return searchTools(searchQuery).slice(0, 6);
         }
+        return [];
     }, [searchQuery]);
 
     useEffect(() => {
@@ -78,7 +76,7 @@ export function Header() {
                                         className={cn("w-8 h-8 rounded-lg bg-gradient-to-br flex items-center justify-center text-xs", cat.gradient)}
                                         style={{ background: `linear-gradient(135deg, ${cat.color}30, ${cat.color}60)` }}
                                     >
-                                        <span style={{ color: cat.color }}>⚡</span>
+                                        <span style={{ color: cat.color }}>{cat.symbol}</span>
                                     </div>
                                     <span className="text-sm text-[rgb(148,148,186)] group-hover/item:text-white transition-colors">
                                         {cat.name}
@@ -90,6 +88,12 @@ export function Header() {
 
                     <Link href="/tools" className="px-3 py-2 rounded-lg text-sm text-[rgb(148,148,186)] hover:text-white hover:bg-[rgba(255,255,255,0.05)] transition-all">
                         All Tools
+                    </Link>
+                    <Link href="/compare" className="px-3 py-2 rounded-lg text-sm text-[rgb(148,148,186)] hover:text-white hover:bg-[rgba(255,255,255,0.05)] transition-all">
+                        Comparisons
+                    </Link>
+                    <Link href="/alternatives" className="px-3 py-2 rounded-lg text-sm text-[rgb(148,148,186)] hover:text-white hover:bg-[rgba(255,255,255,0.05)] transition-all">
+                        Alternatives
                     </Link>
                     <Link href="/blog" className="px-3 py-2 rounded-lg text-sm text-[rgb(148,148,186)] hover:text-white hover:bg-[rgba(255,255,255,0.05)] transition-all">
                         Blog
@@ -139,7 +143,7 @@ export function Header() {
                                 ) : searchQuery.length > 1 ? (
                                     <p className="text-sm text-[rgb(80,80,120)] text-center py-4">No tools found for &quot;{searchQuery}&quot;</p>
                                 ) : (
-                                    <p className="text-xs text-[rgb(80,80,120)] text-center py-3">Start typing to search {10}+ tools</p>
+                                    <p className="text-xs text-[rgb(80,80,120)] text-center py-3">Start typing to search {TOOLS.length} tools</p>
                                 )}
                             </div>
                         )}
@@ -190,6 +194,8 @@ export function Header() {
                             {cat.name}
                         </Link>
                     ))}
+                    <Link href="/compare" onClick={() => setMobileOpen(false)} className="block p-2 rounded-lg hover:bg-[rgba(255,255,255,0.05)] text-sm text-[rgb(148,148,186)]">Comparisons</Link>
+                    <Link href="/alternatives" onClick={() => setMobileOpen(false)} className="block p-2 rounded-lg hover:bg-[rgba(255,255,255,0.05)] text-sm text-[rgb(148,148,186)]">Alternatives</Link>
                     <Link href="/blog" onClick={() => setMobileOpen(false)} className="block p-2 rounded-lg hover:bg-[rgba(255,255,255,0.05)] text-sm text-[rgb(148,148,186)]">Blog</Link>
                 </div>
             )}

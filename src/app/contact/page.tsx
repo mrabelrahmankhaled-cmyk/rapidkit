@@ -1,13 +1,21 @@
 import type { Metadata } from "next";
 import { MessageSquare } from "lucide-react";
 import ContactClient from "./ContactClient";
+import { canonicalUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
-    title: "Contact RapidKit — Get in Touch",
+    title: "Contact Us — Get in Touch",
     description:
         "Have a question, suggestion, or found a bug? Contact the RapidKit team. We're a small team and we actually read every message.",
     robots: { index: true, follow: true },
-    alternates: { canonical: "https://rapidkit.tools/contact" },
+    alternates: { canonical: canonicalUrl("/contact") },
+    openGraph: {
+        title: "Contact Us — Get in Touch | RapidKit",
+        description:
+            "Have a question, suggestion, or found a bug? Contact the RapidKit team.",
+        url: canonicalUrl("/contact"),
+        type: "website",
+    },
 };
 
 export default function ContactPage() {

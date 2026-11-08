@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { canonicalUrl, SITE_DOMAIN } from "@/lib/seo";
 
 export const metadata: Metadata = {
-    title: "Terms of Service | RapidKit",
+    title: "Terms of Service",
     description: "Read RapidKit's Terms of Service. Free tools, fair terms. No account required, no hidden fees, no data selling.",
     robots: { index: true, follow: true },
-    alternates: { canonical: "https://rapidkit.tools/terms" },
+    alternates: { canonical: canonicalUrl("/terms") },
+    openGraph: {
+        title: "Terms of Service | RapidKit",
+        description: "Read RapidKit's Terms of Service. Free tools, fair terms.",
+        url: canonicalUrl("/terms"),
+        type: "website",
+    },
 };
 
 const LAST_UPDATED = "March 1, 2026";
@@ -29,8 +36,8 @@ export default function TermsPage() {
                     <ul className="space-y-1.5 text-sm text-[rgb(140,140,180)]">
                         <li>✅ RapidKit is <strong className="text-white">free to use</strong> — no payment, no subscription.</li>
                         <li>✅ Use our tools for personal and commercial projects.</li>
-                        <li>⚠️ Don't abuse the service or try to harm other users.</li>
-                        <li>⚠️ We provide tools &quot;as-is&quot; — we're not liable for how you use them.</li>
+                        <li>⚠️ Don&apos;t abuse the service or try to harm other users.</li>
+                        <li>⚠️ We provide tools &quot;as-is&quot; — we&apos;re not liable for how you use them.</li>
                     </ul>
                 </div>
 
@@ -64,9 +71,9 @@ export default function TermsPage() {
                     <p>Since all tools run client-side in your browser, your files are never transmitted to or stored on our servers.</p>
                 </Section>
 
-                <Section title="5. Third-Party Services">
-                    <p>RapidKit uses third-party services (Vercel for hosting, Google AdSense for advertising). These services have their own terms and privacy policies which you should review.</p>
-                    <p>Our YouTube Tag Extractor tool fetches publicly available data from YouTube. Use of this tool must comply with <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener noreferrer" className="text-violet-400 hover:text-violet-300">YouTube's Terms of Service</a>.</p>
+                <Section title="5. Third-Party Services & Affiliate Links">
+                    <p>RapidKit uses third-party services (Vercel for hosting, Google Analytics for traffic metrics) and includes affiliate referral links to recommended third-party products. These services and vendors have their own terms and privacy policies which you should review.</p>
+                    <p>Our YouTube Tag Extractor tool fetches publicly available data from YouTube. Use of this tool must comply with <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener noreferrer" className="text-violet-400 hover:text-violet-300">YouTube&apos;s Terms of Service</a>.</p>
                 </Section>
 
                 <Section title="6. Disclaimer of Warranties">
@@ -83,8 +90,8 @@ export default function TermsPage() {
                     <p>This includes but is not limited to data loss, loss of profits, or any harm resulting from relying on tool outputs for critical decisions.</p>
                 </Section>
 
-                <Section title="8. Advertising">
-                    <p>RapidKit displays advertisements through Google AdSense to support the free service. By using RapidKit, you acknowledge that ads may be displayed. Please refer to our <Link href="/privacy" className="text-violet-400 hover:text-violet-300">Privacy Policy</Link> for information on how advertising data is handled.</p>
+                <Section title="8. Advertising & Affiliate Partnerships">
+                    <p>RapidKit may display advertisements or affiliate links to support the free service. Please refer to our <Link href="/privacy" className="text-violet-400 hover:text-violet-300">Privacy Policy</Link> and <Link href="/affiliate-disclosure" className="text-violet-400 hover:text-violet-300">Affiliate Disclosure</Link> for full details.</p>
                 </Section>
 
                 <Section title="9. Changes to Terms">
@@ -96,7 +103,7 @@ export default function TermsPage() {
                 </Section>
 
                 <Section title="11. Contact">
-                    <p>For questions about these Terms of Service, contact us at <a href="mailto:legal@rapidkit.tools" className="text-violet-400 hover:text-violet-300">legal@rapidkit.tools</a></p>
+                    <p>For questions about these Terms of Service, contact us at <a href={`mailto:legal@${SITE_DOMAIN}`} className="text-violet-400 hover:text-violet-300">legal@{SITE_DOMAIN}</a></p>
                 </Section>
 
                 <div className="pt-4 border-t border-[rgb(30,30,46)] flex gap-4">

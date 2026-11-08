@@ -1,41 +1,67 @@
 import type { MetadataRoute } from "next";
-import { TOOLS, CATEGORIES } from "@/lib/tools-registry";
+import { TOOLS, CATEGORIES } from "@/data/tools";
+import { COMPARISONS } from "@/data/comparisons";
+import { ALTERNATIVES } from "@/data/alternatives";
 import { BLOG_POSTS } from "@/lib/blog-registry";
-
-const BASE_URL = "https://rapidkit.tools";
+import { SITE_URL, GUIDES_INDEXABLE } from "@/lib/seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const toolPages = TOOLS.map((tool) => ({
-        url: `${BASE_URL}/tools/${tool.categoryId}/${tool.slug}`,
+        url: `${SITE_URL}/tools/${tool.categoryId}/${tool.slug}`,
         lastModified: new Date(),
         changeFrequency: "weekly" as const,
         priority: tool.isFeatured ? 0.9 : 0.8,
     }));
 
     const categoryPages = CATEGORIES.map((cat) => ({
-        url: `${BASE_URL}/tools/${cat.slug}`,
+        url: `${SITE_URL}/tools/${cat.slug}`,
         lastModified: new Date(),
         changeFrequency: "weekly" as const,
         priority: 0.7,
     }));
 
+    const comparisonPages = COMPARISONS.map((comp) => ({
+        url: `${SITE_URL}/compare/${comp.slug}`,
+        lastModified: new Date(),
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+    }));
+
+    const alternativePages = ALTERNATIVES.map((alt) => ({
+        url: `${SITE_URL}/alternatives/${alt.slug}`,
+        lastModified: new Date(),
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+    }));
+
     const blogPages = BLOG_POSTS.map((post) => ({
-        url: `${BASE_URL}/blog/${post.slug}`,
+        url: `${SITE_URL}/blog/${post.slug}`,
         lastModified: new Date(post.updatedAt),
         changeFrequency: "weekly" as const,
         priority: 0.8,
     }));
 
+    const guideIndexPages: MetadataRoute.Sitemap = GUIDES_INDEXABLE
+        ? [
+              { url: `${SITE_URL}/compare`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
+              { url: `${SITE_URL}/alternatives`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
+          ]
+        : [];
+
     return [
-        { url: BASE_URL, lastModified: new Date(), changeFrequency: "daily", priority: 1.0 },
-        { url: `${BASE_URL}/tools`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
-        { url: `${BASE_URL}/blog`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
-        { url: `${BASE_URL}/about`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.6 },
-        { url: `${BASE_URL}/privacy`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.4 },
-        { url: `${BASE_URL}/terms`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.4 },
-        { url: `${BASE_URL}/contact`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
+        { url: SITE_URL, lastModified: new Date(), changeFrequency: "daily", priority: 1.0 },
+        { url: `${SITE_URL}/tools`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
+        ...guideIndexPages,
+        { url: `${SITE_URL}/blog`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
+        { url: `${SITE_URL}/about`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.6 },
+        { url: `${SITE_URL}/privacy`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.4 },
+        { url: `${SITE_URL}/terms`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.4 },
+        { url: `${SITE_URL}/affiliate-disclosure`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.4 },
+        { url: `${SITE_URL}/contact`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
         ...categoryPages,
         ...toolPages,
+        ...(GUIDES_INDEXABLE ? comparisonPages : []),
+        ...(GUIDES_INDEXABLE ? alternativePages : []),
         ...blogPages,
     ];
 }

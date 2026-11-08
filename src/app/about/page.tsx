@@ -1,13 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Zap, Heart, Globe, Mail } from "lucide-react";
+import { TOOLS, CATEGORIES } from "@/data/tools";
+import { canonicalUrl, SITE_DOMAIN } from "@/lib/seo";
 
 export const metadata: Metadata = {
     title: "About RapidKit — Free Online Tools for Everyone",
     description:
         "Learn about RapidKit — a collection of free, fast, and private online tools built for developers, creators, and everyday users. No sign-up. No tracking.",
     robots: { index: true, follow: true },
-    alternates: { canonical: "https://rapidkit.tools/about" },
+    alternates: { canonical: canonicalUrl("/about") },
+    openGraph: {
+        title: "About RapidKit — Free Online Tools for Everyone | RapidKit",
+        description:
+            "Learn about RapidKit — a collection of free, fast, and private online tools built for developers, creators, and everyday users.",
+        url: canonicalUrl("/about"),
+        type: "website",
+    },
 };
 
 export default function AboutPage() {
@@ -35,12 +44,12 @@ export default function AboutPage() {
                     <h2 className="text-2xl font-bold text-white mb-4">Our Mission</h2>
                     <p className="text-[rgb(120,120,160)] leading-relaxed text-base">
                         The internet is full of tools that make you create an account, charge a monthly fee, or harvest your data
-                        just to do a simple task. We built RapidKit because <strong className="text-white">that's ridiculous</strong>.
+                        just to do a simple task. We built RapidKit because <strong className="text-white">that&apos;s ridiculous</strong>.
                     </p>
                     <p className="text-[rgb(120,120,160)] leading-relaxed text-base mt-3">
                         RapidKit is a growing collection of free, no-nonsense tools that work instantly in your browser. Whether
-                        you're a developer, a content creator, a student, or just someone who needs to convert a unit or compress
-                        an image — we've got you.
+                        you&apos;re a developer, a content creator, a student, or just someone who needs to convert a unit or compress
+                        an image — we&apos;ve got you.
                     </p>
                 </section>
 
@@ -51,7 +60,7 @@ export default function AboutPage() {
                         {[
                             { icon: "⚡", title: "Speed First", desc: "Every tool is built to be instantaneous. No loading screens, no server round-trips for client-side tasks." },
                             { icon: "🔒", title: "Privacy by Default", desc: "Files you process stay in your browser. We can't see your images or documents because they never reach our servers." },
-                            { icon: "🆓", title: "Free, Always", desc: "All core tools are and will remain free. We're supported by non-intrusive advertising, not by selling your data." },
+                            { icon: "🆓", title: "Free, Always", desc: "All core tools are and will remain free. We're supported by transparent partner links and non-intrusive ads, never by selling your data." },
                             { icon: "🌍", title: "Built for Everyone", desc: "No jargon, no required expertise. Our tools are designed for developers and non-developers alike." },
                         ].map((item) => (
                             <div key={item.title} className="p-5 rounded-xl bg-[rgb(10,10,15)] border border-[rgb(30,30,46)]">
@@ -77,7 +86,7 @@ export default function AboutPage() {
                         ))}
                     </div>
                     <p className="text-[rgb(100,100,140)] text-sm mt-4">
-                        All pages are statically generated and served from Vercel's global CDN — meaning your nearest server is always seconds away.
+                        All pages are statically generated and served from Vercel&apos;s global CDN — meaning your nearest server is always seconds away.
                     </p>
                 </section>
 
@@ -86,9 +95,9 @@ export default function AboutPage() {
                     <h2 className="text-2xl font-bold text-white mb-6">RapidKit by the Numbers</h2>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
                         {[
-                            { number: "10+", label: "Free Tools" },
-                            { number: "5", label: "Categories" },
-                            { number: "34", label: "Static Pages" },
+                            { number: `${TOOLS.length}`, label: "Free Tools" },
+                            { number: `${CATEGORIES.length}`, label: "Categories" },
+                            { number: "Browser-First", label: "Most Tools Run Locally" },
                             { number: "0", label: "Accounts Needed" },
                         ].map((stat) => (
                             <div key={stat.label} className="p-4 rounded-xl bg-[rgb(10,10,15)] border border-[rgb(30,30,46)]">
@@ -105,14 +114,14 @@ export default function AboutPage() {
                         <Heart className="w-5 h-5 text-rose-400 fill-rose-400" /> Get in Touch
                     </h2>
                     <p className="text-[rgb(120,120,160)] text-sm leading-relaxed mb-4">
-                        Have a tool suggestion? Found a bug? Want to collaborate? We'd love to hear from you.
+                        Have a tool suggestion? Found a bug? Want to collaborate? We&apos;d love to hear from you.
                     </p>
                     <div className="flex flex-wrap gap-3">
                         <a
-                            href="mailto:hello@rapidkit.tools"
+                            href={`mailto:hello@${SITE_DOMAIN}`}
                             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] text-sm text-[rgb(140,140,180)] hover:text-white hover:border-violet-500/40 transition-all"
                         >
-                            <Mail className="w-4 h-4" /> hello@rapidkit.tools
+                            <Mail className="w-4 h-4" /> hello@{SITE_DOMAIN}
                         </a>
                         <Link
                             href="/tools"

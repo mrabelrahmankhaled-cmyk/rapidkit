@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Share2, Bookmark, Check, Link2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { canonicalUrl } from "@/lib/seo";
 
 type Props = {
     toolName: string;
@@ -14,7 +15,7 @@ export function ShareCTA({ toolName, toolSlug, categoryId }: Props) {
     const [copiedLink, setCopiedLink] = useState(false);
     const [bookmarked, setBookmarked] = useState(false);
 
-    const toolUrl = `https://rapidkit.tools/tools/${categoryId}/${toolSlug}`;
+    const toolUrl = canonicalUrl(`/tools/${categoryId}/${toolSlug}`);
     const shareText = `I just used "${toolName}" on RapidKit — a free online tool. Check it out! 🚀`;
 
     const handleCopyLink = () => {

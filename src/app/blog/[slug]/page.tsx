@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { BLOG_POSTS, getBlogPostBySlug, getRelatedPosts } from "@/lib/blog-registry";
+import { canonicalUrl, SITE_URL, buildBreadcrumbJsonLd } from "@/lib/seo";
 import { Clock, ArrowLeft, ArrowRight, ExternalLink, Tag, BookOpen } from "lucide-react";
 
 // ─── Static Params ────────────────────────────────────────────────
@@ -21,21 +22,24 @@ export async function generateMetadata({
     const post = getBlogPostBySlug(slug);
     if (!post) return {};
 
+    const cleanTitle = post.seo.title.replace(/\s*\|\s*RapidKit(\s*Guide)?$/i, "");
+    const pageUrl = canonicalUrl(`/blog/${post.slug}`);
+
     return {
-        title: post.seo.title,
+        title: cleanTitle,
         description: post.seo.description,
         keywords: post.seo.keywords,
-        authors: [{ name: "RapidKit" }],
+        authors: [{ name: "RapidKit", url: SITE_URL }],
         openGraph: {
             title: post.seo.title,
             description: post.seo.description,
-            url: `https://rapidkit.tools/blog/${post.slug}`,
+            url: pageUrl,
             type: "article",
             publishedTime: post.publishedAt,
             modifiedTime: post.updatedAt,
         },
         alternates: {
-            canonical: `https://rapidkit.tools/blog/${post.slug}`,
+            canonical: pageUrl,
         },
     };
 }
@@ -83,22 +87,32 @@ export default async function BlogPostPage({
         description: post.description,
         datePublished: post.publishedAt,
         dateModified: post.updatedAt,
-        author: { "@type": "Organization", name: "RapidKit", url: "https://rapidkit.tools" },
+        author: { "@type": "Organization", name: "RapidKit", url: SITE_URL },
         publisher: {
             "@type": "Organization",
             name: "RapidKit",
-            url: "https://rapidkit.tools",
-            logo: { "@type": "ImageObject", url: "https://rapidkit.tools/favicon.ico" },
+            url: SITE_URL,
+            logo: { "@type": "ImageObject", url: `${SITE_URL}/icon` },
         },
-        mainEntityOfPage: { "@type": "WebPage", "@id": `https://rapidkit.tools/blog/${post.slug}` },
+        mainEntityOfPage: { "@type": "WebPage", "@id": canonicalUrl(`/blog/${post.slug}`) },
         keywords: post.seo.keywords.join(", "),
     };
+
+    const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+        { name: "Home", path: "/" },
+        { name: "Blog", path: "/blog" },
+        { name: post.title, path: `/blog/${post.slug}` },
+    ]);
 
     return (
         <>
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
             />
 
             <div className="min-h-screen">
