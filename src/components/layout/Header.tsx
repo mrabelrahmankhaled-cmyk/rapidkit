@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Zap, Search, Menu, X, ChevronDown } from "lucide-react";
 import { CATEGORIES, TOOLS, searchTools } from "@/lib/tools-registry";
+import { HAS_INDEXABLE_COMPARISONS } from "@/data/comparisons";
+import { HAS_INDEXABLE_ALTERNATIVES } from "@/data/alternatives";
 import { cn } from "@/lib/utils";
 
 export function Header() {
@@ -89,12 +91,16 @@ export function Header() {
                     <Link href="/tools" className="px-3 py-2 rounded-lg text-sm text-[rgb(148,148,186)] hover:text-white hover:bg-[rgba(255,255,255,0.05)] transition-all">
                         All Tools
                     </Link>
-                    <Link href="/compare" className="px-3 py-2 rounded-lg text-sm text-[rgb(148,148,186)] hover:text-white hover:bg-[rgba(255,255,255,0.05)] transition-all">
-                        Comparisons
-                    </Link>
-                    <Link href="/alternatives" className="px-3 py-2 rounded-lg text-sm text-[rgb(148,148,186)] hover:text-white hover:bg-[rgba(255,255,255,0.05)] transition-all">
-                        Alternatives
-                    </Link>
+                    {HAS_INDEXABLE_COMPARISONS && (
+                        <Link href="/compare" className="px-3 py-2 rounded-lg text-sm text-[rgb(148,148,186)] hover:text-white hover:bg-[rgba(255,255,255,0.05)] transition-all">
+                            Comparisons
+                        </Link>
+                    )}
+                    {HAS_INDEXABLE_ALTERNATIVES && (
+                        <Link href="/alternatives" className="px-3 py-2 rounded-lg text-sm text-[rgb(148,148,186)] hover:text-white hover:bg-[rgba(255,255,255,0.05)] transition-all">
+                            Alternatives
+                        </Link>
+                    )}
                     <Link href="/blog" className="px-3 py-2 rounded-lg text-sm text-[rgb(148,148,186)] hover:text-white hover:bg-[rgba(255,255,255,0.05)] transition-all">
                         Blog
                     </Link>
@@ -194,8 +200,12 @@ export function Header() {
                             {cat.name}
                         </Link>
                     ))}
-                    <Link href="/compare" onClick={() => setMobileOpen(false)} className="block p-2 rounded-lg hover:bg-[rgba(255,255,255,0.05)] text-sm text-[rgb(148,148,186)]">Comparisons</Link>
-                    <Link href="/alternatives" onClick={() => setMobileOpen(false)} className="block p-2 rounded-lg hover:bg-[rgba(255,255,255,0.05)] text-sm text-[rgb(148,148,186)]">Alternatives</Link>
+                    {HAS_INDEXABLE_COMPARISONS && (
+                        <Link href="/compare" onClick={() => setMobileOpen(false)} className="block p-2 rounded-lg hover:bg-[rgba(255,255,255,0.05)] text-sm text-[rgb(148,148,186)]">Comparisons</Link>
+                    )}
+                    {HAS_INDEXABLE_ALTERNATIVES && (
+                        <Link href="/alternatives" onClick={() => setMobileOpen(false)} className="block p-2 rounded-lg hover:bg-[rgba(255,255,255,0.05)] text-sm text-[rgb(148,148,186)]">Alternatives</Link>
+                    )}
                     <Link href="/blog" onClick={() => setMobileOpen(false)} className="block p-2 rounded-lg hover:bg-[rgba(255,255,255,0.05)] text-sm text-[rgb(148,148,186)]">Blog</Link>
                 </div>
             )}

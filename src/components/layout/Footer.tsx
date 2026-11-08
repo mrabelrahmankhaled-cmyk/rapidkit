@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Zap, Heart, ShieldCheck } from "lucide-react";
 import { CATEGORIES, TOOLS } from "@/lib/tools-registry";
+import { INDEXABLE_COMPARISONS, HAS_INDEXABLE_COMPARISONS } from "@/data/comparisons";
+import { INDEXABLE_ALTERNATIVES, HAS_INDEXABLE_ALTERNATIVES } from "@/data/alternatives";
 
 export function Footer() {
     const popularTools = TOOLS.filter((t) => t.isPopular).slice(0, 6);
@@ -92,44 +94,46 @@ export function Footer() {
                             Guides &amp; Comparisons
                         </h3>
                         <ul className="space-y-2.5">
-                            <li>
-                                <Link href="/compare/hostinger-vs-cloudways" className="text-sm text-[rgb(130,130,165)] hover:text-white transition-colors">
-                                    Hostinger vs Cloudways
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/compare/beehiiv-vs-kit" className="text-sm text-[rgb(130,130,165)] hover:text-white transition-colors">
-                                    beehiiv vs Kit
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/compare/vidiq-vs-tubebuddy" className="text-sm text-[rgb(130,130,165)] hover:text-white transition-colors">
-                                    vidIQ vs TubeBuddy
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/alternatives/tinypng-alternatives" className="text-sm text-[rgb(130,130,165)] hover:text-white transition-colors">
-                                    TinyPNG Alternatives
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/alternatives/canva-alternatives" className="text-sm text-[rgb(130,130,165)] hover:text-white transition-colors">
-                                    Canva Alternatives
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/alternatives/semrush-alternatives" className="text-sm text-[rgb(130,130,165)] hover:text-white transition-colors">
-                                    Semrush Alternatives
-                                </Link>
-                            </li>
-                            <li>
-                                <Link
-                                    href="/compare"
-                                    className="text-sm font-medium text-violet-400 hover:text-violet-300 transition-colors inline-flex items-center gap-1"
-                                >
-                                    All Comparisons →
-                                </Link>
-                            </li>
+                            {INDEXABLE_COMPARISONS.map((comp) => (
+                                <li key={comp.slug}>
+                                    <Link
+                                        href={`/compare/${comp.slug}`}
+                                        className="text-sm text-[rgb(130,130,165)] hover:text-white transition-colors"
+                                    >
+                                        {comp.productA.name} vs {comp.productB.name}
+                                    </Link>
+                                </li>
+                            ))}
+                            {INDEXABLE_ALTERNATIVES.map((alt) => (
+                                <li key={alt.slug}>
+                                    <Link
+                                        href={`/alternatives/${alt.slug}`}
+                                        className="text-sm text-[rgb(130,130,165)] hover:text-white transition-colors"
+                                    >
+                                        {alt.targetProduct} Alternatives
+                                    </Link>
+                                </li>
+                            ))}
+                            {HAS_INDEXABLE_COMPARISONS && (
+                                <li>
+                                    <Link
+                                        href="/compare"
+                                        className="text-sm font-medium text-violet-400 hover:text-violet-300 transition-colors inline-flex items-center gap-1"
+                                    >
+                                        All Comparisons →
+                                    </Link>
+                                </li>
+                            )}
+                            {HAS_INDEXABLE_ALTERNATIVES && (
+                                <li>
+                                    <Link
+                                        href="/alternatives"
+                                        className="text-sm font-medium text-violet-400 hover:text-violet-300 transition-colors inline-flex items-center gap-1"
+                                    >
+                                        All Alternatives →
+                                    </Link>
+                                </li>
+                            )}
                         </ul>
                     </div>
 

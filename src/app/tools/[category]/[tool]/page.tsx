@@ -8,8 +8,8 @@ import {
     getToolBySlug,
     getRelatedToolsForTool,
 } from "@/data/tools";
-import { getComparisonsBySlugs } from "@/data/comparisons";
-import { getAlternativesBySlugs } from "@/data/alternatives";
+import { getComparisonsBySlugs, HAS_INDEXABLE_COMPARISONS } from "@/data/comparisons";
+import { getAlternativesBySlugs, HAS_INDEXABLE_ALTERNATIVES } from "@/data/alternatives";
 import {
     canonicalUrl,
     buildToolJsonLd,
@@ -212,13 +212,19 @@ export default async function ToolPage({ params }: Props) {
                                     </h2>
                                 </div>
                                 <div className="flex items-center gap-3 text-xs">
-                                    <Link href="/compare" className="text-violet-400 hover:text-violet-300 transition-colors">
-                                        All Comparisons
-                                    </Link>
-                                    <span className="text-[rgb(60,60,90)]">•</span>
-                                    <Link href="/alternatives" className="text-cyan-400 hover:text-cyan-300 transition-colors">
-                                        All Alternatives
-                                    </Link>
+                                    {HAS_INDEXABLE_COMPARISONS && (
+                                        <Link href="/compare" className="text-violet-400 hover:text-violet-300 transition-colors">
+                                            All Comparisons
+                                        </Link>
+                                    )}
+                                    {HAS_INDEXABLE_COMPARISONS && HAS_INDEXABLE_ALTERNATIVES && (
+                                        <span className="text-[rgb(60,60,90)]">•</span>
+                                    )}
+                                    {HAS_INDEXABLE_ALTERNATIVES && (
+                                        <Link href="/alternatives" className="text-cyan-400 hover:text-cyan-300 transition-colors">
+                                            All Alternatives
+                                        </Link>
+                                    )}
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

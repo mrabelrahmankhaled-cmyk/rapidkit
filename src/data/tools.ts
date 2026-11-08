@@ -1,3 +1,5 @@
+import type { AffiliateId } from "@/data/affiliates";
+
 export type ToolFAQ = {
     question: string;
     answer: string;
@@ -33,7 +35,7 @@ export type Tool = {
     howToSteps: string[];
     faqs: ToolFAQ[];
     relatedToolSlugs: string[];
-    affiliateIds?: string[];
+    affiliateIds?: AffiliateId[];
     relatedComparisonSlugs?: string[];
     relatedAlternativeSlugs?: string[];
 };
@@ -172,7 +174,7 @@ export const TOOLS: Tool[] = [
             },
         ],
         relatedToolSlugs: ["youtube-tag-extractor", "image-compressor", "aspect-ratio-calculator"],
-        affiliateIds: ["vidiq", "tubebuddy", "canva"],
+        affiliateIds: ["vidiq", "tubebuddy", "adobe_express"],
         relatedComparisonSlugs: ["vidiq-vs-tubebuddy"],
         relatedAlternativeSlugs: ["canva-alternatives"],
     },
@@ -259,7 +261,7 @@ export const TOOLS: Tool[] = [
             },
         ],
         relatedToolSlugs: ["webp-converter", "image-metadata-remover", "aspect-ratio-calculator"],
-        affiliateIds: ["shortpixel", "cloudinary"],
+        affiliateIds: ["shortpixel", "optimole"],
         relatedComparisonSlugs: ["hostinger-vs-cloudways"],
         relatedAlternativeSlugs: ["tinypng-alternatives"],
     },
@@ -301,7 +303,7 @@ export const TOOLS: Tool[] = [
             },
         ],
         relatedToolSlugs: ["image-compressor", "favicon-generator", "image-metadata-remover"],
-        affiliateIds: ["cloudinary", "shortpixel"],
+        affiliateIds: ["shortpixel", "optimole"],
         relatedComparisonSlugs: ["hostinger-vs-cloudways"],
         relatedAlternativeSlugs: ["tinypng-alternatives"],
     },
@@ -426,7 +428,7 @@ export const TOOLS: Tool[] = [
             },
         ],
         relatedToolSlugs: ["glassmorphism-generator", "box-shadow-generator", "color-converter"],
-        affiliateIds: ["canva"],
+        affiliateIds: ["adobe_express", "kittl"],
         relatedAlternativeSlugs: ["canva-alternatives"],
     },
     {
@@ -468,7 +470,7 @@ export const TOOLS: Tool[] = [
             },
         ],
         relatedToolSlugs: ["whatsapp-link-generator", "url-parser", "favicon-generator"],
-        affiliateIds: ["canva"],
+        affiliateIds: ["adobe_express", "kittl"],
         relatedAlternativeSlugs: ["canva-alternatives"],
     },
     {
@@ -713,7 +715,7 @@ export const TOOLS: Tool[] = [
             },
         ],
         relatedToolSlugs: ["markdown-editor", "css-gradient-generator", "image-compressor"],
-        affiliateIds: ["canva"],
+        affiliateIds: ["adobe_express", "kittl"],
         relatedAlternativeSlugs: ["canva-alternatives"],
     },
     {
@@ -794,7 +796,7 @@ export const TOOLS: Tool[] = [
             },
         ],
         relatedToolSlugs: ["json-formatter", "url-parser", "webp-converter"],
-        affiliateIds: ["cloudinary"],
+        affiliateIds: ["shortpixel", "optimole"],
     },
     {
         id: "favicon-generator",
@@ -835,7 +837,7 @@ export const TOOLS: Tool[] = [
             },
         ],
         relatedToolSlugs: ["webp-converter", "image-compressor", "meta-tag-generator"],
-        affiliateIds: ["canva", "hostinger"],
+        affiliateIds: ["adobe_express", "hostinger"],
         relatedComparisonSlugs: ["hostinger-vs-cloudways"],
         relatedAlternativeSlugs: ["canva-alternatives", "tinypng-alternatives"],
     },
@@ -1001,7 +1003,7 @@ export const TOOLS: Tool[] = [
             },
         ],
         relatedToolSlugs: ["word-counter", "text-case-converter", "markdown-editor"],
-        affiliateIds: ["canva"],
+        affiliateIds: ["adobe_express", "kittl"],
     },
     {
         id: "text-diff-checker",
@@ -1121,7 +1123,7 @@ export const TOOLS: Tool[] = [
             },
         ],
         relatedToolSlugs: ["color-palette-generator", "css-gradient-generator", "box-shadow-generator"],
-        affiliateIds: ["canva"],
+        affiliateIds: ["adobe_express", "kittl"],
     },
 
     // ─── Marketing Tools ───────────────────────────────────────────
@@ -1291,7 +1293,7 @@ export const TOOLS: Tool[] = [
             },
         ],
         relatedToolSlugs: ["color-converter", "css-gradient-generator", "image-compressor"],
-        affiliateIds: ["canva"],
+        affiliateIds: ["adobe_express", "kittl"],
         relatedAlternativeSlugs: ["canva-alternatives"],
     },
     {
@@ -1333,7 +1335,7 @@ export const TOOLS: Tool[] = [
             },
         ],
         relatedToolSlugs: ["css-gradient-generator", "glassmorphism-generator", "box-shadow-generator"],
-        affiliateIds: ["canva"],
+        affiliateIds: ["adobe_express", "kittl"],
         relatedAlternativeSlugs: ["canva-alternatives"],
     },
     {
@@ -1375,7 +1377,7 @@ export const TOOLS: Tool[] = [
             },
         ],
         relatedToolSlugs: ["glassmorphism-generator", "css-gradient-generator", "color-converter"],
-        affiliateIds: ["canva"],
+        affiliateIds: ["adobe_express", "kittl"],
         relatedAlternativeSlugs: ["canva-alternatives"],
     },
     {
@@ -1456,7 +1458,7 @@ export const TOOLS: Tool[] = [
             },
         ],
         relatedToolSlugs: ["box-shadow-generator", "css-gradient-generator", "svg-shape-generator"],
-        affiliateIds: ["canva"],
+        affiliateIds: ["adobe_express", "kittl"],
         relatedAlternativeSlugs: ["canva-alternatives"],
     },
     {
@@ -1497,7 +1499,7 @@ export const TOOLS: Tool[] = [
             },
         ],
         relatedToolSlugs: ["youtube-thumbnail-downloader", "image-compressor", "unit-converter"],
-        affiliateIds: ["canva"],
+        affiliateIds: ["adobe_express", "kittl"],
         relatedComparisonSlugs: ["vidiq-vs-tubebuddy"],
         relatedAlternativeSlugs: ["canva-alternatives"],
     },

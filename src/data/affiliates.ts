@@ -1,5 +1,25 @@
+export type AffiliateId =
+    | "vidiq"
+    | "tubebuddy"
+    | "shortpixel"
+    | "onepassword"
+    | "nordvpn"
+    | "hostinger"
+    | "cloudways"
+    | "grammarly"
+    | "semrush"
+    | "beehiiv"
+    | "kit"
+    | "airtable"
+    | "notion"
+    | "optimole"
+    | "adobe_express"
+    | "kittl"
+    | "mangools"
+    | "seranking";
+
 export type AffiliatePartner = {
-    id: string;
+    id: AffiliateId;
     name: string;
     /**
      * Resolved affiliate URL. Defaults to empty string ("") as a placeholder until
@@ -19,7 +39,7 @@ export type AffiliatePartner = {
 
 export const PLACEHOLDER_URL = "";
 
-export const AFFILIATES: Record<string, AffiliatePartner> = {
+export const AFFILIATES: Record<AffiliateId, AffiliatePartner> = {
     vidiq: {
         id: "vidiq",
         name: "vidIQ",
@@ -59,27 +79,6 @@ export const AFFILIATES: Record<string, AffiliatePartner> = {
         cons: [
             "Full A/B testing and bulk tools require a paid license",
             "Browser extension UI can feel dense on smaller screens",
-        ],
-        disclosureRequired: true,
-    },
-    cloudinary: {
-        id: "cloudinary",
-        name: "Cloudinary",
-        url: process.env.NEXT_PUBLIC_AFFILIATE_CLOUDINARY_URL || PLACEHOLDER_URL,
-        envKey: "NEXT_PUBLIC_AFFILIATE_CLOUDINARY_URL",
-        category: "image",
-        badge: "Image & Video CDN",
-        ctaText: "Try Cloudinary",
-        shortPitch:
-            "Automate image compression, WebP/AVIF format selection, and responsive resizing at scale via URL parameters and SDKs.",
-        pros: [
-            "Automatic format selection (f_auto) and quality compression (q_auto)",
-            "On-the-fly cropping and responsive resizing via URL parameters",
-            "Image API, Video API, and SDKs with global CDN delivery",
-        ],
-        cons: [
-            "Requires integration into your application or CMS",
-            "Usage-based pricing scales with transformations and bandwidth",
         ],
         disclosureRequired: true,
     },
@@ -293,27 +292,6 @@ export const AFFILIATES: Record<string, AffiliatePartner> = {
         ],
         disclosureRequired: true,
     },
-    canva: {
-        id: "canva",
-        name: "Canva",
-        url: process.env.NEXT_PUBLIC_AFFILIATE_CANVA_URL || PLACEHOLDER_URL,
-        envKey: "NEXT_PUBLIC_AFFILIATE_CANVA_URL",
-        category: "design",
-        badge: "Visual Design Suite",
-        ctaText: "Design on Canva",
-        shortPitch:
-            "Design high-CTR YouTube thumbnails, social media banners, and brand kits using drag-and-drop templates and custom color palettes.",
-        pros: [
-            "Thousands of ready-made YouTube thumbnail and social templates",
-            "Brand Kit support for storing custom hex palettes and fonts",
-            "One-click background removal and magic resize on Pro tier",
-        ],
-        cons: [
-            "Background remover and magic resize require Canva Pro",
-            "Less granular vector path control than dedicated desktop software",
-        ],
-        disclosureRequired: true,
-    },
     notion: {
         id: "notion",
         name: "Notion",
@@ -454,11 +432,11 @@ export function isAffiliateConfigured(partner: AffiliatePartner | undefined): pa
     return trimmed.startsWith("https://") || trimmed.startsWith("http://");
 }
 
-export function getAffiliateById(id: string): AffiliatePartner | undefined {
+export function getAffiliateById(id: AffiliateId): AffiliatePartner | undefined {
     return AFFILIATES[id];
 }
 
-export function getConfiguredAffiliatesByIds(ids?: string[]): AffiliatePartner[] {
+export function getConfiguredAffiliatesByIds(ids?: AffiliateId[]): AffiliatePartner[] {
     if (!ids || ids.length === 0) return [];
     return ids
         .map((id) => AFFILIATES[id])

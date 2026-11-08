@@ -1,8 +1,9 @@
 import type { ToolFAQ } from "@/data/tools";
+import type { AffiliateId } from "@/data/affiliates";
 
 export type AlternativeProduct = {
     name: string;
-    affiliateId?: string;
+    affiliateId?: AffiliateId;
     internalToolUrl?: string;
     tagline: string;
     bestFor: string;
@@ -26,6 +27,7 @@ export type AlternativesPage = {
     title: string;
     subtitle: string;
     categoryLabel: string;
+    indexable: boolean;
     lastVerified: string | null;
     seo: {
         title: string;
@@ -43,7 +45,7 @@ export type AlternativesPage = {
     faqs: ToolFAQ[];
     relatedToolSlugs: string[];
     relatedComparisonSlugs?: string[];
-    affiliateIds: string[];
+    affiliateIds: AffiliateId[];
 };
 
 export const ALTERNATIVES: AlternativesPage[] = [
@@ -55,6 +57,7 @@ export const ALTERNATIVES: AlternativesPage[] = [
         subtitle:
             "Compare browser-local image compressors, automated WordPress plugins, and developer image CDNs for optimizing PNG, JPEG, and WebP assets.",
         categoryLabel: "Image Optimization",
+        indexable: true,
         lastVerified: "2026-11-08",
         seo: {
             title: "Best TinyPNG Alternatives — Local, WordPress & CDN Image Optimizers",
@@ -147,7 +150,6 @@ export const ALTERNATIVES: AlternativesPage[] = [
             },
             {
                 name: "Cloudinary",
-                affiliateId: "cloudinary",
                 tagline: "Programmable image and video platform with dynamic URL transformations.",
                 bestFor:
                     "Developers and product teams who want automatic format selection (f_auto), automatic quality compression (q_auto), and real-time resizing via URL parameters and SDKs.",
@@ -226,7 +228,7 @@ export const ALTERNATIVES: AlternativesPage[] = [
             "favicon-generator",
         ],
         relatedComparisonSlugs: ["hostinger-vs-cloudways"],
-        affiliateIds: ["shortpixel", "cloudinary", "optimole"],
+        affiliateIds: ["shortpixel", "optimole"],
     },
 
     // ─── 2. Canva Alternatives ─────────────────────────────────────
@@ -237,6 +239,7 @@ export const ALTERNATIVES: AlternativesPage[] = [
         subtitle:
             "Compare Adobe Express, Kittl, and dedicated browser design utilities when you need Creative Cloud integration, stylized typography, or instant CSS/SVG code.",
         categoryLabel: "Design & Creative Tools",
+        indexable: true,
         lastVerified: "2026-11-08",
         seo: {
             title: "Best Canva Alternatives — Graphic Design, Typography & Web Assets",
@@ -379,7 +382,7 @@ export const ALTERNATIVES: AlternativesPage[] = [
             "css-gradient-generator",
         ],
         relatedComparisonSlugs: ["vidiq-vs-tubebuddy", "beehiiv-vs-kit"],
-        affiliateIds: ["adobe_express", "kittl", "canva"],
+        affiliateIds: ["adobe_express", "kittl"],
     },
 
     // ─── 3. Semrush Alternatives ───────────────────────────────────
@@ -390,6 +393,7 @@ export const ALTERNATIVES: AlternativesPage[] = [
         subtitle:
             "Compare Mangools, SE Ranking, and free browser SEO utilities when you want focused keyword research and site auditing without enterprise complexity.",
         categoryLabel: "SEO & Marketing Software",
+        indexable: true,
         lastVerified: "2026-11-08",
         seo: {
             title: "Best Semrush Alternatives — Keyword Research & SEO Audit Tools",
@@ -534,6 +538,9 @@ export const ALTERNATIVES: AlternativesPage[] = [
     },
 ];
 
+export const INDEXABLE_ALTERNATIVES: AlternativesPage[] = ALTERNATIVES.filter((a) => a.indexable);
+export const HAS_INDEXABLE_ALTERNATIVES: boolean = INDEXABLE_ALTERNATIVES.length > 0;
+
 export function getAlternativesBySlug(slug: string): AlternativesPage | undefined {
     return ALTERNATIVES.find((a) => a.slug === slug);
 }
@@ -542,5 +549,5 @@ export function getAlternativesBySlugs(slugs?: string[]): AlternativesPage[] {
     if (!slugs || slugs.length === 0) return [];
     return slugs
         .map((slug) => ALTERNATIVES.find((a) => a.slug === slug))
-        .filter((a): a is AlternativesPage => Boolean(a));
+        .filter((a): a is AlternativesPage => Boolean(a && a.indexable));
 }

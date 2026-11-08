@@ -1,4 +1,5 @@
 import type { ToolFAQ } from "@/data/tools";
+import type { AffiliateId } from "@/data/affiliates";
 
 /**
  * CONTENT POLICY (fact-checked 2026-11-08 against vendor pages):
@@ -9,7 +10,7 @@ import type { ToolFAQ } from "@/data/tools";
 
 export type ComparisonProduct = {
     name: string;
-    affiliateId?: string;
+    affiliateId?: AffiliateId;
     tagline: string;
     pricingSummary: string;
     pricingUrl: string;
@@ -29,6 +30,7 @@ export type ComparisonPage = {
     title: string;
     subtitle: string;
     categoryLabel: string;
+    indexable: boolean;
     lastVerified: string | null;
     seo: {
         title: string;
@@ -46,7 +48,7 @@ export type ComparisonPage = {
     faqs: ToolFAQ[];
     relatedToolSlugs: string[];
     relatedAlternativeSlugs?: string[];
-    affiliateIds: string[];
+    affiliateIds: AffiliateId[];
 };
 
 export const COMPARISONS: ComparisonPage[] = [
@@ -61,6 +63,7 @@ export const COMPARISONS: ComparisonPage[] = [
         subtitle:
             "A short, source-checked look at Hostinger's hosting lineup next to Cloudways, with pointers to verify the rest on the vendors' own pages.",
         categoryLabel: "Web & Cloud Hosting",
+        indexable: false,
         lastVerified: null,
         seo: {
             title: "Hostinger vs Cloudways — Hosting Comparison",
@@ -183,6 +186,7 @@ export const COMPARISONS: ComparisonPage[] = [
         subtitle:
             "How beehiiv's newsletter-plus-website approach compares with Kit's tag-based email automation and creator commerce, based on each vendor's own site.",
         categoryLabel: "Email & Newsletter Platforms",
+        indexable: true,
         lastVerified: "2026-11-08",
         seo: {
             title: "beehiiv vs Kit (ConvertKit) — Newsletter & Email Platform Comparison",
@@ -316,6 +320,7 @@ export const COMPARISONS: ComparisonPage[] = [
         subtitle:
             "What vidIQ and TubeBuddy each list on their own sites for keyword research, video ideas, bulk editing, and A/B testing.",
         categoryLabel: "YouTube Creator Tools",
+        indexable: true,
         lastVerified: "2026-11-08",
         seo: {
             title: "vidIQ vs TubeBuddy — YouTube SEO & Creator Toolkit Comparison",
@@ -440,6 +445,9 @@ export const COMPARISONS: ComparisonPage[] = [
     },
 ];
 
+export const INDEXABLE_COMPARISONS: ComparisonPage[] = COMPARISONS.filter((c) => c.indexable);
+export const HAS_INDEXABLE_COMPARISONS: boolean = INDEXABLE_COMPARISONS.length > 0;
+
 export function getComparisonBySlug(slug: string): ComparisonPage | undefined {
     return COMPARISONS.find((c) => c.slug === slug);
 }
@@ -448,5 +456,5 @@ export function getComparisonsBySlugs(slugs?: string[]): ComparisonPage[] {
     if (!slugs || slugs.length === 0) return [];
     return slugs
         .map((slug) => COMPARISONS.find((c) => c.slug === slug))
-        .filter((c): c is ComparisonPage => Boolean(c));
+        .filter((c): c is ComparisonPage => Boolean(c && c.indexable));
 }

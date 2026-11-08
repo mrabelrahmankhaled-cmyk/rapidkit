@@ -4,13 +4,6 @@ export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://getrapidki
 export const SITE_NAME = "RapidKit";
 export const SITE_DOMAIN = "getrapidkit.me";
 
-/**
- * Controls whether /compare, /compare/[slug], /alternatives, and /alternatives/[slug]
- * are indexable by search engines and included in /sitemap.xml.
- * Flip to `true` once manual content verification (see REVIEW.md) is complete.
- */
-export const GUIDES_INDEXABLE = false;
-
 export function canonicalUrl(path: string): string {
     if (!path || path === "/") return SITE_URL;
     const normalizedPath = path.startsWith("/") ? path : `/${path}`;

@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Layers, ArrowRight, ChevronRight, Wrench } from "lucide-react";
-import { ALTERNATIVES } from "@/data/alternatives";
-import { COMPARISONS } from "@/data/comparisons";
+import { INDEXABLE_ALTERNATIVES, HAS_INDEXABLE_ALTERNATIVES } from "@/data/alternatives";
+import { INDEXABLE_COMPARISONS, HAS_INDEXABLE_COMPARISONS } from "@/data/comparisons";
 import { getToolBySlug } from "@/data/tools";
-import { canonicalUrl, buildBreadcrumbJsonLd, GUIDES_INDEXABLE } from "@/lib/seo";
+import { canonicalUrl, buildBreadcrumbJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = {
     title: "Software Alternatives for Developers, Creators & Marketers",
     description:
         "Explore curated alternatives to TinyPNG, Canva, and Semrush — comparing cloud platforms, WordPress plugins, and free browser-first RapidKit tools.",
     robots: {
-        index: GUIDES_INDEXABLE,
-        follow: GUIDES_INDEXABLE,
+        index: HAS_INDEXABLE_ALTERNATIVES,
+        follow: HAS_INDEXABLE_ALTERNATIVES,
     },
     alternates: {
         canonical: canonicalUrl("/alternatives"),
@@ -69,7 +69,7 @@ export default function AlternativesIndexPage() {
 
                     {/* Alternatives Cards */}
                     <div className="grid grid-cols-1 gap-6 mb-14">
-                        {ALTERNATIVES.map((alt) => {
+                        {INDEXABLE_ALTERNATIVES.map((alt) => {
                             const linkedTools = alt.relatedToolSlugs
                                 .map((s) => getToolBySlug(s))
                                 .filter((t): t is NonNullable<typeof t> => Boolean(t));
@@ -138,38 +138,40 @@ export default function AlternativesIndexPage() {
                     </div>
 
                     {/* Cross-link to Head-to-Head Comparisons */}
-                    <section className="glass-card p-6 sm:p-8">
-                        <div className="flex items-center justify-between gap-4 flex-wrap mb-4">
-                            <div>
-                                <h2 className="text-lg font-bold text-white">Head-to-Head Software Comparisons</h2>
-                                <p className="text-xs text-[rgb(110,110,150)] mt-0.5">
-                                    Deciding between two specific platforms? Read our side-by-side comparisons.
-                                </p>
-                            </div>
-                            <Link
-                                href="/compare"
-                                className="text-xs font-semibold text-violet-400 hover:text-violet-300 inline-flex items-center gap-1 transition-colors"
-                            >
-                                View all comparisons <ArrowRight className="w-3.5 h-3.5" />
-                            </Link>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                            {COMPARISONS.map((comp) => (
+                    {HAS_INDEXABLE_COMPARISONS && (
+                        <section className="glass-card p-6 sm:p-8">
+                            <div className="flex items-center justify-between gap-4 flex-wrap mb-4">
+                                <div>
+                                    <h2 className="text-lg font-bold text-white">Head-to-Head Software Comparisons</h2>
+                                    <p className="text-xs text-[rgb(110,110,150)] mt-0.5">
+                                        Deciding between two specific platforms? Read our side-by-side comparisons.
+                                    </p>
+                                </div>
                                 <Link
-                                    key={comp.slug}
-                                    href={`/compare/${comp.slug}`}
-                                    className="p-4 rounded-xl bg-[rgb(14,14,22)] border border-[rgb(38,38,58)] hover:border-violet-500/40 transition-all group block"
+                                    href="/compare"
+                                    className="text-xs font-semibold text-violet-400 hover:text-violet-300 inline-flex items-center gap-1 transition-colors"
                                 >
-                                    <span className="text-[10px] font-semibold uppercase tracking-wider text-violet-300 block mb-1">
-                                        {comp.categoryLabel}
-                                    </span>
-                                    <h3 className="text-sm font-semibold text-white group-hover:text-violet-300 transition-colors">
-                                        {comp.productA.name} vs {comp.productB.name}
-                                    </h3>
+                                    View all comparisons <ArrowRight className="w-3.5 h-3.5" />
                                 </Link>
-                            ))}
-                        </div>
-                    </section>
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                {INDEXABLE_COMPARISONS.map((comp) => (
+                                    <Link
+                                        key={comp.slug}
+                                        href={`/compare/${comp.slug}`}
+                                        className="p-4 rounded-xl bg-[rgb(14,14,22)] border border-[rgb(38,38,58)] hover:border-violet-500/40 transition-all group block"
+                                    >
+                                        <span className="text-[10px] font-semibold uppercase tracking-wider text-violet-300 block mb-1">
+                                            {comp.categoryLabel}
+                                        </span>
+                                        <h3 className="text-sm font-semibold text-white group-hover:text-violet-300 transition-colors">
+                                            {comp.productA.name} vs {comp.productB.name}
+                                        </h3>
+                                    </Link>
+                                ))}
+                            </div>
+                        </section>
+                    )}
                 </div>
             </div>
         </>

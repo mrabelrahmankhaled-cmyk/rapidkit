@@ -1,9 +1,9 @@
 import type { MetadataRoute } from "next";
 import { TOOLS, CATEGORIES } from "@/data/tools";
-import { COMPARISONS } from "@/data/comparisons";
-import { ALTERNATIVES } from "@/data/alternatives";
+import { INDEXABLE_COMPARISONS, HAS_INDEXABLE_COMPARISONS } from "@/data/comparisons";
+import { INDEXABLE_ALTERNATIVES, HAS_INDEXABLE_ALTERNATIVES } from "@/data/alternatives";
 import { BLOG_POSTS } from "@/lib/blog-registry";
-import { SITE_URL, GUIDES_INDEXABLE } from "@/lib/seo";
+import { SITE_URL } from "@/lib/seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const toolPages = TOOLS.map((tool) => ({
@@ -20,14 +20,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
         priority: 0.7,
     }));
 
-    const comparisonPages = COMPARISONS.map((comp) => ({
+    const comparisonPages = INDEXABLE_COMPARISONS.map((comp) => ({
         url: `${SITE_URL}/compare/${comp.slug}`,
         lastModified: new Date(),
         changeFrequency: "weekly" as const,
         priority: 0.8,
     }));
 
-    const alternativePages = ALTERNATIVES.map((alt) => ({
+    const alternativePages = INDEXABLE_ALTERNATIVES.map((alt) => ({
         url: `${SITE_URL}/alternatives/${alt.slug}`,
         lastModified: new Date(),
         changeFrequency: "weekly" as const,
@@ -41,12 +41,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
         priority: 0.8,
     }));
 
-    const guideIndexPages: MetadataRoute.Sitemap = GUIDES_INDEXABLE
-        ? [
-              { url: `${SITE_URL}/compare`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
-              { url: `${SITE_URL}/alternatives`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
-          ]
-        : [];
+    const guideIndexPages: MetadataRoute.Sitemap = [
+        ...(HAS_INDEXABLE_COMPARISONS
+            ? [{ url: `${SITE_URL}/compare`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.8 }]
+            : []),
+        ...(HAS_INDEXABLE_ALTERNATIVES
+            ? [{ url: `${SITE_URL}/alternatives`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.8 }]
+            : []),
+    ];
 
     return [
         { url: SITE_URL, lastModified: new Date(), changeFrequency: "daily", priority: 1.0 },
@@ -60,8 +62,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
         { url: `${SITE_URL}/contact`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
         ...categoryPages,
         ...toolPages,
-        ...(GUIDES_INDEXABLE ? comparisonPages : []),
-        ...(GUIDES_INDEXABLE ? alternativePages : []),
+        ...comparisonPages,
+        ...alternativePages,
         ...blogPages,
     ];
 }

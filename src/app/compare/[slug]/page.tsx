@@ -17,7 +17,7 @@ import { COMPARISONS, getComparisonBySlug, type ComparisonProduct } from "@/data
 import { getAlternativesBySlugs } from "@/data/alternatives";
 import { getToolBySlug, getCategoryById } from "@/data/tools";
 import { getAffiliateById, isAffiliateConfigured } from "@/data/affiliates";
-import { canonicalUrl, buildBreadcrumbJsonLd, buildFaqJsonLd, GUIDES_INDEXABLE } from "@/lib/seo";
+import { canonicalUrl, buildBreadcrumbJsonLd, buildFaqJsonLd } from "@/lib/seo";
 import { AffiliateLink } from "@/components/affiliate/AffiliateLink";
 import { AffiliateCTA } from "@/components/affiliate/AffiliateCTA";
 
@@ -46,8 +46,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         description: comp.seo.description,
         keywords: comp.seo.keywords,
         robots: {
-            index: GUIDES_INDEXABLE,
-            follow: GUIDES_INDEXABLE,
+            index: comp.indexable,
+            follow: comp.indexable,
         },
         alternates: {
             canonical: pageUrl,

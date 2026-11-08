@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { ExternalLink, Check, Sparkles } from "lucide-react";
-import { getConfiguredAffiliatesByIds, type AffiliatePartner } from "@/data/affiliates";
+import { getConfiguredAffiliatesByIds, type AffiliateId, type AffiliatePartner } from "@/data/affiliates";
 import { AffiliateLink } from "./AffiliateLink";
 
 type AffiliateCTAProps = {
-    affiliateIds?: string[];
+    affiliateIds?: AffiliateId[];
     toolSlug?: string;
     placement?: string;
     title?: string;
