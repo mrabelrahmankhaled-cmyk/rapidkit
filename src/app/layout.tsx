@@ -58,6 +58,9 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  other: {
+    "impact-site-verification": "183cc3c1-0fb3-4edb-938a-7a6671fc93ea",
+  },
   ...(gscVerification
     ? {
         verification: {
@@ -74,6 +77,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Impact.com site verification (requires explicit 'value' attribute rather than 'content') */}
+        <meta {...({ name: "impact-site-verification", value: "183cc3c1-0fb3-4edb-938a-7a6671fc93ea" } as Record<string, string>)} />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {gaMeasurementId && (
           <>

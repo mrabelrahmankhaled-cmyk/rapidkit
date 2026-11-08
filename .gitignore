@@ -45,3 +45,9 @@ next-env.d.ts
 /REVIEW.md
 REVIEW.md
 
+# local scratch and verification scripts
+/scratch/
+check-*.js
+curl-*.js
+verify*.js
+
