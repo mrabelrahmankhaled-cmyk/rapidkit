@@ -59,7 +59,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   other: {
-    "impact-site-verification": "183cc3c1-0fb3-4edb-938a-7a6671fc93ea",
+    "impact-site-verification": "9b7bf579-649e-4cdf-b2aa-c710bb9dcc6c",
   },
   ...(gscVerification
     ? {
@@ -79,7 +79,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         {/* Impact.com site verification (requires explicit 'value' attribute rather than 'content') */}
-        <meta {...({ name: "impact-site-verification", value: "183cc3c1-0fb3-4edb-938a-7a6671fc93ea" } as Record<string, string>)} />
+        <meta {...({ name: "impact-site-verification", value: "9b7bf579-649e-4cdf-b2aa-c710bb9dcc6c" } as Record<string, string>)} />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {gaMeasurementId && (
