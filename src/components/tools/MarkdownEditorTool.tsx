@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import {
     Eye,
     Code,
@@ -102,6 +103,27 @@ export function MarkdownEditorTool() {
     const [copied, setCopied] = useState<"md" | "html" | null>(null);
     const [previewTheme, setPreviewTheme] = useState<"dark" | "light">("dark");
     const [isFullscreen, setIsFullscreen] = useState(false);
+    const mounted = useSyncExternalStore(
+        () => () => {},
+        () => true,
+        () => false
+    );
+
+    useEffect(() => {
+        if (!isFullscreen) return;
+        const origOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                setIsFullscreen(false);
+            }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => {
+            document.body.style.overflow = origOverflow;
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [isFullscreen]);
 
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -221,14 +243,15 @@ export function MarkdownEditorTool() {
     const lines = markdown ? markdown.split("\n").length : 0;
     const readingTime = Math.max(1, Math.ceil(words / 200));
 
-    return (
+    const editorContent = (
         <div
             className={cn(
                 "flex flex-col transition-all duration-300",
                 isFullscreen
-                    ? "fixed inset-0 z-50 bg-[rgb(10,10,15)] p-4 sm:p-6 h-screen w-screen overflow-hidden"
+                    ? "fixed inset-0 z-[99999] bg-[rgb(10,10,15)] p-4 sm:p-6 h-screen w-screen overflow-hidden"
                     : "h-[calc(100vh-220px)] min-h-[680px]"
             )}
+            style={isFullscreen ? { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, width: "100vw", height: "100vh", zIndex: 99999 } : undefined}
         >
             {/* ─── Top Main Navigation Bar ──────────────────────────── */}
             <div className="flex flex-wrap items-center justify-between gap-3 p-3 sm:p-4 rounded-2xl bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] shadow-xl mb-3">
@@ -823,4 +846,6 @@ export function MarkdownEditorTool() {
             ` }} />
         </div>
     );
+
+    return mounted && isFullscreen ? createPortal(editorContent, document.body) : editorContent;
 }

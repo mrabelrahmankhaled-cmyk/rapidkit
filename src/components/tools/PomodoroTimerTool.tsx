@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import {
     Play,
     Pause,
@@ -126,6 +127,11 @@ export function PomodoroTimerTool() {
     });
 
     const [completedCycles, setCompletedCycles] = useState<number>(0);
+    const mounted = useSyncExternalStore(
+        () => () => {},
+        () => true,
+        () => false
+    );
 
     const timerRef = useRef<NodeJS.Timeout | null>(null);
     const audioCtxRef = useRef<AudioContext | null>(null);
@@ -480,6 +486,60 @@ export function PomodoroTimerTool() {
         };
     }, [isActive, timeLeft, mode]);
 
+    // ─── Zen Mode Fullscreen Handlers & Portal Management ─────────
+    const enterZen = useCallback(() => {
+        setIsFullscreen(true);
+        try {
+            if (typeof document !== "undefined" && !document.fullscreenElement && document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            }
+        } catch {
+            // safe fallback
+        }
+    }, []);
+
+    const exitZen = useCallback(() => {
+        setIsFullscreen(false);
+        try {
+            if (typeof document !== "undefined" && document.fullscreenElement && document.exitFullscreen) {
+                document.exitFullscreen().catch(() => {});
+            }
+        } catch {
+            // safe fallback
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!isFullscreen) return;
+        const handleFullscreenChange = () => {
+            if (!document.fullscreenElement && isFullscreen) {
+                setIsFullscreen(false);
+            }
+        };
+        document.addEventListener("fullscreenchange", handleFullscreenChange);
+        return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    }, [isFullscreen]);
+
+    useEffect(() => {
+        if (!isFullscreen) return;
+        const handleEsc = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                exitZen();
+            }
+        };
+        window.addEventListener("keydown", handleEsc);
+        return () => window.removeEventListener("keydown", handleEsc);
+    }, [isFullscreen, exitZen]);
+
+    useEffect(() => {
+        if (!isFullscreen) return;
+        const origOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+        return () => {
+            document.body.style.overflow = origOverflow;
+        };
+    }, [isFullscreen]);
+
     // ─── Keyboard Shortcuts ──────────────────────────────────────────
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -493,13 +553,17 @@ export function PomodoroTimerTool() {
             } else if (e.key === "r" || e.key === "R") {
                 switchMode(mode, false);
             } else if (e.key === "f" || e.key === "F") {
-                setIsFullscreen((prev) => !prev);
+                if (isFullscreen) {
+                    exitZen();
+                } else {
+                    enterZen();
+                }
             }
         };
 
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [mode, switchMode]);
+    }, [mode, switchMode, isFullscreen, enterZen, exitZen]);
 
     // ─── Task Handlers ───────────────────────────────────────────────
     const handleAddTask = (e: React.FormEvent) => {
@@ -546,33 +610,8 @@ export function PomodoroTimerTool() {
     const activeTask = tasks.find((t) => t.id === activeTaskId);
 
     return (
-        <div
-            className={cn(
-                "transition-all duration-300",
-                isFullscreen
-                    ? "fixed inset-0 z-50 bg-[rgb(10,10,15)] p-6 flex flex-col justify-center items-center h-screen w-screen overflow-y-auto"
-                    : "space-y-8"
-            )}
-        >
-            {/* ─── Top Zen / Fullscreen Exit Button ──────────────────── */}
-            {isFullscreen && (
-                <div className="absolute top-6 right-6 flex items-center gap-3 z-20">
-                    <button
-                        onClick={() => setIsFullscreen(false)}
-                        className="px-4 py-2 rounded-xl bg-[rgb(20,20,30)] border border-[rgb(45,45,65)] text-xs font-semibold text-white hover:bg-[rgb(30,30,45)] transition-all flex items-center gap-2 shadow-xl"
-                    >
-                        <Minimize2 className="w-4 h-4" />
-                        <span>Exit Zen Mode</span>
-                    </button>
-                </div>
-            )}
-
-            <div
-                className={cn(
-                    "grid gap-8 items-start w-full",
-                    isFullscreen ? "max-w-3xl" : "grid-cols-1 lg:grid-cols-[1fr_380px]"
-                )}
-            >
+        <div className="space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 items-start w-full">
                 {/* ─── Main Focus Chamber ───────────────────────────── */}
                 <div className="space-y-6">
                     <div className="p-8 sm:p-12 rounded-[3.5rem] bg-[rgb(12,12,18)] border border-[rgb(38,38,58)] shadow-2xl relative overflow-hidden flex flex-col items-center justify-center min-h-[520px]">
@@ -730,16 +769,15 @@ export function PomodoroTimerTool() {
                                     <span>Settings</span>
                                 </button>
 
-                                {!isFullscreen && (
-                                    <button
-                                        onClick={() => setIsFullscreen(true)}
-                                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[rgb(18,18,28)] border border-[rgb(38,38,58)] hover:text-white transition-all"
-                                        title="Zen Mode (F)"
-                                    >
-                                        <Maximize2 className="w-4 h-4 text-cyan-400" />
-                                        <span>Zen</span>
-                                    </button>
-                                )}
+                                <button
+                                    type="button"
+                                    onClick={enterZen}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[rgb(18,18,28)] border border-[rgb(38,38,58)] hover:text-white transition-all"
+                                    title="Zen Mode (F)"
+                                >
+                                    <Maximize2 className="w-4 h-4 text-cyan-400" />
+                                    <span>Zen</span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -863,8 +901,7 @@ export function PomodoroTimerTool() {
                 </div>
 
                 {/* ─── Sidebar ───────────────────────────────────────── */}
-                {!isFullscreen && (
-                    <div className="space-y-6">
+                <div className="space-y-6">
                         {/* ─── Daily Focus Stats Card ─── */}
                         <div className="p-6 rounded-3xl bg-[rgb(12,12,18)] border border-[rgb(38,38,58)] shadow-xl space-y-4">
                             <div className="flex items-center justify-between">
@@ -1026,12 +1063,14 @@ export function PomodoroTimerTool() {
                             </div>
                         </div>
                     </div>
-                )}
-            </div>
+                </div>
 
-            {/* ─── Settings Modal ─────────────────────────────────────── */}
-            {showSettings && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
+            {/* ─── Settings Modal (Portal to body to prevent stacking context traps) ─── */}
+            {mounted && showSettings && createPortal(
+                <div
+                    className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+                    style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, zIndex: 99999 }}
+                >
                     <div className="w-full max-w-md p-6 sm:p-7 rounded-3xl bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] shadow-2xl space-y-6">
                         <div className="flex items-center justify-between pb-3 border-b border-[rgb(35,35,50)]">
                             <h3 className="text-base font-bold text-white flex items-center gap-2">
@@ -1142,7 +1181,237 @@ export function PomodoroTimerTool() {
                             Save &amp; Close
                         </button>
                     </div>
-                </div>
+                </div>,
+                document.body
+            )}
+
+            {/* ─── Zen Mode Distraction-Free Portal (100% immune to parent stacking context) ─── */}
+            {mounted && isFullscreen && createPortal(
+                <div
+                    className="fixed inset-0 z-[99999] bg-[rgb(8,8,13)] text-white flex flex-col justify-between p-6 sm:p-10 select-none overflow-y-auto"
+                    style={{
+                        position: "fixed",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        width: "100vw",
+                        height: "100vh",
+                        zIndex: 99999,
+                    }}
+                >
+                    {/* Ambient subtle glow matching active mode */}
+                    <div
+                        className={cn(
+                            "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] sm:w-[650px] h-[550px] sm:h-[650px] rounded-full blur-[140px] pointer-events-none opacity-20 transition-all duration-1000",
+                            mode === "work" && "bg-rose-500",
+                            mode === "short" && "bg-emerald-500",
+                            mode === "long" && "bg-cyan-500"
+                        )}
+                    />
+
+                    {/* ─── Zen Top Navigation Bar ─── */}
+                    <div className="relative z-10 w-full max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-4">
+                        {/* Mode Navigation Pills */}
+                        <div className="flex p-1.5 bg-[rgb(16,16,24)] rounded-2xl border border-[rgb(38,38,58)] shadow-lg">
+                            {(["work", "short", "long"] as Mode[]).map((m) => (
+                                <button
+                                    key={m}
+                                    type="button"
+                                    onClick={() => switchMode(m)}
+                                    className={cn(
+                                        "px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all",
+                                        mode === m
+                                            ? cn(MODE_CONFIG[m].bg, "text-white shadow-lg", MODE_CONFIG[m].glow)
+                                            : "text-[rgb(148,148,186)] hover:text-white"
+                                    )}
+                                >
+                                    {m === "work" ? "Focus" : m === "short" ? "Quick Rest" : "Long Rest"}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Audio & Exit Controls */}
+                        <div className="flex items-center gap-2">
+                            {/* Ambient Sound Chips */}
+                            <div className="hidden md:flex items-center gap-1.5 p-1 bg-[rgb(16,16,24)] rounded-xl border border-[rgb(38,38,58)] text-xs">
+                                {[
+                                    { id: "none", label: "Mute", icon: VolumeX },
+                                    { id: "rain", label: "Rain", icon: CloudRain },
+                                    { id: "brown", label: "Deep Focus", icon: Waves },
+                                    { id: "waves", label: "Alpha Waves", icon: Brain },
+                                ].map((snd) => {
+                                    const IconComp = snd.icon;
+                                    const isSelected = ambientSound === snd.id;
+                                    return (
+                                        <button
+                                            key={snd.id}
+                                            type="button"
+                                            onClick={() => {
+                                                const nextSnd = snd.id as AmbientSound;
+                                                setAmbientSound(nextSnd);
+                                                if (nextSnd !== "none" && !isActive) {
+                                                    startAmbientSound(nextSnd, ambientVolume);
+                                                }
+                                            }}
+                                            className={cn(
+                                                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all",
+                                                isSelected
+                                                    ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40"
+                                                    : "text-[rgb(140,140,170)] hover:text-white"
+                                            )}
+                                        >
+                                            <IconComp className="w-3.5 h-3.5" />
+                                            <span>{snd.label}</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Chime Bell Toggle */}
+                            <button
+                                type="button"
+                                onClick={() => setVolume(!volume)}
+                                className="p-2.5 rounded-xl bg-[rgb(16,16,24)] border border-[rgb(38,38,58)] text-[rgb(148,148,186)] hover:text-white transition-all"
+                                title={volume ? "Mute Bell" : "Unmute Bell"}
+                            >
+                                {volume ? <Volume2 className="w-4 h-4 text-emerald-400" /> : <VolumeX className="w-4 h-4 text-rose-400" />}
+                            </button>
+
+                            {/* Exit Button */}
+                            <button
+                                type="button"
+                                onClick={exitZen}
+                                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[rgb(22,22,34)] border border-[rgb(45,45,68)] text-xs font-semibold text-white hover:bg-[rgb(30,30,48)] hover:border-violet-500/50 transition-all shadow-xl"
+                            >
+                                <Minimize2 className="w-3.5 h-3.5 text-cyan-400" />
+                                <span>Exit Zen</span>
+                                <span className="hidden sm:inline text-[10px] text-[rgb(120,120,150)] bg-[rgb(12,12,18)] px-1.5 py-0.5 rounded border border-[rgb(35,35,50)]">Esc</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* ─── Zen Main Focus Chamber ─── */}
+                    <div className="relative z-10 flex flex-col items-center justify-center my-auto py-8">
+                        {/* Current Task Banner */}
+                        {activeTask && (
+                            <div className="mb-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[rgb(18,18,28)] border border-[rgb(45,45,65)] text-sm shadow-xl">
+                                <span className="text-rose-400 font-semibold">🎯 Focus Target:</span>
+                                <span className="text-white font-medium">{activeTask.text}</span>
+                                <span className="text-xs text-rose-300 font-mono ml-1">
+                                    (🍅 {activeTask.pomodorosCompleted}/{activeTask.pomodorosRequired})
+                                </span>
+                            </div>
+                        )}
+
+                        {/* Circular Timer (Large, Crisp) */}
+                        <div className="relative w-80 sm:w-96 h-80 sm:h-96 flex items-center justify-center">
+                            <svg className="w-full h-full -rotate-90">
+                                <circle
+                                    cx="50%"
+                                    cy="50%"
+                                    r="130"
+                                    className="stroke-[rgb(20,20,32)] fill-none stroke-[8px]"
+                                />
+                                <circle
+                                    cx="50%"
+                                    cy="50%"
+                                    r="130"
+                                    className={cn(
+                                        "fill-none stroke-[9px] transition-all duration-1000",
+                                        MODE_CONFIG[mode].ring
+                                    )}
+                                    strokeDasharray={816.81}
+                                    strokeDashoffset={816.81 - (816.81 * progress) / 100}
+                                    strokeLinecap="round"
+                                />
+                            </svg>
+
+                            <div className="absolute inset-0 flex flex-col items-center justify-center select-none">
+                                <span className="text-7xl sm:text-8xl font-mono font-black text-white tracking-tight drop-shadow-2xl">
+                                    {formatTime(timeLeft)}
+                                </span>
+                                <div
+                                    className={cn(
+                                        "mt-3 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-widest border transition-all flex items-center gap-2",
+                                        MODE_CONFIG[mode].badge
+                                    )}
+                                >
+                                    <span
+                                        className={cn(
+                                            "w-2 h-2 rounded-full",
+                                            isActive ? "animate-ping bg-current" : "bg-current"
+                                        )}
+                                    />
+                                    <span>{isActive ? "Flow State" : "Paused"}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Play / Reset / Skip Controls */}
+                        <div className="flex items-center gap-6 mt-8">
+                            <button
+                                type="button"
+                                onClick={() => switchMode(mode)}
+                                className="p-4 rounded-2xl bg-[rgb(18,18,28)] border border-[rgb(38,38,58)] text-[rgb(148,148,186)] hover:text-white hover:border-violet-500/50 transition-all shadow-xl"
+                                title="Reset Current Interval (R)"
+                            >
+                                <RotateCcw className="w-6 h-6" />
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => setIsActive(!isActive)}
+                                className={cn(
+                                    "w-24 sm:w-28 h-24 sm:h-28 rounded-3xl flex items-center justify-center transition-all shadow-2xl hover:scale-105 active:scale-95",
+                                    isActive
+                                        ? "bg-white text-black shadow-white/30"
+                                        : cn(MODE_CONFIG[mode].bg, "text-white", MODE_CONFIG[mode].glow)
+                                )}
+                                title={isActive ? "Pause (Space)" : "Start (Space)"}
+                            >
+                                {isActive ? (
+                                    <Pause className="w-10 h-10 fill-current" />
+                                ) : (
+                                    <Play className="w-10 h-10 fill-current ml-1" />
+                                )}
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    if (mode === "work") switchMode("short");
+                                    else switchMode("work");
+                                }}
+                                className="p-4 rounded-2xl bg-[rgb(18,18,28)] border border-[rgb(38,38,58)] text-[rgb(148,148,186)] hover:text-white hover:border-violet-500/50 transition-all shadow-xl"
+                                title="Skip to Next Session"
+                            >
+                                <FastForward className="w-6 h-6" />
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* ─── Zen Bottom Bar ─── */}
+                    <div className="relative z-10 w-full max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-4 text-xs text-[rgb(120,120,160)]">
+                        <div className="flex items-center gap-4">
+                            <span><kbd className="px-1.5 py-0.5 rounded bg-[rgb(20,20,30)] border border-[rgb(40,40,60)] font-mono text-white text-[11px]">Space</kbd> Play / Pause</span>
+                            <span><kbd className="px-1.5 py-0.5 rounded bg-[rgb(20,20,30)] border border-[rgb(40,40,60)] font-mono text-white text-[11px]">R</kbd> Reset</span>
+                            <span><kbd className="px-1.5 py-0.5 rounded bg-[rgb(20,20,30)] border border-[rgb(40,40,60)] font-mono text-white text-[11px]">Esc</kbd> Exit</span>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[rgb(18,18,28)] border border-[rgb(38,38,58)]">
+                                <span>🍅</span>
+                                <strong className="text-white">{stats.todayPomodoros}</strong> today
+                            </span>
+                            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[rgb(18,18,28)] border border-[rgb(38,38,58)] text-orange-300">
+                                <span>🔥</span>
+                                <strong>{stats.streakDays}</strong> day streak
+                            </span>
+                        </div>
+                    </div>
+                </div>,
+                document.body
             )}
         </div>
     );
