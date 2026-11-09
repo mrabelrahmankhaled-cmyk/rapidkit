@@ -108,6 +108,15 @@ export function Header() {
 
                 {/* ─── Search + CTA ─────────────────────────────── */}
                 <div className="flex items-center gap-3">
+                    {/* Hire Me CTA */}
+                    <Link
+                        href="/hire-me"
+                        className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-violet-500/40 bg-gradient-to-r from-violet-500/10 to-cyan-500/10 text-xs font-semibold text-white hover:border-violet-500/80 hover:from-violet-500/20 hover:to-cyan-500/20 shadow-sm shadow-violet-500/20 transition-all shrink-0"
+                    >
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        <span>Hire Me</span>
+                    </Link>
+
                     {/* Search */}
                     <div ref={searchRef} className="relative hidden md:block">
                         <button
@@ -207,6 +216,17 @@ export function Header() {
                         <Link href="/alternatives" onClick={() => setMobileOpen(false)} className="block p-2 rounded-lg hover:bg-[rgba(255,255,255,0.05)] text-sm text-[rgb(148,148,186)]">Alternatives</Link>
                     )}
                     <Link href="/blog" onClick={() => setMobileOpen(false)} className="block p-2 rounded-lg hover:bg-[rgba(255,255,255,0.05)] text-sm text-[rgb(148,148,186)]">Blog</Link>
+                    <Link
+                        href="/hire-me"
+                        onClick={() => setMobileOpen(false)}
+                        className="flex items-center justify-between p-2.5 rounded-lg bg-gradient-to-r from-violet-500/15 to-cyan-500/15 border border-violet-500/30 text-sm font-semibold text-white hover:border-violet-500/60 transition-all mt-2"
+                    >
+                        <span className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                            Hire Abdelkhalek
+                        </span>
+                        <span className="text-xs text-violet-300">Available →</span>
+                    </Link>
                 </div>
             )}
         </header>

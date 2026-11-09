@@ -144,6 +144,7 @@ export function Footer() {
                         </h3>
                         <ul className="space-y-2.5">
                             {[
+                                { href: "/hire-me", label: "Hire Abdelkhalek" },
                                 { href: "/about", label: "About" },
                                 { href: "/blog", label: "Blog" },
                                 { href: "/contact", label: "Contact" },
