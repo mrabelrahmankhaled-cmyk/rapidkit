@@ -203,6 +203,11 @@ const JwtDecoderTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const WebCodePlaygroundTool = dynamic(
+    () => import("@/components/tools/WebCodePlaygroundTool").then((m) => ({ default: m.WebCodePlaygroundTool })),
+    { loading: Spinner, ssr: false }
+);
+
 // ─── Map slug → Component ────────────────────────────────────────
 const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "youtube-thumbnail-downloader": YoutubeThumbnailTool,
@@ -243,6 +248,7 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "utm-builder": UtmBuilderTool,
     "robots-txt-generator": RobotsTxtGeneratorTool,
     "jwt-decoder": JwtDecoderTool,
+    "web-code-playground": WebCodePlaygroundTool,
 };
 
 type Props = {

@@ -1724,6 +1724,53 @@ export const TOOLS: Tool[] = [
         relatedToolSlugs: ["base64-converter", "uuid-generator", "unix-timestamp-converter"],
         affiliateIds: ["hostinger"],
     },
+    // ─── Developer: Web Code Playground ───────────────────────────
+    {
+        id: "web-code-playground",
+        name: "Web Code Playground (HTML/CSS/JS Compiler)",
+        slug: "web-code-playground",
+        description: "Interactive real-time frontend code playground. Write and compile HTML, CSS, and JavaScript client-side with instant preview.",
+        longDescription:
+            "Write, compile, and preview HTML, CSS, and modern JavaScript in a high-performance, real-time client-side development playground. Featuring dual grid and tabbed layout modes, isolated sandboxed iframe execution, one-click HTML export, and zero server logging.",
+        categoryId: "developer",
+        icon: "Code2",
+        tags: ["html", "css", "javascript", "compiler", "playground", "developer", "frontend", "editor"],
+        isNew: true,
+        isFeatured: true,
+        isPopular: true,
+        seo: {
+            title: "Online Web Code Playground — HTML, CSS & JS Compiler | RapidKit",
+            description: "Run and test HTML, CSS, and JavaScript in real time with an instant sandboxed preview. 100% free, private, client-side frontend code compiler.",
+            keywords: ["html compiler online", "javascript playground", "css playground", "web code editor online", "frontend compiler", "html css js runner"],
+        },
+        howToSteps: [
+            "Write or paste your markup in the HTML editor.",
+            "Add design and animation rules in the CSS editor.",
+            "Write script logic or DOM interactions in the JavaScript editor.",
+            "Watch your web page render instantly in the live sandboxed preview pane.",
+            "Click 'Download .html' to export your runnable code as a single standalone file.",
+        ],
+        faqs: [
+            {
+                question: "What is a frontend code playground?",
+                answer: "A frontend code playground is an interactive development environment that lets you write HTML markup, CSS styling, and JavaScript logic simultaneously, rendering the resulting web application live in an isolated preview frame without needing a local build setup.",
+            },
+            {
+                question: "How does the sandboxed srcDoc ensure security?",
+                answer: "The preview window executes your code inside an isolated HTML iframe configured with strict sandbox attributes ('allow-scripts allow-modals'). This isolates your script execution in a separate security context, preventing malicious code from accessing your parent browser session or cookies.",
+            },
+            {
+                question: "Does my code run completely in the browser?",
+                answer: "Yes, 100%. All compilation, concatenation, and rendering occur entirely in your local browser memory using native Web APIs. No code is transmitted to, stored on, or logged by any remote server.",
+            },
+            {
+                question: "Can I export or save my work?",
+                answer: "Absolutely. Click the 'Download .html' button to export your combined HTML, CSS, and JavaScript into a single, fully functional standalone HTML file that you can host anywhere or open locally in any browser.",
+            },
+        ],
+        relatedToolSlugs: ["markdown-editor", "json-formatter", "code-to-image"],
+        affiliateIds: ["hostinger"],
+    },
 ];
 
 // ─── Helper Functions ────────────────────────────────────────────
