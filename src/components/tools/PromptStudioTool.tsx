@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import {
     Sparkles,
     Copy,
@@ -20,7 +20,18 @@ import {
     CheckCircle2,
     Bot,
     Palette,
-    Cpu
+    Cpu,
+    Star,
+    History,
+    Download,
+    Trash2,
+    Clock,
+    Variable,
+    Bookmark,
+    ChevronDown,
+    ChevronUp,
+    FolderHeart,
+    Lock
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -121,8 +132,8 @@ const PRESETS: PromptPreset[] = [
         category: "Marketer",
         icon: Search,
         role: "Lead Technical SEO & Content Marketing Strategist",
-        task: "Create an exhaustive, high-ranking SEO content brief designed to satisfy search intent and capture top-3 rankings for the target primary keyword.",
-        context: "Target audience: Technical practitioners and engineering managers. Search intent: Informational and comparative. Include secondary LSI keywords, H1/H2/H3 outline, internal linking suggestions, and FAQ schema recommendations.",
+        task: "Create an exhaustive, high-ranking SEO content brief for the target primary keyword: {{primary_keyword}}.",
+        context: "Target audience: {{target_audience}}. Search intent: Informational and comparative. Include secondary LSI keywords, H1/H2/H3 outline, internal linking suggestions, and FAQ schema recommendations.",
         outputFormat: "Structured Markdown brief with suggested word counts per section, keyword integration checklist, and a ready-to-use FAQ schema JSON-LD block.",
         language: "English",
     },
@@ -150,6 +161,18 @@ const LANGUAGES = [
     { code: "Chinese", label: "Chinese (中文)" },
 ];
 
+export interface SavedPrompt {
+    id: string;
+    timestamp: number;
+    title: string;
+    model: TargetModel;
+    role: string;
+    task: string;
+    context: string;
+    outputFormat: string;
+    language: string;
+}
+
 export function PromptStudioTool() {
     // ─── Framework & Target Model State ──────────────────────────────
     const [targetModel, setTargetModel] = useState<TargetModel>("chatgpt");
@@ -160,6 +183,55 @@ export function PromptStudioTool() {
     const [language, setLanguage] = useState(PRESETS[0].language);
     const [activePreset, setActivePreset] = useState<string | null>("react-debugging");
     const [copied, setCopied] = useState(false);
+    const [favoriteSaved, setFavoriteSaved] = useState(false);
+
+    // ─── Phase 3: Retention State (History & Favorites) ──────────────
+    const [history, setHistory] = useState<SavedPrompt[]>([]);
+    const [favorites, setFavorites] = useState<SavedPrompt[]>([]);
+    const [showMyPrompts, setShowMyPrompts] = useState(false);
+    const [promptsTab, setPromptsTab] = useState<"favorites" | "history">("favorites");
+
+    // ─── LocalStorage Persistence ────────────────────────────────────
+    useEffect(() => {
+        queueMicrotask(() => {
+            try {
+                const savedHistory = localStorage.getItem("rapidkit_prompt_history");
+                if (savedHistory) {
+                    const parsed = JSON.parse(savedHistory);
+                    if (Array.isArray(parsed)) {
+                        setHistory(parsed.slice(0, 10));
+                    }
+                }
+                const savedFavs = localStorage.getItem("rapidkit_prompt_favorites");
+                if (savedFavs) {
+                    const parsedFavs = JSON.parse(savedFavs);
+                    if (Array.isArray(parsedFavs)) {
+                        setFavorites(parsedFavs);
+                    }
+                }
+            } catch (e) {
+                console.error("Failed to load prompt storage", e);
+            }
+        });
+    }, []);
+
+    const saveHistoryToStorage = useCallback((items: SavedPrompt[]) => {
+        setHistory(items);
+        try {
+            localStorage.setItem("rapidkit_prompt_history", JSON.stringify(items));
+        } catch {
+            // ignore
+        }
+    }, []);
+
+    const saveFavoritesToStorage = useCallback((items: SavedPrompt[]) => {
+        setFavorites(items);
+        try {
+            localStorage.setItem("rapidkit_prompt_favorites", JSON.stringify(items));
+        } catch {
+            // ignore
+        }
+    }, []);
 
     // ─── Real-Time Quality Checker Logic ─────────────────────────────
     const qualityReport = useMemo(() => {
@@ -242,6 +314,14 @@ export function PromptStudioTool() {
         return sections.join("\n\n");
     }, [targetModel, role, task, context, outputFormat, language]);
 
+    // ─── Bonus: Prompt Variables Detection ───────────────────────────
+    const detectedVariables = useMemo(() => {
+        const fullContent = `${role} ${task} ${context} ${outputFormat}`;
+        const matches = fullContent.match(/\{\{([a-zA-Z0-9_ -]+)\}\}/g);
+        if (!matches) return [];
+        return Array.from(new Set(matches));
+    }, [role, task, context, outputFormat]);
+
     // ─── Metrics ─────────────────────────────────────────────────────
     const charCount = constructedPrompt.length;
     const wordCount = useMemo(() => {
@@ -268,12 +348,95 @@ export function PromptStudioTool() {
         setActivePreset(null);
     };
 
+    // Auto-save to History (capped at 10 items) and copy to clipboard
     const handleCopy = useCallback(() => {
         if (!constructedPrompt) return;
-        navigator.clipboard.writeText(constructedPrompt);
+        if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+            navigator.clipboard.writeText(constructedPrompt).catch(() => {});
+        }
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
-    }, [constructedPrompt]);
+
+        // Auto-save current prompt to localStorage history (max 10)
+        const entry: SavedPrompt = {
+            id: Date.now().toString(),
+            timestamp: Date.now(),
+            title: role.trim() || task.trim().slice(0, 36) || `${targetModel.toUpperCase()} Prompt`,
+            model: targetModel,
+            role,
+            task,
+            context,
+            outputFormat,
+            language,
+        };
+
+        const updatedHistory = [entry, ...history.filter((h) => h.role !== role || h.task !== task)].slice(0, 10);
+        saveHistoryToStorage(updatedHistory);
+    }, [constructedPrompt, role, task, context, outputFormat, language, targetModel, history, saveHistoryToStorage]);
+
+    // Save to Favorites (indefinite storage)
+    const handleSaveToFavorites = () => {
+        if (!constructedPrompt) return;
+
+        const newFav: SavedPrompt = {
+            id: Date.now().toString(),
+            timestamp: Date.now(),
+            title: role.trim() || task.trim().slice(0, 36) || `${targetModel.toUpperCase()} Prompt`,
+            model: targetModel,
+            role,
+            task,
+            context,
+            outputFormat,
+            language,
+        };
+
+        const updatedFavs = [newFav, ...favorites.filter((f) => f.role !== role || f.task !== task)];
+        saveFavoritesToStorage(updatedFavs);
+        setFavoriteSaved(true);
+        setTimeout(() => setFavoriteSaved(false), 2000);
+    };
+
+    // Restore a saved prompt into the builder
+    const handleRestorePrompt = (item: SavedPrompt) => {
+        setRole(item.role);
+        setTask(item.task);
+        setContext(item.context);
+        setOutputFormat(item.outputFormat);
+        setLanguage(item.language || "English");
+        setTargetModel(item.model || "chatgpt");
+        setActivePreset(null);
+    };
+
+    // Delete item from history
+    const handleDeleteHistory = (id: string) => {
+        const updated = history.filter((h) => h.id !== id);
+        saveHistoryToStorage(updated);
+    };
+
+    // Clear entire history
+    const handleClearHistory = () => {
+        saveHistoryToStorage([]);
+    };
+
+    // Delete item from favorites
+    const handleDeleteFavorite = (id: string) => {
+        const updated = favorites.filter((f) => f.id !== id);
+        saveFavoritesToStorage(updated);
+    };
+
+    // Export as .txt file
+    const handleDownloadTxt = useCallback(() => {
+        if (!constructedPrompt) return;
+        const blob = new Blob([constructedPrompt], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `rapidkit-prompt-${targetModel}-${Date.now()}.txt`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }, [constructedPrompt, targetModel]);
 
     const activeModelConfig = MODEL_OPTIONS.find((m) => m.id === targetModel) || MODEL_OPTIONS[0];
 
@@ -362,17 +525,199 @@ export function PromptStudioTool() {
                 </div>
             </div>
 
-            {/* ─── Quick Presets Bar (V1) ──────────────────────────── */}
+            {/* ─── Quick Presets Bar & My Prompts Toggle ───────────── */}
             <div className="space-y-3">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                     <span className="text-xs font-bold uppercase tracking-wider text-[rgb(150,150,190)] flex items-center gap-1.5">
                         <Wand2 className="w-3.5 h-3.5 text-violet-400" />
                         <span>Niche Quick Presets</span>
                     </span>
-                    <span className="text-[11px] text-[rgb(110,110,150)]">
-                        Click to auto-populate framework
-                    </span>
+
+                    {/* My Prompts Toggle Button */}
+                    <button
+                        type="button"
+                        onClick={() => setShowMyPrompts(!showMyPrompts)}
+                        className={cn(
+                            "flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all shadow-sm",
+                            showMyPrompts
+                                ? "bg-violet-600/20 border-violet-500/50 text-violet-300"
+                                : "bg-[rgb(16,16,24)] border-[rgb(38,38,58)] text-[rgb(150,150,190)] hover:text-white hover:border-violet-500/40"
+                        )}
+                    >
+                        <Bookmark className="w-3.5 h-3.5 text-amber-400" />
+                        <span>My Prompts</span>
+                        <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-[rgb(24,24,36)] text-white border border-[rgb(45,45,65)]">
+                            {favorites.length + history.length}
+                        </span>
+                        {showMyPrompts ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                    </button>
                 </div>
+
+                {/* ─── Collapsible "My Prompts" Panel (Favorites & History) ── */}
+                {showMyPrompts && (
+                    <div className="p-5 rounded-3xl bg-[rgb(13,13,20)] border border-[rgb(45,45,70)] shadow-2xl space-y-4 animate-in fade-in duration-200">
+                        <div className="flex items-center justify-between pb-3 border-b border-[rgb(30,30,46)]">
+                            {/* Tabs */}
+                            <div className="flex p-1 bg-[rgb(18,18,28)] rounded-xl border border-[rgb(38,38,58)] text-xs">
+                                <button
+                                    type="button"
+                                    onClick={() => setPromptsTab("favorites")}
+                                    className={cn(
+                                        "flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all",
+                                        promptsTab === "favorites"
+                                            ? "bg-amber-500/20 border border-amber-500/40 text-amber-300 shadow-sm"
+                                            : "text-[rgb(140,140,170)] hover:text-white"
+                                    )}
+                                >
+                                    <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                                    <span>Favorites ({favorites.length})</span>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setPromptsTab("history")}
+                                    className={cn(
+                                        "flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all",
+                                        promptsTab === "history"
+                                            ? "bg-violet-600/20 border border-violet-500/40 text-violet-300 shadow-sm"
+                                            : "text-[rgb(140,140,170)] hover:text-white"
+                                    )}
+                                >
+                                    <History className="w-3.5 h-3.5 text-violet-400" />
+                                    <span>History ({history.length}/10)</span>
+                                </button>
+                            </div>
+
+                            {/* Clear History Button if on history tab */}
+                            {promptsTab === "history" && history.length > 0 && (
+                                <button
+                                    type="button"
+                                    onClick={handleClearHistory}
+                                    className="text-[11px] text-[rgb(140,140,170)] hover:text-rose-400 flex items-center gap-1 transition-colors"
+                                >
+                                    <Trash2 className="w-3 h-3" />
+                                    <span>Clear History</span>
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Favorites Content */}
+                        {promptsTab === "favorites" && (
+                            <div className="space-y-2 max-h-64 overflow-y-auto custom-scrollbar pr-1">
+                                {favorites.length === 0 ? (
+                                    <div className="py-8 text-center text-xs text-[rgb(110,110,145)] space-y-1">
+                                        <FolderHeart className="w-6 h-6 mx-auto text-[rgb(80,80,110)] mb-1" />
+                                        <p>No favorites saved yet.</p>
+                                        <p className="text-[10px] text-[rgb(90,90,120)]">Click &quot;⭐ Favorite&quot; to save your go-to prompts locally in your browser (retained until browser cache is cleared).</p>
+                                    </div>
+                                ) : (
+                                    favorites.map((fav) => (
+                                        <div
+                                            key={fav.id}
+                                            className="flex items-center justify-between p-3 rounded-2xl bg-[rgb(18,18,28)] border border-[rgb(35,35,50)] hover:border-violet-500/40 transition-all group"
+                                        >
+                                            <div className="truncate mr-3 space-y-0.5">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-xs font-bold text-white truncate">{fav.title}</span>
+                                                    <span className="text-[9px] uppercase font-bold px-1.5 py-0.2 rounded bg-violet-500/20 text-violet-300 border border-violet-500/30">
+                                                        {fav.model}
+                                                    </span>
+                                                </div>
+                                                <p className="text-[11px] text-[rgb(120,120,150)] truncate max-w-md">
+                                                    {fav.task || fav.context}
+                                                </p>
+                                            </div>
+
+                                            <div className="flex items-center gap-2 shrink-0">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleRestorePrompt(fav)}
+                                                    className="px-2.5 py-1 rounded-lg bg-violet-600/20 hover:bg-violet-600 text-violet-300 hover:text-white text-xs font-semibold transition-all border border-violet-500/30"
+                                                    title="Load prompt into builder"
+                                                >
+                                                    Restore
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleDeleteFavorite(fav.id)}
+                                                    className="p-1.5 text-[rgb(110,110,140)] hover:text-rose-400 transition-colors"
+                                                    title="Delete favorite"
+                                                >
+                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        )}
+
+                        {/* History Content */}
+                        {promptsTab === "history" && (
+                            <div className="space-y-2 max-h-64 overflow-y-auto custom-scrollbar pr-1">
+                                {history.length === 0 ? (
+                                    <div className="py-8 text-center text-xs text-[rgb(110,110,145)] space-y-1">
+                                        <Clock className="w-6 h-6 mx-auto text-[rgb(80,80,110)] mb-1" />
+                                        <p>No copy history yet.</p>
+                                        <p className="text-[10px] text-[rgb(90,90,120)]">Clicking &quot;Copy Prompt&quot; will automatically save your last 10 prompts here.</p>
+                                    </div>
+                                ) : (
+                                    history.map((hist) => (
+                                        <div
+                                            key={hist.id}
+                                            className="flex items-center justify-between p-3 rounded-2xl bg-[rgb(18,18,28)] border border-[rgb(35,35,50)] hover:border-violet-500/40 transition-all group"
+                                        >
+                                            <div className="truncate mr-3 space-y-0.5">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-xs font-bold text-white truncate">{hist.title}</span>
+                                                    <span className="text-[9px] uppercase font-bold px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                                                        {hist.model}
+                                                    </span>
+                                                    <span className="text-[10px] text-[rgb(100,100,130)] font-mono">
+                                                        {new Date(hist.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                    </span>
+                                                </div>
+                                                <p className="text-[11px] text-[rgb(120,120,150)] truncate max-w-md">
+                                                    {hist.task || hist.context}
+                                                </p>
+                                            </div>
+
+                                            <div className="flex items-center gap-2 shrink-0">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleRestorePrompt(hist)}
+                                                    className="px-2.5 py-1 rounded-lg bg-cyan-600/20 hover:bg-cyan-600 text-cyan-300 hover:text-white text-xs font-semibold transition-all border border-cyan-500/30"
+                                                    title="Load prompt into builder"
+                                                >
+                                                    Restore
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleDeleteHistory(hist.id)}
+                                                    className="p-1.5 text-[rgb(110,110,140)] hover:text-rose-400 transition-colors"
+                                                    title="Delete history entry"
+                                                >
+                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        )}
+
+                        {/* Privacy & Storage Transparency Note */}
+                        <div className="pt-2 border-t border-[rgb(25,25,38)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 text-[10px] text-[rgb(110,110,140)]">
+                            <span className="flex items-center gap-1.5">
+                                <Lock className="w-3 h-3 text-emerald-400/80 shrink-0" />
+                                <span>100% Client-Side Privacy: Prompts are never sent to external servers or logged in analytics.</span>
+                            </span>
+                            <span className="text-[rgb(90,90,120)] font-mono">
+                                Retained in browser until data is cleared
+                            </span>
+                        </div>
+                    </div>
+                )}
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
                     {PRESETS.map((preset) => {
@@ -432,15 +777,35 @@ export function PromptStudioTool() {
                                 </span>
                             )}
                         </div>
-                        <button
-                            type="button"
-                            onClick={handleClearAll}
-                            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium text-[rgb(140,140,175)] hover:text-rose-400 hover:bg-rose-500/10 transition-all"
-                            title="Reset all inputs"
-                        >
-                            <RotateCcw className="w-3.5 h-3.5" />
-                            <span>Clear All</span>
-                        </button>
+                        <div className="flex items-center gap-2">
+                            {/* Save to Favorites Button */}
+                            <button
+                                type="button"
+                                onClick={handleSaveToFavorites}
+                                disabled={!constructedPrompt}
+                                className={cn(
+                                    "flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium border transition-all",
+                                    favoriteSaved
+                                        ? "bg-amber-500/20 border-amber-500/50 text-amber-300"
+                                        : "bg-[rgb(18,18,28)] border-[rgb(45,45,65)] text-[rgb(150,150,190)] hover:text-amber-300 hover:border-amber-500/40"
+                                )}
+                                title="Save prompt to favorites (stored locally in browser until cleared)"
+                            >
+                                <Star className={cn("w-3.5 h-3.5 text-amber-400", favoriteSaved && "fill-amber-400")} />
+                                <span>{favoriteSaved ? "Saved!" : "Favorite"}</span>
+                            </button>
+
+                            {/* Clear All */}
+                            <button
+                                type="button"
+                                onClick={handleClearAll}
+                                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium text-[rgb(140,140,175)] hover:text-rose-400 hover:bg-rose-500/10 transition-all"
+                                title="Reset all inputs"
+                            >
+                                <RotateCcw className="w-3.5 h-3.5" />
+                                <span>Clear All</span>
+                            </button>
+                        </div>
                     </div>
 
                     <div className="space-y-4">
@@ -695,6 +1060,24 @@ export function PromptStudioTool() {
                             )}
                         </div>
 
+                        {/* ─── Bonus: Detected Variables Info Badge ─── */}
+                        {detectedVariables.length > 0 && (
+                            <div className="p-3 rounded-2xl bg-violet-500/10 border border-violet-500/25 flex items-start gap-2 text-xs text-violet-200">
+                                <Variable className="w-4 h-4 text-violet-400 shrink-0 mt-0.5" />
+                                <div>
+                                    <span className="font-bold text-violet-300">
+                                        {detectedVariables.length} Template Variable{detectedVariables.length > 1 ? "s" : ""} Detected:{" "}
+                                    </span>
+                                    <span className="font-mono text-[11px] text-white">
+                                        {detectedVariables.join(", ")}
+                                    </span>
+                                    <p className="text-[10px] text-violet-300/80 mt-0.5">
+                                        Remember to replace placeholder variables with your real context before submitting to your AI.
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
                         {/* ─── Live Constructed Prompt Preview ────────── */}
                         <div className="flex items-center justify-between pb-1 border-b border-[rgb(30,30,46)]">
                             <div className="flex items-center gap-2">
@@ -717,11 +1100,23 @@ export function PromptStudioTool() {
                                 readOnly
                                 value={constructedPrompt}
                                 placeholder="Your structured prompt will appear here automatically as you type..."
-                                className="w-full h-[340px] sm:h-[360px] p-4 rounded-2xl bg-[rgb(10,10,15)] border border-[rgb(35,35,50)] text-emerald-200/90 font-mono text-xs focus:outline-none resize-none leading-relaxed shadow-inner custom-scrollbar select-all"
+                                className="w-full h-[320px] sm:h-[340px] p-4 rounded-2xl bg-[rgb(10,10,15)] border border-[rgb(35,35,50)] text-emerald-200/90 font-mono text-xs focus:outline-none resize-none leading-relaxed shadow-inner custom-scrollbar select-all"
                             />
 
-                            {/* Floating Quick Action */}
-                            <div className="absolute top-3 right-3">
+                            {/* Floating Quick Action Buttons */}
+                            <div className="absolute top-3 right-3 flex items-center gap-1.5">
+                                {/* Download .txt */}
+                                <button
+                                    type="button"
+                                    onClick={handleDownloadTxt}
+                                    disabled={!constructedPrompt}
+                                    className="p-1.5 rounded-xl bg-[rgb(20,20,32)] border border-[rgb(45,45,68)] text-[rgb(150,150,190)] hover:text-cyan-400 hover:border-cyan-500/50 transition-all shadow-md"
+                                    title="Download as .txt file"
+                                >
+                                    <Download className="w-3.5 h-3.5" />
+                                </button>
+
+                                {/* Copy Button */}
                                 <button
                                     type="button"
                                     onClick={handleCopy}
@@ -732,7 +1127,7 @@ export function PromptStudioTool() {
                                             ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-300 shadow-emerald-500/20"
                                             : "bg-[rgb(20,20,32)] border-[rgb(45,45,68)] text-white hover:bg-[rgb(30,30,48)] hover:border-violet-500/50"
                                     )}
-                                    title="Copy structured prompt to clipboard"
+                                    title="Copy prompt to clipboard (auto-saves to History)"
                                 >
                                     {copied ? (
                                         <>
@@ -750,14 +1145,14 @@ export function PromptStudioTool() {
                         </div>
                     </div>
 
-                    {/* Bottom Primary Copy Bar */}
-                    <div className="pt-2">
+                    {/* Bottom Primary Action Bar */}
+                    <div className="pt-2 flex flex-col sm:flex-row items-center gap-2">
                         <button
                             type="button"
                             onClick={handleCopy}
                             disabled={!constructedPrompt}
                             className={cn(
-                                "w-full py-3.5 px-6 rounded-2xl text-sm font-bold transition-all shadow-xl flex items-center justify-center gap-2",
+                                "flex-grow py-3.5 px-6 rounded-2xl text-sm font-bold transition-all shadow-xl flex items-center justify-center gap-2",
                                 copied
                                     ? "bg-emerald-500 text-white shadow-emerald-500/25 scale-[1.01]"
                                     : "bg-violet-600 hover:bg-violet-500 text-white shadow-violet-600/30 hover:scale-[1.01] active:scale-[0.99]"
@@ -771,9 +1166,20 @@ export function PromptStudioTool() {
                             ) : (
                                 <>
                                     <Copy className="w-4 h-4" />
-                                    <span>Copy {activeModelConfig.name} Prompt to Clipboard</span>
+                                    <span>Copy {activeModelConfig.name} Prompt</span>
                                 </>
                             )}
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={handleDownloadTxt}
+                            disabled={!constructedPrompt}
+                            className="w-full sm:w-auto py-3.5 px-5 rounded-2xl bg-[rgb(18,18,28)] border border-[rgb(45,45,68)] hover:border-cyan-500/50 hover:bg-[rgb(25,25,38)] text-white text-sm font-semibold transition-all shadow-md flex items-center justify-center gap-2 shrink-0"
+                            title="Download prompt as .txt"
+                        >
+                            <Download className="w-4 h-4 text-cyan-400" />
+                            <span>Download .txt</span>
                         </button>
                     </div>
                 </div>
