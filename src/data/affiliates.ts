@@ -235,14 +235,14 @@ export const AFFILIATES: Record<AffiliateId, AffiliatePartner> = {
         url: process.env.NEXT_PUBLIC_AFFILIATE_BEEHIIV_URL || PLACEHOLDER_URL,
         envKey: "NEXT_PUBLIC_AFFILIATE_BEEHIIV_URL",
         category: "marketing",
-        badge: "Newsletter Platform",
-        ctaText: "Start on beehiiv",
+        badge: "Newsletter Platform · 20% Off",
+        ctaText: "Claim 30-Day Free Trial + 20% Off",
         shortPitch:
-            "Launch a newsletter with an integrated Newsletter Website, referral program, recommendations, and built-in ad network.",
+            "Launch a newsletter with an integrated Newsletter Website, referral program, recommendations, and built-in ad network. Get a 30-day free trial + 20% OFF for your first 3 months.",
         pros: [
+            "Partner perk: Get a 30-day free trial + 20% OFF for your first 3 months",
             "$0 Free forever plan available with Newsletter Website included on all plans",
             "Built-in Referral Program, Recommendations, Paid Subscriptions, and Ad Network on eligible tiers",
-            "Includes custom Website Builder, Polls, Automations, A/B Testing, and Segmentation",
         ],
         cons: [
             "Built-in Ad Network, Referral Program, and Paid Subscriptions require upgrading to a paid plan",
