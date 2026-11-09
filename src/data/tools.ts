@@ -1771,6 +1771,61 @@ export const TOOLS: Tool[] = [
         relatedToolSlugs: ["markdown-editor", "json-formatter", "code-to-image"],
         affiliateIds: ["hostinger"],
     },
+    {
+        id: "prompt-studio",
+        name: "AI Prompt Studio",
+        slug: "prompt-studio",
+        description: "Build high-performance, structured AI prompts for developers and marketers using the Role-Task-Context-Format framework.",
+        longDescription:
+            "RapidKit AI Prompt Studio is a professional, 100% client-side prompt engineering environment. Construct precise, structured prompts for ChatGPT, Claude, Gemini, and DeepSeek using the proven Role-Task-Context-Format (RTCF) framework. Features instant live preview, multi-language prompt output, niche developer and marketer presets, and zero server logging.",
+        categoryId: "productivity",
+        icon: "Sparkles",
+        tags: ["ai", "prompt", "prompt engineering", "productivity", "chatgpt", "claude", "developer", "marketing"],
+        isNew: true,
+        isFeatured: true,
+        isPopular: true,
+        seo: {
+            title: "AI Prompt Studio — Structured Prompt Builder for Developers & Marketers | RapidKit",
+            description:
+                "Generate structured, production-ready AI prompts using the Role-Task-Context-Format framework. Free, 100% client-side, no signup required.",
+            keywords: [
+                "ai prompt studio",
+                "prompt generator",
+                "prompt builder",
+                "chatgpt prompt generator",
+                "claude prompt framework",
+                "role task context format prompt",
+                "ai prompt engineering tool",
+            ],
+        },
+        howToSteps: [
+            "Choose a Quick Preset or enter a target Role / Persona for the AI model.",
+            "Define the specific Task or Objective you need accomplished.",
+            "Add Context and Constraints such as tech stack, tone, style rules, or edge cases to avoid.",
+            "Specify your desired Output Format (Markdown table, JSON, code diff, or email draft).",
+            "Select your preferred Output Language and click 'Copy Prompt to Clipboard'.",
+        ],
+        faqs: [
+            {
+                question: "What is the Role-Task-Context-Format (RTCF) prompt framework?",
+                answer: "The RTCF framework is a proven prompt engineering methodology that structures instructions into four distinct pillars: defining who the AI should act as (Role), what it must achieve (Task), what boundaries and technical environment it operates within (Context & Constraints), and the exact structure of its response (Format). This structure eliminates ambiguity and consistently generates senior-level output across all major LLMs.",
+            },
+            {
+                question: "Why do specific constraints yield better AI code and copy?",
+                answer: "Large language models operate by predicting the most statistically probable continuation of your input. Without explicit constraints, models default to generic, generalized answers. Specifying exact constraints (e.g. library versions, strict TypeScript rules, word limits, or avoiding clichés) forces the model to prune irrelevant possibilities and focus its parameter attention on production-ready, highly tailored solutions.",
+            },
+            {
+                question: "Is my prompt data processed locally or sent to external servers?",
+                answer: "Your prompt construction runs 100% locally in your web browser. RapidKit never sends, stores, or logs your prompts, proprietary business context, or code on any external server. Everything stays completely private on your device.",
+            },
+            {
+                question: "Can I use these prompts across ChatGPT, Claude, Gemini, and DeepSeek?",
+                answer: "Yes. Prompts engineered with RapidKit AI Prompt Studio adhere to universally recognized LLM prompting standards and work seamlessly with OpenAI ChatGPT (GPT-4o, o1), Anthropic Claude 3.5 Sonnet, Google Gemini 1.5/2.0, DeepSeek R1/V3, and open-source models running locally on Ollama or LM Studio.",
+            },
+        ],
+        relatedToolSlugs: ["web-code-playground", "markdown-editor", "utm-builder"],
+        affiliateIds: ["beehiiv", "semrush"],
+    },
 ];
 
 // ─── Helper Functions ────────────────────────────────────────────

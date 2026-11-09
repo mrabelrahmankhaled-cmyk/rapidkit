@@ -208,6 +208,11 @@ const WebCodePlaygroundTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const PromptStudioTool = dynamic(
+    () => import("@/components/tools/PromptStudioTool").then((m) => ({ default: m.PromptStudioTool })),
+    { loading: Spinner, ssr: false }
+);
+
 // ─── Map slug → Component ────────────────────────────────────────
 const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "youtube-thumbnail-downloader": YoutubeThumbnailTool,
@@ -249,6 +254,7 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "robots-txt-generator": RobotsTxtGeneratorTool,
     "jwt-decoder": JwtDecoderTool,
     "web-code-playground": WebCodePlaygroundTool,
+    "prompt-studio": PromptStudioTool,
 };
 
 type Props = {
