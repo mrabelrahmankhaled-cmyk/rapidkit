@@ -1588,6 +1588,142 @@ export const TOOLS: Tool[] = [
         relatedToolSlugs: ["word-counter", "markdown-editor", "screen-recorder"],
         affiliateIds: ["notion"],
     },
+    // ─── Marketing: UTM Campaign Builder ─────────────────────────
+    {
+        id: "utm-builder",
+        name: "UTM Campaign Builder",
+        slug: "utm-builder",
+        description: "Generate tracking-ready campaign URLs with standard Google Analytics UTM parameters.",
+        longDescription:
+            "Create standardized, error-free UTM tracking URLs for marketing campaigns, newsletters, ad groups, and social promotions. Easily add campaign source, medium, campaign name, term, and content parameters to track conversions accurately in Google Analytics 4 (GA4) and attribution dashboards.",
+        categoryId: "marketing",
+        icon: "Link2",
+        tags: ["utm", "campaign", "marketing", "analytics", "tracking", "url builder"],
+        isNew: true,
+        isFeatured: true,
+        seo: {
+            title: "Free UTM Campaign Builder — Generate Google Analytics Tracking URLs | RapidKit",
+            description: "Easily generate UTM tracking URLs for Google Analytics, newsletters, and ad campaigns. Free, instant, and 100% client-side.",
+            keywords: ["utm builder", "campaign url builder", "google analytics utm generator", "utm tracking link builder", "utm parameters creator"],
+        },
+        howToSteps: [
+            "Enter your destination website landing page URL.",
+            "Specify the campaign source (e.g. google, newsletter, twitter) and medium (e.g. cpc, email, social).",
+            "Optionally add campaign name, search term keywords, and content identifier for A/B testing.",
+            "Click 'Copy URL' to paste into your ads, email blasts, or social media posts.",
+        ],
+        faqs: [
+            {
+                question: "What are UTM parameters and why are they important?",
+                answer: "UTM (Urchin Tracking Module) parameters are five standard query parameters added to URLs. When a visitor clicks the link, web analytics tools like Google Analytics 4 (GA4) read these parameters to pinpoint exactly which campaign, channel, and creative delivered the visitor and conversion.",
+            },
+            {
+                question: "Which UTM parameters are strictly required?",
+                answer: "At minimum, your destination URL and utm_source are required. For paid advertising and structured campaigns, Google Analytics also strongly recommends utm_medium and utm_campaign to categorize traffic into standard channel groups (e.g., Paid Search, Email, Organic Social).",
+            },
+            {
+                question: "Should UTM codes be capitalized or lowercase?",
+                answer: "Always use lowercase letters for UTM parameters. Analytics tools treat URLs case-sensitively, so 'Email', 'email', and 'EMAIL' would be reported as three separate channels, fragmenting your campaign data.",
+            },
+            {
+                question: "Can I use UTM parameters on internal site links?",
+                answer: "No. You should never use UTM codes on internal links between pages on your own website. Doing so overrides the original acquisition source and resets the user session, corrupting your analytics attribution.",
+            },
+        ],
+        relatedToolSlugs: ["meta-tag-generator", "whatsapp-link-generator", "qr-code-generator"],
+        affiliateIds: ["beehiiv", "semrush"],
+    },
+    // ─── Developer: Robots.txt Generator ─────────────────────────
+    {
+        id: "robots-txt-generator",
+        name: "Robots.txt Generator",
+        slug: "robots-txt-generator",
+        description: "Generate standard robots.txt files with crawl directives, custom user-agents, and XML sitemaps.",
+        longDescription:
+            "Create a valid robots.txt file to guide search engine crawlers, manage crawl budgets, and prevent indexation of private folders. Easily configure default allow/disallow policies, set custom crawl-delays, block aggressive AI scraping bots (GPTBot, ClaudeBot, CCBot), and specify your XML sitemap URL.",
+        categoryId: "developer",
+        icon: "FileCode",
+        tags: ["robots.txt", "seo", "crawlers", "developer", "search engines", "sitemap"],
+        isNew: true,
+        isPopular: true,
+        seo: {
+            title: "Free Robots.txt Generator — Create SEO Crawler Directives | RapidKit",
+            description: "Generate clean, search-engine compliant robots.txt files in seconds. Customize allow/disallow rules, sitemap directives, and block AI bots.",
+            keywords: ["robots txt generator", "create robots txt online", "seo robots file creator", "search engine crawler directives", "block ai bot robots txt"],
+        },
+        howToSteps: [
+            "Select your default crawler access policy (Allow all or Disallow all).",
+            "Optionally toggle 'Block AI Training Bots' to protect content from unauthorized LLM scrapers.",
+            "Add specific paths to disallow (e.g. /admin/, /api/) or allow (e.g. /public/).",
+            "Provide your XML Sitemap URL and copy or download the generated robots.txt file.",
+            "Upload the file to the root directory of your web server (https://yourdomain.com/robots.txt).",
+        ],
+        faqs: [
+            {
+                question: "What is a robots.txt file?",
+                answer: "A robots.txt file is a plaintext file placed in your website root directory that tells web crawlers (like Googlebot and Bingbot) which URLs they can or cannot request from your site. It is primarily used to manage crawl traffic and prevent overload on non-public pages.",
+            },
+            {
+                question: "Does robots.txt guarantee a page won't appear in Google search results?",
+                answer: "No. Robots.txt prevents search engines from crawling the page, but if other websites link to that URL with descriptive anchor text, Google can still index the URL. To guarantee a page is never indexed, use a noindex meta robots tag or require user authentication.",
+            },
+            {
+                question: "Where should the robots.txt file be placed?",
+                answer: "The robots.txt file must be uploaded to the top-level root directory of your website domain, accessible at https://yourdomain.com/robots.txt. It cannot be placed in a subdirectory.",
+            },
+            {
+                question: "Why should I consider blocking AI scrapers in robots.txt?",
+                answer: "Many webmasters block AI crawlers like GPTBot, ClaudeBot, and CCBot to prevent their proprietary written content, code, or images from being ingested into generative AI training datasets without compensation or attribution.",
+            },
+        ],
+        relatedToolSlugs: ["meta-tag-generator", "json-formatter", "url-parser"],
+        affiliateIds: ["hostinger"],
+    },
+    // ─── Developer: JWT Decoder ──────────────────────────────────
+    {
+        id: "jwt-decoder",
+        name: "JSON Web Token (JWT) Decoder",
+        slug: "jwt-decoder",
+        description: "Decode and inspect JSON Web Tokens (JWT) client-side with expiration check and formatted claims.",
+        longDescription:
+            "Decode, debug, and inspect JSON Web Tokens (JWTs) client-side in real time. Instantly parse the Base64URL-encoded header, payload claims, expiration timestamps, algorithm type, and token validity without transmitting your credentials or tokens across the internet.",
+        categoryId: "developer",
+        icon: "KeyRound",
+        tags: ["jwt", "jwt decoder", "token", "auth", "developer", "security", "base64"],
+        isNew: true,
+        isFeatured: true,
+        seo: {
+            title: "Online JWT Decoder — Decode JSON Web Tokens Client-Side | RapidKit",
+            description: "Fast, secure client-side JWT decoder. Inspect header and payload claims, check expiration dates, and debug auth tokens safely in your browser.",
+            keywords: ["jwt decoder", "decode jwt online", "json web token inspector", "jwt payload viewer", "client side jwt debugger"],
+        },
+        howToSteps: [
+            "Paste your JSON Web Token string into the input box.",
+            "The tool automatically splits the token into Header, Payload, and Signature parts.",
+            "Review formatted JSON claims, signing algorithm, and expiration status.",
+            "Click 'Copy' to grab the decoded payload or header JSON for debugging.",
+        ],
+        faqs: [
+            {
+                question: "What is a JSON Web Token (JWT)?",
+                answer: "A JSON Web Token (JWT) is an open industry standard (RFC 7519) for securely transmitting information between parties as a compact, self-contained JSON object. It is widely used in modern web applications for user authentication and API authorization.",
+            },
+            {
+                question: "Is it safe to decode my JWT here?",
+                answer: "Yes, 100% safe. This tool performs all Base64URL decoding and JSON formatting entirely in your local browser memory using client-side JavaScript. Your token is never uploaded, logged, or sent to any server.",
+            },
+            {
+                question: "Does this tool verify the cryptographic signature?",
+                answer: "No. Decoding a JWT reads the claims contained in the header and payload, but validating the cryptographic signature requires the server's private key or secret. For security reasons, never paste your private signing keys into web tools.",
+            },
+            {
+                question: "What do 'iat' and 'exp' claims mean in a JWT?",
+                answer: "'iat' stands for 'Issued At' and indicates the Unix epoch timestamp when the token was generated. 'exp' stands for 'Expiration Time', after which the token is invalid and must be rejected by authentication servers.",
+            },
+        ],
+        relatedToolSlugs: ["base64-converter", "uuid-generator", "unix-timestamp-converter"],
+        affiliateIds: ["hostinger"],
+    },
 ];
 
 // ─── Helper Functions ────────────────────────────────────────────

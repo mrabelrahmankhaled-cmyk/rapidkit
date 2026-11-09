@@ -188,6 +188,21 @@ const PomodoroTimerTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const UtmBuilderTool = dynamic(
+    () => import("@/components/tools/UtmBuilderTool").then((m) => ({ default: m.UtmBuilderTool })),
+    { loading: Spinner, ssr: false }
+);
+
+const RobotsTxtGeneratorTool = dynamic(
+    () => import("@/components/tools/RobotsTxtGeneratorTool").then((m) => ({ default: m.RobotsTxtGeneratorTool })),
+    { loading: Spinner, ssr: false }
+);
+
+const JwtDecoderTool = dynamic(
+    () => import("@/components/tools/JwtDecoderTool").then((m) => ({ default: m.JwtDecoderTool })),
+    { loading: Spinner, ssr: false }
+);
+
 // ─── Map slug → Component ────────────────────────────────────────
 const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "youtube-thumbnail-downloader": YoutubeThumbnailTool,
@@ -225,6 +240,9 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "signature-pad": SignaturePadTool,
     "markdown-editor": MarkdownEditorTool,
     "pomodoro-timer": PomodoroTimerTool,
+    "utm-builder": UtmBuilderTool,
+    "robots-txt-generator": RobotsTxtGeneratorTool,
+    "jwt-decoder": JwtDecoderTool,
 };
 
 type Props = {
