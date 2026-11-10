@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import {
     Search,
     Filter,
@@ -72,6 +73,22 @@ export function PromptLibraryTab({ onSelectTemplate }: PromptLibraryTabProps) {
     const [selectedCategory, setSelectedCategory] = useState<TemplateCategory | "All">("All");
     const [selectedTag, setSelectedTag] = useState<string | null>(null);
     const [previewTemplate, setPreviewTemplate] = useState<PromptTemplate | null>(null);
+
+    const mounted = useSyncExternalStore(
+        () => () => {},
+        () => true,
+        () => false
+    );
+
+    // Prevent body scroll when preview modal is open
+    useEffect(() => {
+        if (!previewTemplate) return;
+        const originalOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+        return () => {
+            document.body.style.overflow = originalOverflow;
+        };
+    }, [previewTemplate]);
 
     const allTags = useMemo(() => getAllTags(), []);
 
@@ -350,20 +367,21 @@ export function PromptLibraryTab({ onSelectTemplate }: PromptLibraryTabProps) {
             )}
 
             {/* ─── Template Preview Modal ────────────────────────────── */}
-            {previewTemplate && (
+            {mounted && previewTemplate && createPortal(
                 <div
                     role="dialog"
                     aria-modal="true"
                     aria-labelledby="preview-title"
                     onClick={() => setPreviewTemplate(null)}
-                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200"
+                    className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+                    style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, width: "100%", height: "100%", zIndex: 99999 }}
                 >
                     <div
                         onClick={(e) => e.stopPropagation()}
-                        className="w-full max-w-2xl max-h-[85vh] rounded-3xl bg-[rgb(12,12,18)] border border-[rgb(45,45,70)] shadow-2xl flex flex-col justify-between overflow-hidden animate-in zoom-in-95 duration-150"
+                        className="w-full max-w-2xl max-h-[88vh] rounded-3xl bg-[rgb(12,12,18)] border border-[rgb(45,45,70)] shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-150 relative"
                     >
                         {/* Modal Header */}
-                        <div className="p-5 border-b border-[rgb(30,30,46)] flex items-start justify-between gap-4">
+                        <div className="p-5 border-b border-[rgb(30,30,46)] flex items-start justify-between gap-4 shrink-0">
                             <div className="space-y-1">
                                 <div className="flex items-center gap-2">
                                     <span
@@ -402,7 +420,7 @@ export function PromptLibraryTab({ onSelectTemplate }: PromptLibraryTabProps) {
                         </div>
 
                         {/* Modal Body: RTCF Breakdown */}
-                        <div className="p-5 space-y-4 overflow-y-auto custom-scrollbar text-xs">
+                        <div className="p-5 space-y-4 overflow-y-auto custom-scrollbar text-xs flex-1 min-h-0">
                             {/* Required Variables Section */}
                             <div className="p-3.5 rounded-2xl bg-violet-500/10 border border-violet-500/25 space-y-2">
                                 <div className="flex items-center gap-1.5 font-bold text-violet-300">
@@ -457,7 +475,7 @@ export function PromptLibraryTab({ onSelectTemplate }: PromptLibraryTabProps) {
                         </div>
 
                         {/* Modal Footer */}
-                        <div className="p-4 border-t border-[rgb(30,30,46)] bg-[rgb(10,10,15)] flex items-center justify-between gap-3">
+                        <div className="p-4 border-t border-[rgb(30,30,46)] bg-[rgb(10,10,15)] flex items-center justify-between gap-3 shrink-0">
                             <span className="text-[11px] text-[rgb(120,120,150)]">
                                 Ready to customize and export this prompt?
                             </span>
@@ -484,7 +502,8 @@ export function PromptLibraryTab({ onSelectTemplate }: PromptLibraryTabProps) {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     );
