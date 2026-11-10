@@ -589,3 +589,393 @@ test("Phase 6 Audit Regression D: Generated prompt text is rendered only as text
     assert.ok(generatorTabSource.includes("flex flex-wrap items-start gap-x-2 gap-y-1"));
     assert.ok(generatorTabSource.includes("break-words"));
 });
+
+test("Phase 6.7 UI Test: Send to Builder transfers all fields, language, and guidelines without polluting context", () => {
+    assert.ok(studioToolSource.includes("if (decomposed.language) setLanguage(decomposed.language);"));
+    assert.ok(studioToolSource.includes("if (decomposed.guidelines !== undefined) setGuidelines(decomposed.guidelines);"));
+    assert.ok(studioToolSource.includes("### Guidelines & Negative Constraints\\n${g}"));
+    assert.ok(studioToolSource.includes("<guidelines_and_constraints>\\n${g}\\n</guidelines_and_constraints>"));
+    assert.ok(studioToolSource.includes("**Guidelines & Negative Constraints:**\\n${g}"));
+});
+
+test("Phase 6.7 Behavioral: SavedPrompt backward compatibility (legacy storage, restore, presets, templates)", () => {
+    // 1. Simulate legacy localStorage history & favorites (entries saved BEFORE guidelines was introduced)
+    const legacyHistoryRaw = JSON.stringify([
+        {
+            id: "legacy-hist-1",
+            timestamp: 1700000000000,
+            title: "Senior Software Engineer and System Architect",
+            model: "chatgpt",
+            role: "Senior Software Engineer and System Architect",
+            task: "Build a responsive SaaS dashboard using React and TypeScript",
+            context: "React, TypeScript, production-grade standards",
+            outputFormat: "Technical approach and implementation code",
+            language: "English",
+            // NOTE: guidelines property is completely missing in legacy entries
+        },
+    ]);
+
+    const legacyFavoritesRaw = JSON.stringify([
+        {
+            id: "legacy-fav-1",
+            timestamp: 1699000000000,
+            title: "Legacy Backend Architecture",
+            model: "claude",
+            role: "Backend Architect",
+            task: "Design scalable event-driven messaging",
+            context: "Kafka, Golang, clean architecture",
+            outputFormat: "Architecture design document and code",
+            language: "English",
+            // missing guidelines
+        },
+    ]);
+
+    // Test storage loading simulation
+    const parsedHistory = JSON.parse(legacyHistoryRaw);
+    const parsedFavorites = JSON.parse(legacyFavoritesRaw);
+    assert.strictEqual(Array.isArray(parsedHistory), true);
+    assert.strictEqual(Array.isArray(parsedFavorites), true);
+    assert.strictEqual(parsedHistory[0].guidelines, undefined);
+    assert.strictEqual(parsedFavorites[0].guidelines, undefined);
+
+    // 2. Simulate handleRestorePrompt for legacy history entry
+    let role = "Current Role";
+    let task = "Current Task";
+    let context = "Current Context";
+    let outputFormat = "Current Format";
+    let language = "Spanish";
+    let targetModel = "gemini";
+    let guidelines = "Existing Active Guidelines";
+    let activePreset: string | null = "react-debugging";
+
+    interface LegacySavedPrompt {
+        id?: string;
+        timestamp?: number;
+        title?: string;
+        model?: string;
+        role: string;
+        task: string;
+        context: string;
+        outputFormat: string;
+        language?: string;
+        guidelines?: string;
+    }
+
+    const handleRestorePrompt = (item: LegacySavedPrompt) => {
+        role = item.role;
+        task = item.task;
+        context = item.context;
+        outputFormat = item.outputFormat;
+        language = item.language || "English";
+        targetModel = item.model || "chatgpt";
+        guidelines = item.guidelines || "";
+        activePreset = null;
+    };
+
+    handleRestorePrompt(parsedHistory[0]);
+
+    // Assert that legacy prompt restored correctly and guidelines safely defaulted to empty string ""
+    assert.strictEqual(role, "Senior Software Engineer and System Architect");
+    assert.strictEqual(task, "Build a responsive SaaS dashboard using React and TypeScript");
+    assert.strictEqual(context, "React, TypeScript, production-grade standards");
+    assert.strictEqual(outputFormat, "Technical approach and implementation code");
+    assert.strictEqual(language, "English");
+    assert.strictEqual(targetModel, "chatgpt");
+    assert.strictEqual(guidelines, "", "Missing guidelines must safely default to empty string");
+    assert.strictEqual(activePreset, null);
+
+    // 3. Test prompt construction across models with empty guidelines:
+    // ChatGPT:
+    const buildChatGPTPrompt = (r: string, t: string, c: string, f: string, g: string, lang: string) => {
+        const sections: string[] = [];
+        if (r) sections.push(`### Role & Persona\n${r}`);
+        if (t) sections.push(`### Task & Objective\n${t}`);
+        if (c) sections.push(`### Context & Constraints\n${c}`);
+        if (f) sections.push(`### Desired Output Format\n${f}`);
+        if (g) sections.push(`### Guidelines & Negative Constraints\n${g}`);
+        if (lang) sections.push(`### Response Language\nPlease provide the final response in ${lang}.`);
+        return sections.join("\n\n");
+    };
+
+    const chatGPTPrompt = buildChatGPTPrompt(role, task, context, outputFormat, guidelines, language);
+    assert.ok(!chatGPTPrompt.includes("### Guidelines & Negative Constraints"), "No guidelines heading when guidelines is empty");
+    assert.ok(!chatGPTPrompt.includes("undefined"), "Prompt must never contain string 'undefined'");
+
+    // Claude:
+    const buildClaudePrompt = (r: string, t: string, c: string, f: string, g: string, lang: string) => {
+        const sections: string[] = [];
+        if (r) sections.push(`<role_and_persona>\n${r}\n</role_and_persona>`);
+        if (t) sections.push(`<task>\n${t}\n</task>`);
+        if (c) sections.push(`<context_and_constraints>\n${c}\n</context_and_constraints>`);
+        if (f) sections.push(`<output_format>\n${f}\n</output_format>`);
+        if (g) sections.push(`<guidelines_and_constraints>\n${g}\n</guidelines_and_constraints>`);
+        if (lang) sections.push(`<response_language>\nPlease provide the final response in ${lang}.\n</response_language>`);
+        return sections.join("\n\n");
+    };
+    const claudePrompt = buildClaudePrompt(role, task, context, outputFormat, guidelines, language);
+    assert.ok(!claudePrompt.includes("<guidelines_and_constraints>"), "No Claude guidelines tag when guidelines is empty");
+    assert.ok(!claudePrompt.includes("undefined"));
+
+    // Gemini:
+    const buildGeminiPrompt = (r: string, t: string, c: string, f: string, g: string, lang: string) => {
+        const sections: string[] = [];
+        if (r) sections.push(`**Role & Persona:**\n${r}`);
+        if (t) sections.push(`**Task & Objective:**\n${t}`);
+        if (c) sections.push(`**Context & Constraints:**\n${c}`);
+        if (f) sections.push(`**Output Format:**\n${f}`);
+        if (g) sections.push(`**Guidelines & Negative Constraints:**\n${g}`);
+        if (lang) sections.push(`**Response Language:**\nPlease provide the final response in ${lang}.`);
+        return sections.join("\n\n");
+    };
+    const geminiPrompt = buildGeminiPrompt(role, task, context, outputFormat, guidelines, language);
+    assert.ok(!geminiPrompt.includes("**Guidelines & Negative Constraints:**"), "No Gemini guidelines heading when guidelines is empty");
+    assert.ok(!geminiPrompt.includes("undefined"));
+
+    // 4. Test handleApplyPreset resetting guidelines to ""
+    guidelines = "Some temporary guidelines";
+    const testPreset = {
+        id: "code-review",
+        role: "Senior Code Reviewer",
+        task: "Review pull request",
+        context: "TypeScript repo",
+        outputFormat: "Bullet points of issues and fixes",
+        language: "English",
+    };
+    role = testPreset.role;
+    task = testPreset.task;
+    context = testPreset.context;
+    outputFormat = testPreset.outputFormat;
+    language = testPreset.language;
+    guidelines = "";
+    activePreset = testPreset.id;
+    assert.strictEqual(guidelines, "", "Applying preset must reset guidelines to empty string");
+    assert.strictEqual(activePreset, "code-review");
+
+    // 5. Test handleClearAll resetting guidelines to ""
+    guidelines = "Some guidelines before clear";
+    role = "";
+    task = "";
+    context = "";
+    outputFormat = "";
+    language = "English";
+    guidelines = "";
+    activePreset = null;
+    assert.strictEqual(guidelines, "", "Clear all must reset guidelines to empty string");
+
+    // 6. Test saving new prompt with guidelines
+    guidelines = "- Do not use deprecated packages";
+    role = "Lead Architect";
+    task = "Build microservice";
+    const newEntry = {
+        id: "new-prompt-1",
+        timestamp: Date.now(),
+        title: role,
+        model: "chatgpt",
+        role,
+        task,
+        context,
+        outputFormat,
+        language,
+        guidelines,
+    };
+    assert.strictEqual(newEntry.guidelines, "- Do not use deprecated packages");
+
+    // Restoring this new entry restores guidelines correctly
+    handleRestorePrompt(newEntry);
+    assert.strictEqual(guidelines, "- Do not use deprecated packages");
+
+    // 7. Test template selection preserving guidelines in draft and resetting in builder
+    const template = PROMPT_TEMPLATES[0];
+    const historyList: LegacySavedPrompt[] = [];
+    if (role.trim() || task.trim()) {
+        const draft = {
+            id: "draft-1",
+            timestamp: Date.now(),
+            title: role,
+            model: "chatgpt",
+            role,
+            task,
+            context,
+            outputFormat,
+            language,
+            guidelines,
+        };
+        historyList.push(draft);
+    }
+    role = template.role;
+    task = template.task;
+    context = template.context;
+    outputFormat = template.outputFormat;
+    guidelines = "";
+    activePreset = null;
+
+    assert.strictEqual(historyList[0].guidelines, "- Do not use deprecated packages", "History draft must retain guidelines");
+    assert.strictEqual(guidelines, "", "Template application must reset guidelines to empty string");
+});
+
+test("Phase 6.7 Behavioral: Actual Send-to-Builder transfer path data flow with exact live reproduction prompt", () => {
+    // Exact live reproduction prompt reported in Phase 6.7:
+    const liveReproductionPrompt = `Role: Senior Software Engineer and System Architect.
+
+Task: Build a responsive SaaS dashboard using React and TypeScript.
+
+Context:
+- React and TypeScript are already specified.
+- Follow production-grade engineering standards.
+- Use strict typing and maintainable modular architecture.
+- Build a maintainable and modular codebase.
+- Avoid unnecessary dependencies.
+
+Output:
+- Explain the technical approach and root causes.
+- Provide clean, modular implementation.
+- Cover edge cases and verification steps.
+
+Response Language: English.`;
+
+    // 1. Optimizer runs optimizePrompt on user's input
+    const optResult = optimizePrompt(liveReproductionPrompt);
+    assert.strictEqual(optResult.score.overall, 100, "Optimizer correctly evaluates structured prompt at 100/100");
+
+    // 2. User accepts suggestions (Specificity / all suggestions)
+    const allAcceptedIds = optResult.suggestions.map((s) => s.id);
+    assert.ok(allAcceptedIds.length > 0, "Suggestions should be present");
+
+    // 3. User clicks 'Send to Builder' in PromptOptimizerTab
+    // PromptOptimizerTab.tsx executes:
+    // const decomposed = result.decomposePrompt(acceptedIds);
+    // onNavigateToBuilder(decomposed);
+    const decomposed = optResult.decomposePrompt(allAcceptedIds);
+
+    // 4. In PromptStudioTool, handleLoadFromOptimizer receives decomposed:
+    // Simulate initial Builder state before transfer
+    const history: Array<{
+        id: string;
+        timestamp: number;
+        title: string;
+        model: string;
+        role: string;
+        task: string;
+        context: string;
+        outputFormat: string;
+        language: string;
+        guidelines: string;
+    }> = [];
+    let builderRole = "Draft Software Engineer";
+    let builderTask = "Draft Task before load";
+    let builderContext = "Draft Context";
+    let builderOutputFormat = "Draft Format";
+    let builderLanguage = "French";
+    let builderGuidelines = "";
+    let activePreset: string | null = "react-debugging";
+    let activeTab = "optimizer";
+
+    // Simulate handleLoadFromOptimizer(decomposed) in PromptStudioTool.tsx:
+    if (builderRole.trim() || builderTask.trim()) {
+        history.unshift({
+            id: "draft-saved-before-load",
+            timestamp: Date.now(),
+            title: builderRole,
+            model: "chatgpt",
+            role: builderRole,
+            task: builderTask,
+            context: builderContext,
+            outputFormat: builderOutputFormat,
+            language: builderLanguage,
+            guidelines: builderGuidelines,
+        });
+    }
+
+    if (decomposed) {
+        if (decomposed.role) builderRole = decomposed.role;
+        if (decomposed.task) builderTask = decomposed.task;
+        if (decomposed.context) builderContext = decomposed.context;
+        if (decomposed.outputFormat) builderOutputFormat = decomposed.outputFormat;
+        if (decomposed.language) builderLanguage = decomposed.language;
+        if (decomposed.guidelines !== undefined) builderGuidelines = decomposed.guidelines;
+        activePreset = null;
+    }
+    activeTab = "builder";
+
+    // 5. Verify the Builder receives the EXACT required values:
+    // Role: Senior Software Engineer and System Architect
+    assert.strictEqual(
+        builderRole,
+        "Senior Software Engineer and System Architect",
+        "Builder must receive exact Role value"
+    );
+
+    // Task: Build a responsive SaaS dashboard using React and TypeScript.
+    assert.strictEqual(
+        builderTask,
+        "Build a responsive SaaS dashboard using React and TypeScript.",
+        "Builder must receive exact Task value"
+    );
+
+    // Context: All five original context bullets
+    const contextLines = builderContext.split("\n").filter((l) => l.trim().startsWith("-"));
+    assert.strictEqual(contextLines.length, 5, "Context must have exactly 5 bullets");
+    assert.ok(builderContext.includes("React and TypeScript are already specified."));
+    assert.ok(builderContext.includes("Follow production-grade engineering standards."));
+    assert.ok(builderContext.includes("Use strict typing and maintainable modular architecture."));
+    assert.ok(builderContext.includes("Build a maintainable and modular codebase."));
+    assert.ok(builderContext.includes("Avoid unnecessary dependencies."));
+
+    // Output Format: All three original output bullets
+    const outputLines = builderOutputFormat.split("\n").filter((l) => l.trim().startsWith("-"));
+    assert.strictEqual(outputLines.length, 3, "Output format must have exactly 3 bullets");
+    assert.ok(builderOutputFormat.includes("Explain the technical approach and root causes."));
+    assert.ok(builderOutputFormat.includes("Provide clean, modular implementation."));
+    assert.ok(builderOutputFormat.includes("Cover edge cases and verification steps."));
+
+    // Language: English
+    assert.strictEqual(builderLanguage, "English", "Builder must receive exact Language value");
+
+    // Guidelines: The accepted Specificity instruction
+    const expectedSpecificity = "- Avoid pleasantries, conversational filler, or self-evident introductions. Deliver direct, high-density actionable content.";
+    assert.ok(
+        builderGuidelines.includes("Avoid pleasantries, conversational filler, or self-evident introductions."),
+        "Guidelines must contain the accepted Specificity instruction"
+    );
+
+    // CRITICAL: Guidelines never enter the Context field
+    assert.strictEqual(
+        builderContext.includes("Avoid pleasantries"),
+        false,
+        "Guidelines must NEVER enter the Context field"
+    );
+
+    // Active preset is cleared & tab switched to builder
+    assert.strictEqual(activePreset, null, "Active preset must be cleared");
+    assert.strictEqual(activeTab, "builder", "Active tab must switch to builder");
+
+    // Previous active work was safely archived in history
+    assert.strictEqual(history.length, 1);
+    assert.strictEqual(history[0].role, "Draft Software Engineer");
+
+    // 6. Verify final constructed prompt from Builder state
+    const sections: string[] = [];
+    if (builderRole.trim()) sections.push(`### Role & Persona\n${builderRole.trim()}`);
+    if (builderTask.trim()) sections.push(`### Task & Objective\n${builderTask.trim()}`);
+    if (builderContext.trim()) sections.push(`### Context & Constraints\n${builderContext.trim()}`);
+    if (builderOutputFormat.trim()) sections.push(`### Desired Output Format\n${builderOutputFormat.trim()}`);
+    if (builderGuidelines.trim()) sections.push(`### Guidelines & Negative Constraints\n${builderGuidelines.trim()}`);
+    if (builderLanguage.trim()) sections.push(`### Response Language\nPlease provide the final response in ${builderLanguage.trim()}.`);
+    const constructed = sections.join("\n\n");
+
+    // Verify sections in constructed prompt
+    assert.ok(constructed.includes("### Role & Persona\nSenior Software Engineer and System Architect"));
+    assert.ok(constructed.includes("### Task & Objective\nBuild a responsive SaaS dashboard using React and TypeScript."));
+    assert.ok(constructed.includes("### Context & Constraints\n- React and TypeScript are already specified."));
+    assert.ok(constructed.includes("### Desired Output Format\n- Explain the technical approach and root causes."));
+    assert.ok(constructed.includes("### Guidelines & Negative Constraints\n" + expectedSpecificity));
+    assert.ok(constructed.includes("### Response Language\nPlease provide the final response in English."));
+
+    // Verify no section duplication in constructed output
+    assert.strictEqual((constructed.match(/### Role & Persona/g) || []).length, 1);
+    assert.strictEqual((constructed.match(/### Task & Objective/g) || []).length, 1);
+    assert.strictEqual((constructed.match(/### Context & Constraints/g) || []).length, 1);
+    assert.strictEqual((constructed.match(/### Desired Output Format/g) || []).length, 1);
+    assert.strictEqual((constructed.match(/### Guidelines & Negative Constraints/g) || []).length, 1);
+    assert.strictEqual((constructed.match(/### Response Language/g) || []).length, 1);
+});

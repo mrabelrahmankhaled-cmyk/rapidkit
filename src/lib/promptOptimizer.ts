@@ -58,6 +58,8 @@ export interface DecomposedPrompt {
     task: string;
     context: string;
     outputFormat: string;
+    language?: string;
+    guidelines?: string;
 }
 
 export interface OptimizationResult {
@@ -776,8 +778,11 @@ export function optimizePrompt(rawText: string): OptimizationResult {
         const formatSug = acceptedSuggestions.find((s) => s.targetField === "format");
         const constraintSugs = acceptedSuggestions.filter((s) => s.targetField === "constraint");
 
-        // If the prompt already has top-level markdown headings (e.g. ### Role & Persona or ### Task & Objective)
-        const hasExistingHeadings = /^###\s+/m.test(normalizedPrompt);
+        // If the prompt already has top-level markdown headings or structured colon-labeled sections
+        const hasExistingHeadings =
+            /^###\s+/m.test(normalizedPrompt) ||
+            (/(?:^|\n)(?:Task|Objective|Goal|المهمة|الهدف)[ \t]*:/i.test(normalizedPrompt) &&
+                /(?:^|\n)(?:Context|Output|Format|Role|السياق|التنسيق|الدور)[ \t]*:/i.test(normalizedPrompt));
 
         if (hasExistingHeadings) {
             let resultText = normalizedPrompt;
@@ -893,39 +898,147 @@ export function optimizePrompt(rawText: string): OptimizationResult {
     const decomposePrompt = (acceptedSuggestionIds: Set<string> | string[]): DecomposedPrompt => {
         const optimized = buildOptimizedPrompt(acceptedSuggestionIds);
 
-        const roleMatch = optimized.match(
+        const nextSectionLookahead =
+            "(?=(?:\\n#+|\\n(?:Role|Persona|Task|Objective|Goal|Context|Constraints?|Desired\\s+Output\\s+Format|Output\\s+Format|Output|Format|Response\\s+Language|Output\\s+Language|Language|Guidelines|Negative\\s+Constraints|الدور|الشخصية|المهمة|الهدف|السياق|الخلفية|التنسيق|المخرجات|صيغة\\s+المخرجات|الإرشادات|لغة\\s+الرد|اللغة)[ \\t]*:|$))";
+
+        // 1. Role
+        const mdRoleMatch = optimized.match(
             /(?:^|\n)###\s+(?:Role(?:\s*&|\s+and)?\s*Persona|Role|Persona|الدور(?:\s*والشخصية)?|الدور|الشخصية)[^\n]*\n([\s\S]*?)(?=\n###|\n*$)/i
         );
-        const taskMatch = optimized.match(
+        const explicitRoleMatch = optimized.match(
+            new RegExp(
+                "(?:^|\\n)(?:Role(?:\\s*&|\\s+and)?\\s*Persona|Role|Persona|الدور(?:\\s*والشخصية)?|الدور|الشخصية)[ \\t]*:[ \\t]*\\n?([\\s\\S]*?)" +
+                    nextSectionLookahead,
+                "i"
+            )
+        );
+        let role = "";
+        if (mdRoleMatch && mdRoleMatch[1].trim()) {
+            role = mdRoleMatch[1].trim();
+        } else if (explicitRoleMatch && explicitRoleMatch[1].trim()) {
+            role = explicitRoleMatch[1].trim();
+        } else if (roleAnalysis.detectedRoleText) {
+            role = roleAnalysis.detectedRoleText;
+        }
+        role = role
+            .replace(/^Act as\s+/i, "")
+            .replace(/^(?:Role|Persona|الدور|الشخصية)\s*:\s*/i, "")
+            .replace(/\.$/, "")
+            .trim();
+
+        // 2. Task
+        const explicitTaskMatch = optimized.match(
+            new RegExp(
+                "(?:^|\\n)(?:Task(?:\\s*&|\\s+and)?\\s*Objective|Task|Objective|Goal|المهمة|الهدف)[ \\t]*:[ \\t]*\\n?([\\s\\S]*?)" +
+                    nextSectionLookahead,
+                "i"
+            )
+        );
+        const mdTaskMatch = optimized.match(
             /(?:^|\n)###\s+(?:Task(?:\s*&|\s+and)?\s*Objective|Task|Objective|الهدف|المهمة)[^\n]*\n([\s\S]*?)(?=\n###|\n*$)/i
         );
-        const contextMatch = optimized.match(
-            /(?:^|\n)###\s+(?:Context(?:\s*&|\s+and)?\s*Constraints?|Context|Constraints?|السياق(?:\s*والقيود)?|السياق|الخلفية)[^\n]*\n([\s\S]*?)(?=\n###|\n*$)/i
-        );
-        const formatMatch = optimized.match(
-            /(?:^|\n)###\s+(?:Desired\s+Output\s+Format|Output\s+Format|Format|التنسيق|تنسيق|المخرجات|صيغة\s+المخرجات)[^\n]*\n([\s\S]*?)(?=\n###|\n*$)/i
-        );
-        const guideMatch = optimized.match(
-            /(?:^|\n)###\s+(?:Guidelines(?:\s*&|\s+and)?\s*Negative\s*Constraints|Guidelines|Negative\s*Constraints|الإرشادات[^\n]*)\n([\s\S]*?)(?=\n###|\n*$)/i
-        );
-
-        let context = contextMatch ? contextMatch[1].trim() : "";
-        if (guideMatch && guideMatch[1].trim()) {
-            context = context ? `${context}\n\n${guideMatch[1].trim()}` : guideMatch[1].trim();
+        let task = "";
+        if (explicitTaskMatch && explicitTaskMatch[1].trim()) {
+            task = explicitTaskMatch[1].trim();
+        } else if (mdTaskMatch && mdTaskMatch[1].trim()) {
+            // If mdTaskMatch body is a wrapper containing nested section labels, cut before the first nested section
+            const innerCut = mdTaskMatch[1].search(
+                new RegExp(
+                    "\\n(?:Role|Persona|Context|Constraints?|Output|Format|Response\\s+Language|الدور|السياق|المخرجات|التنسيق)[ \\t]*:",
+                    "i"
+                )
+            );
+            task = innerCut !== -1 ? mdTaskMatch[1].slice(0, innerCut).trim() : mdTaskMatch[1].trim();
+        } else {
+            task = normalizedPrompt;
         }
 
-        let role = "";
-        if (roleMatch && roleMatch[1].trim()) {
-            role = roleMatch[1].trim().replace(/^Act as\s+/i, "").replace(/\.$/, "");
-        } else if (roleAnalysis.detectedRoleText) {
-            role = roleAnalysis.detectedRoleText.replace(/^Act as\s+/i, "").replace(/\.$/, "").trim();
+        // 3. Context
+        const mdContextMatch = optimized.match(
+            /(?:^|\n)###\s+(?:Context(?:\s*&|\s+and)?\s*Constraints?|Context|Constraints?|السياق(?:\s*والقيود)?|السياق|الخلفية)[^\n]*\n([\s\S]*?)(?=\n###|\n*$)/i
+        );
+        const explicitContextMatch = optimized.match(
+            new RegExp(
+                "(?:^|\\n)(?:Context(?:\\s*&|\\s+and)?\\s*Constraints?|Context|Constraints?|Technical\\s+Stack|Tech\\s*Stack|Background|السياق(?:\\s*والقيود)?|القيود(?:\\s*والمتطلبات)?|السياق|الخلفية)[ \\t]*:[ \\t]*\\n?([\\s\\S]*?)" +
+                    nextSectionLookahead,
+                "i"
+            )
+        );
+        let context = "";
+        if (mdContextMatch && mdContextMatch[1].trim()) {
+            context = mdContextMatch[1].trim();
+        } else if (explicitContextMatch && explicitContextMatch[1].trim()) {
+            context = explicitContextMatch[1].trim();
+        }
+
+        // 4. Output Format
+        const mdFormatMatch = optimized.match(
+            /(?:^|\n)###\s+(?:Desired\s+Output\s+Format|Output\s+Format|Format|التنسيق|تنسيق|المخرجات|صيغة\s+المخرجات)[^\n]*\n([\s\S]*?)(?=\n###|\n*$)/i
+        );
+        const explicitFormatMatch = optimized.match(
+            new RegExp(
+                "(?:^|\\n)(?:Desired\\s+Output\\s+Format|Output\\s+Format|Output|Format|التنسيق|تنسيق|المخرجات|صيغة\\s+المخرجات)[ \\t]*:[ \\t]*\\n?([\\s\\S]*?)" +
+                    nextSectionLookahead,
+                "i"
+            )
+        );
+        let outputFormat = "";
+        if (mdFormatMatch && mdFormatMatch[1].trim()) {
+            outputFormat = mdFormatMatch[1].trim();
+        } else if (explicitFormatMatch && explicitFormatMatch[1].trim()) {
+            outputFormat = explicitFormatMatch[1].trim();
+        }
+
+        // 5. Language
+        const mdLangMatch = optimized.match(
+            /(?:^|\n)###\s+(?:Response\s+Language|Output\s+Language|Language|لغة\s+الرد|اللغة)[^\n]*\n(?:Please provide the final response in\s+)?([^\n.]*)/i
+        );
+        const explicitLangMatch = optimized.match(
+            new RegExp(
+                "(?:^|\\n)(?:Response\\s+Language|Output\\s+Language|Language|لغة\\s+الرد|اللغة)[ \\t]*:[ \\t]*\\n?([\\s\\S]*?)" +
+                    nextSectionLookahead,
+                "i"
+            )
+        );
+        let language = "";
+        if (mdLangMatch && mdLangMatch[1].trim()) {
+            language = mdLangMatch[1].trim();
+        } else if (explicitLangMatch && explicitLangMatch[1].trim()) {
+            language = explicitLangMatch[1].trim().replace(/\.$/, "").trim();
+        }
+        if (language) {
+            if (/arabic|عربي/i.test(language)) language = "Arabic";
+            else if (/english|إنجليز/i.test(language)) language = "English";
+            else if (/spanish|إسبان/i.test(language)) language = "Spanish";
+            else if (/french|فرنس/i.test(language)) language = "French";
+            else if (/german|ألمان/i.test(language)) language = "German";
+        }
+
+        // 6. Guidelines (kept separate so they are not wrongly injected into Context)
+        const mdGuideMatch = optimized.match(
+            /(?:^|\n)###\s+(?:Guidelines(?:\s*&|\s+and)?\s*Negative\s*Constraints|Guidelines|Negative\s*Constraints|الإرشادات[^\n]*)\n([\s\S]*?)(?=\n###|\n*$)/i
+        );
+        const explicitGuideMatch = optimized.match(
+            new RegExp(
+                "(?:^|\\n)(?:Guidelines(?:\\s*&|\\s+and)?\\s*Negative\\s*Constraints|Guidelines|Negative\\s*Constraints|الإرشادات)[ \\t]*:[ \\t]*\\n?([\\s\\S]*?)" +
+                    nextSectionLookahead,
+                "i"
+            )
+        );
+        let guidelines = "";
+        if (mdGuideMatch && mdGuideMatch[1].trim()) {
+            guidelines = mdGuideMatch[1].trim();
+        } else if (explicitGuideMatch && explicitGuideMatch[1].trim()) {
+            guidelines = explicitGuideMatch[1].trim();
         }
 
         return {
             role,
-            task: taskMatch ? taskMatch[1].trim() : normalizedPrompt,
+            task,
             context,
-            outputFormat: formatMatch ? formatMatch[1].trim() : "",
+            outputFormat,
+            language: language || undefined,
+            guidelines: guidelines || undefined,
         };
     };
 

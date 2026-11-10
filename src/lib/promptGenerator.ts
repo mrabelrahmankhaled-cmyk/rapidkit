@@ -579,7 +579,7 @@ export function formatPromptForModel(
 function collectUnresolvedPlaceholders(fields: DecomposedPrompt): MissingInformationItem[] {
     const items: MissingInformationItem[] = [];
     const seen = new Set<string>();
-    const sources: Array<[keyof DecomposedPrompt, MissingInformationItem["targetField"]]> = [
+    const sources: Array<["role" | "task" | "context" | "outputFormat", MissingInformationItem["targetField"]]> = [
         ["role", "role"],
         ["task", "task"],
         ["context", "context"],

@@ -197,6 +197,7 @@ export interface SavedPrompt {
     context: string;
     outputFormat: string;
     language: string;
+    guidelines?: string;
 }
 
 export function PromptStudioTool() {
@@ -207,6 +208,7 @@ export function PromptStudioTool() {
     const [context, setContext] = useState(PRESETS[0].context);
     const [outputFormat, setOutputFormat] = useState(PRESETS[0].outputFormat);
     const [language, setLanguage] = useState(PRESETS[0].language);
+    const [guidelines, setGuidelines] = useState("");
     const [activePreset, setActivePreset] = useState<string | null>("react-debugging");
     const [copied, setCopied] = useState(false);
     const [favoriteSaved, setFavoriteSaved] = useState(false);
@@ -306,6 +308,7 @@ export function PromptStudioTool() {
         const t = task.trim();
         const c = context.trim();
         const f = outputFormat.trim();
+        const g = guidelines.trim();
         const lang = language.trim();
 
         // 1. Midjourney: Visual synthesis without text RTCF markdown or conversational language
@@ -329,6 +332,7 @@ export function PromptStudioTool() {
             if (t) sections.push(`<task>\n${t}\n</task>`);
             if (c) sections.push(`<context_and_constraints>\n${c}\n</context_and_constraints>`);
             if (f) sections.push(`<output_format>\n${f}\n</output_format>`);
+            if (g) sections.push(`<guidelines_and_constraints>\n${g}\n</guidelines_and_constraints>`);
             if (lang) sections.push(`<response_language>\nPlease provide the final response in ${lang}.\n</response_language>`);
             return sections.join("\n\n");
         }
@@ -340,6 +344,7 @@ export function PromptStudioTool() {
             if (t) sections.push(`**Task & Objectives:**\n${t}`);
             if (c) sections.push(`**Contextual Guidelines & Constraints:**\n${c}`);
             if (f) sections.push(`**Output Specification:**\n${f}`);
+            if (g) sections.push(`**Guidelines & Negative Constraints:**\n${g}`);
             if (lang) sections.push(`**Output Language:**\nPlease provide the final response in ${lang}.`);
             return sections.join("\n\n");
         }
@@ -350,17 +355,18 @@ export function PromptStudioTool() {
         if (t) sections.push(`### Task & Objective\n${t}`);
         if (c) sections.push(`### Context & Constraints\n${c}`);
         if (f) sections.push(`### Desired Output Format\n${f}`);
+        if (g) sections.push(`### Guidelines & Negative Constraints\n${g}`);
         if (lang) sections.push(`### Response Language\nPlease provide the final response in ${lang}.`);
         return sections.join("\n\n");
-    }, [targetModel, role, task, context, outputFormat, language]);
+    }, [targetModel, role, task, context, outputFormat, guidelines, language]);
 
     // ─── Bonus: Prompt Variables Detection ───────────────────────────
     const detectedVariables = useMemo(() => {
-        const fullContent = `${role} ${task} ${context} ${outputFormat}`;
+        const fullContent = `${role} ${task} ${context} ${outputFormat} ${guidelines}`;
         const matches = fullContent.match(/\{\{([a-zA-Z0-9_ -]+)\}\}/g);
         if (!matches) return [];
         return Array.from(new Set(matches));
-    }, [role, task, context, outputFormat]);
+    }, [role, task, context, outputFormat, guidelines]);
 
     // ─── Metrics ─────────────────────────────────────────────────────
     const charCount = constructedPrompt.length;
@@ -376,6 +382,7 @@ export function PromptStudioTool() {
         setContext(preset.context);
         setOutputFormat(preset.outputFormat);
         setLanguage(preset.language);
+        setGuidelines("");
         setActivePreset(preset.id);
     };
 
@@ -385,6 +392,7 @@ export function PromptStudioTool() {
         setContext("");
         setOutputFormat("");
         setLanguage("English");
+        setGuidelines("");
         setActivePreset(null);
     };
 
@@ -408,11 +416,12 @@ export function PromptStudioTool() {
             context,
             outputFormat,
             language,
+            guidelines,
         };
 
         const updatedHistory = [entry, ...history.filter((h) => h.role !== role || h.task !== task)].slice(0, 10);
         saveHistoryToStorage(updatedHistory);
-    }, [constructedPrompt, role, task, context, outputFormat, language, targetModel, history, saveHistoryToStorage]);
+    }, [constructedPrompt, role, task, context, outputFormat, guidelines, language, targetModel, history, saveHistoryToStorage]);
 
     // Save to Favorites (indefinite storage)
     const handleSaveToFavorites = () => {
@@ -428,6 +437,7 @@ export function PromptStudioTool() {
             context,
             outputFormat,
             language,
+            guidelines,
         };
 
         const updatedFavs = [newFav, ...favorites.filter((f) => f.role !== role || f.task !== task)];
@@ -444,6 +454,7 @@ export function PromptStudioTool() {
         setOutputFormat(item.outputFormat);
         setLanguage(item.language || "English");
         setTargetModel(item.model || "chatgpt");
+        setGuidelines(item.guidelines || "");
         setActivePreset(null);
     };
 
@@ -492,6 +503,7 @@ export function PromptStudioTool() {
                 context,
                 outputFormat,
                 language,
+                guidelines,
             };
             const filtered = history.filter((h) => h.role !== role || h.task !== task);
             saveHistoryToStorage([currentDraft, ...filtered].slice(0, 10));
@@ -501,6 +513,7 @@ export function PromptStudioTool() {
         setTask(template.task);
         setContext(template.context);
         setOutputFormat(template.outputFormat);
+        setGuidelines("");
         setActivePreset(null);
 
         // Switch model only if user was on Midjourney and template is text-based (or vice-versa)
@@ -523,7 +536,7 @@ export function PromptStudioTool() {
         if (typeof window !== "undefined") {
             window.scrollTo({ top: 100, behavior: "smooth" });
         }
-    }, [role, task, context, outputFormat, language, targetModel, history, saveHistoryToStorage]);
+    }, [role, task, context, outputFormat, guidelines, language, targetModel, history, saveHistoryToStorage]);
 
     // Send to Builder Handler from Optimizer or Generator (safe against destroying active draft)
     const handleLoadFromOptimizer = useCallback(
@@ -541,6 +554,7 @@ export function PromptStudioTool() {
                     context,
                     outputFormat,
                     language,
+                    guidelines,
                 };
                 const filtered = history.filter((h) => h.role !== role || h.task !== task);
                 saveHistoryToStorage([currentDraft, ...filtered].slice(0, 10));
@@ -551,15 +565,19 @@ export function PromptStudioTool() {
                 if (decomposed.task) setTask(decomposed.task);
                 if (decomposed.context) setContext(decomposed.context);
                 if (decomposed.outputFormat) setOutputFormat(decomposed.outputFormat);
+                if (decomposed.language) setLanguage(decomposed.language);
+                if (decomposed.guidelines !== undefined) setGuidelines(decomposed.guidelines);
                 setActivePreset(null);
             } else if (decomposed) {
                 setRole(decomposed.role);
                 setTask(decomposed.task);
                 setContext(decomposed.context);
                 setOutputFormat(decomposed.outputFormat);
+                if (decomposed.language) setLanguage(decomposed.language);
+                if (decomposed.guidelines !== undefined) setGuidelines(decomposed.guidelines);
                 setActivePreset(null);
 
-                const fullContent = `${decomposed.role} ${decomposed.task} ${decomposed.context} ${decomposed.outputFormat}`;
+                const fullContent = `${decomposed.role} ${decomposed.task} ${decomposed.context} ${decomposed.outputFormat} ${decomposed.guidelines || ""}`;
                 const matches = fullContent.match(/\{\{([^}]+)\}\}/g);
                 if (matches && matches.length > 0) {
                     const nextVars: Record<string, string> = {};
@@ -577,7 +595,7 @@ export function PromptStudioTool() {
                 window.scrollTo({ top: 100, behavior: "smooth" });
             }
         },
-        [role, task, context, outputFormat, language, targetModel, history, saveHistoryToStorage]
+        [role, task, context, outputFormat, guidelines, language, targetModel, history, saveHistoryToStorage]
     );
 
     // Shared Copy & Auto-Save History Handler for Generator
@@ -606,7 +624,8 @@ export function PromptStudioTool() {
                 task: fields.task,
                 context: fields.context,
                 outputFormat: fields.outputFormat,
-                language,
+                language: fields.language || language,
+                guidelines: fields.guidelines || "",
             };
 
             const updatedHistory = [
@@ -636,7 +655,8 @@ export function PromptStudioTool() {
                 task: fields.task,
                 context: fields.context,
                 outputFormat: fields.outputFormat,
-                language,
+                language: fields.language || language,
+                guidelines: fields.guidelines || "",
             };
 
             const updatedFavs = [

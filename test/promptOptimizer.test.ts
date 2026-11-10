@@ -610,7 +610,7 @@ Output Format: Clean code with unit tests`;
 
     // Decompose must extract each field separately without leakage
     const decomposed = res.decomposePrompt([]);
-    assert.strictEqual(decomposed.outputFormat, ""); // was not accepted yet
+    assert.strictEqual(decomposed.outputFormat, "Clean code with unit tests");
     assert.ok(!decomposed.context.includes("Output Format"));
 });
 
@@ -873,4 +873,223 @@ Technical approach and implementation code`;
     const decomposedWithRole = resRolePreserve.decomposePrompt(["role-definition-test"]);
     assert.ok(decomposedWithRole.role.includes("Senior Software Engineer and System Architect"), "Original role preserved in decomposePrompt");
     assert.ok(decomposedWithRole.role.includes("Lead Systems Architect"), "New role addition present in decomposePrompt");
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 6.7: Send to Prompt Builder Data Mapping Regression Tests
+// ─────────────────────────────────────────────────────────────────────────────
+
+test("Phase 6.7: Exact live reproduction prompt decomposition and Builder data mapping", () => {
+    // Exact live reproduction prompt
+    const liveReproPrompt = `### Task & Objective
+Role: Senior Software Engineer and System Architect.
+
+Task: Build a responsive SaaS dashboard using React and TypeScript.
+
+Context:
+- React and TypeScript are already specified.
+- Follow production-grade engineering standards.
+- Use strict typing and maintainable modular architecture.
+- Build a maintainable and modular codebase.
+- Avoid unnecessary dependencies.
+
+Output:
+- Explain the technical approach and root causes.
+- Provide clean, modular implementation.
+- Cover edge cases and verification steps.
+
+Response Language: English.
+
+### Guidelines & Negative Constraints
+- Avoid pleasantries, conversational filler, or self-evident introductions. Deliver direct, high-density actionable content.`;
+
+    const res = optimizePrompt(liveReproPrompt);
+    const decomposed = res.decomposePrompt([]);
+
+    // 1. Role = Senior Software Engineer and System Architect
+    assert.strictEqual(
+        decomposed.role,
+        "Senior Software Engineer and System Architect",
+        "Role must be cleanly extracted without label or period"
+    );
+
+    // 2. Task = Build a responsive SaaS dashboard using React and TypeScript.
+    assert.strictEqual(
+        decomposed.task,
+        "Build a responsive SaaS dashboard using React and TypeScript.",
+        "Task must contain only the task directive, not the whole prompt"
+    );
+
+    // 3. Context preserves all five original context constraints
+    assert.ok(decomposed.context.includes("React and TypeScript are already specified."));
+    assert.ok(decomposed.context.includes("Follow production-grade engineering standards."));
+    assert.ok(decomposed.context.includes("Use strict typing and maintainable modular architecture."));
+    assert.ok(decomposed.context.includes("Build a maintainable and modular codebase."));
+    assert.ok(decomposed.context.includes("Avoid unnecessary dependencies."));
+    const contextBullets = decomposed.context.split("\n").filter((l) => l.trim().startsWith("-"));
+    assert.strictEqual(contextBullets.length, 5, "Context must preserve all five original bullet points");
+
+    // 4. Output Format preserves the three original output requirements
+    assert.ok(decomposed.outputFormat.includes("Explain the technical approach and root causes."));
+    assert.ok(decomposed.outputFormat.includes("Provide clean, modular implementation."));
+    assert.ok(decomposed.outputFormat.includes("Cover edge cases and verification steps."));
+    const outputBullets = decomposed.outputFormat.split("\n").filter((l) => l.trim().startsWith("-"));
+    assert.strictEqual(outputBullets.length, 3, "Output format must preserve all three original bullet points");
+
+    // 5. Language = English
+    assert.strictEqual(decomposed.language, "English", "Language must be English");
+
+    // 6. Specificity guideline is not inserted into Context
+    assert.ok(
+        !decomposed.context.includes("Avoid pleasantries"),
+        "Specificity guideline must not be inserted into Context"
+    );
+
+    // 7. Specificity guideline is not silently lost
+    assert.ok(
+        decomposed.guidelines?.includes("Avoid pleasantries"),
+        "Specificity guideline must be preserved in guidelines field"
+    );
+
+    // 8. No duplicated sections or nested full-prompt content in any field
+    assert.ok(!decomposed.task.includes("Role:"), "Task must not contain Role label");
+    assert.ok(!decomposed.task.includes("Context:"), "Task must not contain Context label");
+    assert.ok(!decomposed.task.includes("Output:"), "Task must not contain Output label");
+    assert.ok(!decomposed.role.includes("Task:"), "Role must not contain Task label");
+    assert.ok(!decomposed.context.includes("Output:"), "Context must not contain Output label");
+});
+
+test("Phase 6.7: Raw colon-labeled prompt optimization lifecycle (Accept All, Reset, Send to Builder)", () => {
+    const rawColonPrompt = `Role: Senior Software Engineer and System Architect.
+
+Task: Build a responsive SaaS dashboard using React and TypeScript.
+
+Context:
+- React and TypeScript are already specified.
+- Follow production-grade engineering standards.
+- Use strict typing and maintainable modular architecture.
+- Build a maintainable and modular codebase.
+- Avoid unnecessary dependencies.
+
+Output:
+- Explain the technical approach and root causes.
+- Provide clean, modular implementation.
+- Cover edge cases and verification steps.
+
+Response Language: English.`;
+
+    const res = optimizePrompt(rawColonPrompt);
+
+    // Score must be 100/100
+    assert.strictEqual(res.score.overall, 100);
+
+    // 1. Accept All followed by decompose
+    const allIds = res.suggestions.map((s) => s.id);
+    const decomposedAll = res.decomposePrompt(allIds);
+
+    assert.strictEqual(decomposedAll.role, "Senior Software Engineer and System Architect");
+    assert.strictEqual(decomposedAll.task, "Build a responsive SaaS dashboard using React and TypeScript.");
+    assert.strictEqual(decomposedAll.context.split("\n").filter((l) => l.trim().startsWith("-")).length, 5);
+    assert.strictEqual(decomposedAll.outputFormat.split("\n").filter((l) => l.trim().startsWith("-")).length, 3);
+    assert.strictEqual(decomposedAll.language, "English");
+    assert.ok(decomposedAll.guidelines?.includes("Avoid pleasantries"));
+    assert.ok(!decomposedAll.context.includes("Avoid pleasantries"));
+
+    // 2. Reset (empty or default suggestions) followed by decompose
+    const decomposedReset = res.decomposePrompt([]);
+    assert.strictEqual(decomposedReset.role, "Senior Software Engineer and System Architect");
+    assert.strictEqual(decomposedReset.task, "Build a responsive SaaS dashboard using React and TypeScript.");
+    assert.strictEqual(decomposedReset.context.split("\n").filter((l) => l.trim().startsWith("-")).length, 5);
+    assert.strictEqual(decomposedReset.outputFormat.split("\n").filter((l) => l.trim().startsWith("-")).length, 3);
+    assert.strictEqual(decomposedReset.language, "English");
+
+    // 3. Repeated calls are idempotent and return identical values
+    const rep1 = res.decomposePrompt(allIds);
+    const rep2 = res.decomposePrompt(allIds);
+    assert.deepStrictEqual(rep1, rep2);
+
+    // 4. Verify Builder's final generated prompt when constructed with these fields
+    const r = decomposedAll.role.trim();
+    const t = decomposedAll.task.trim();
+    const c = decomposedAll.context.trim();
+    const f = decomposedAll.outputFormat.trim();
+    const g = (decomposedAll.guidelines || "").trim();
+    const lang = (decomposedAll.language || "English").trim();
+
+    const sections: string[] = [];
+    if (r) sections.push(`### Role & Persona\n${r}`);
+    if (t) sections.push(`### Task & Objective\n${t}`);
+    if (c) sections.push(`### Context & Constraints\n${c}`);
+    if (f) sections.push(`### Desired Output Format\n${f}`);
+    if (g) sections.push(`### Guidelines & Negative Constraints\n${g}`);
+    if (lang) sections.push(`### Response Language\nPlease provide the final response in ${lang}.`);
+    const builderPrompt = sections.join("\n\n");
+
+    // Assert final prompt structure
+    assert.ok(builderPrompt.includes("### Role & Persona\nSenior Software Engineer and System Architect"));
+    assert.ok(builderPrompt.includes("### Task & Objective\nBuild a responsive SaaS dashboard using React and TypeScript."));
+    assert.ok(builderPrompt.includes("### Context & Constraints\n- React and TypeScript are already specified."));
+    assert.ok(builderPrompt.includes("### Desired Output Format\n- Explain the technical approach and root causes."));
+    assert.ok(builderPrompt.includes("### Guidelines & Negative Constraints\n- Avoid pleasantries"));
+    assert.ok(builderPrompt.includes("### Response Language\nPlease provide the final response in English."));
+
+    // Verify no section duplication
+    assert.strictEqual((builderPrompt.match(/### Role & Persona/g) || []).length, 1);
+    assert.strictEqual((builderPrompt.match(/### Task & Objective/g) || []).length, 1);
+    assert.strictEqual((builderPrompt.match(/### Context & Constraints/g) || []).length, 1);
+    assert.strictEqual((builderPrompt.match(/### Desired Output Format/g) || []).length, 1);
+    assert.strictEqual((builderPrompt.match(/### Guidelines & Negative Constraints/g) || []).length, 1);
+});
+
+test("Phase 6.7: Edge cases (empty sections, missing sections, Arabic headings and colon labels)", () => {
+    // 1. Missing sections
+    const partialPrompt = `Task: Simple calculation function
+Context: Python 3.12`;
+    const resPartial = optimizePrompt(partialPrompt);
+    const decPartial = resPartial.decomposePrompt([]);
+    assert.strictEqual(decPartial.task, "Simple calculation function");
+    assert.strictEqual(decPartial.context, "Python 3.12");
+    assert.strictEqual(decPartial.role, "");
+    assert.strictEqual(decPartial.outputFormat, "");
+
+    // 2. Arabic colon-labeled prompt with all fields
+    const arabicColonPrompt = `الدور: مهندس نظم متكاملة
+المهمة: بناء بوابة دفع إلكتروني
+السياق: Node.js, Express, PostgreSQL, معايير أمان عالية
+التنسيق: كود برمجي موثق مع معالجة الأخطاء
+لغة الرد: العربية
+الإرشادات: تجنب الردود التمهيدية الطويلة`;
+
+    const resArColon = optimizePrompt(arabicColonPrompt);
+    const decArColon = resArColon.decomposePrompt([]);
+    assert.strictEqual(decArColon.role, "مهندس نظم متكاملة");
+    assert.strictEqual(decArColon.task, "بناء بوابة دفع إلكتروني");
+    assert.strictEqual(decArColon.context, "Node.js, Express, PostgreSQL, معايير أمان عالية");
+    assert.strictEqual(decArColon.outputFormat, "كود برمجي موثق مع معالجة الأخطاء");
+    assert.strictEqual(decArColon.language, "Arabic");
+    assert.strictEqual(decArColon.guidelines, "تجنب الردود التمهيدية الطويلة");
+
+    // 3. Arabic Markdown headings
+    const arabicMdPrompt = `### الشخصية
+خبير أمان سيبراني ومراجع كود
+
+### المهمة
+فحص الثغرات الأمنية في مسار تسجيل الدخول
+
+### السياق والقيود
+Next.js, NextAuth, JWT, معايير OWASP
+
+### التنسيق
+تقرير تحليلي مع خطوات المعالجة
+
+### الإرشادات
+- لا تقدم افتراضات غير مؤكدة`;
+
+    const resArMd = optimizePrompt(arabicMdPrompt);
+    const decArMd = resArMd.decomposePrompt([]);
+    assert.strictEqual(decArMd.role, "خبير أمان سيبراني ومراجع كود");
+    assert.strictEqual(decArMd.task, "فحص الثغرات الأمنية في مسار تسجيل الدخول");
+    assert.strictEqual(decArMd.context, "Next.js, NextAuth, JWT, معايير OWASP");
+    assert.strictEqual(decArMd.outputFormat, "تقرير تحليلي مع خطوات المعالجة");
+    assert.strictEqual(decArMd.guidelines, "- لا تقدم افتراضات غير مؤكدة");
 });
