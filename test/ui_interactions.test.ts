@@ -979,3 +979,98 @@ Response Language: English.`;
     assert.strictEqual((constructed.match(/### Guidelines & Negative Constraints/g) || []).length, 1);
     assert.strictEqual((constructed.match(/### Response Language/g) || []).length, 1);
 });
+
+test("Phase 6.9A Behavioral: Cross-Tab Model Synchronization (Midjourney recovery to ChatGPT upon Send to Builder)", () => {
+    interface SavedPrompt {
+        id: string;
+        timestamp: number;
+        title: string;
+        model: string;
+        role: string;
+        task: string;
+        context: string;
+        outputFormat: string;
+        language: string;
+        guidelines?: string;
+    }
+
+    let targetModel = "midjourney";
+    let activeTab = "optimizer";
+    let history: SavedPrompt[] = [];
+    let builderRole = "";
+    let builderTask = "A cybernetic neon city at twilight, 8k render";
+    let builderContext = "";
+    let builderOutputFormat = "";
+    let builderLanguage = "English";
+    let builderGuidelines = "";
+
+    const handleLoadFromOptimizer = (decomposed?: DecomposedPrompt, replaceAll = false) => {
+        // Guard against silent data loss: preserve current work to history before loading
+        if (builderRole.trim() || builderTask.trim()) {
+            const currentDraft: SavedPrompt = {
+                id: Date.now().toString(),
+                timestamp: Date.now(),
+                title: builderRole.trim() || builderTask.trim().slice(0, 36) || `${targetModel.toUpperCase()} Draft`,
+                model: targetModel,
+                role: builderRole,
+                task: builderTask,
+                context: builderContext,
+                outputFormat: builderOutputFormat,
+                language: builderLanguage,
+                guidelines: builderGuidelines,
+            };
+            const filtered = history.filter((h) => h.role !== builderRole || h.task !== builderTask);
+            history = [currentDraft, ...filtered].slice(0, 10);
+        }
+
+        if (targetModel === "midjourney") {
+            targetModel = "chatgpt";
+        }
+
+        if (decomposed && replaceAll) {
+            builderRole = decomposed.role;
+            builderTask = decomposed.task;
+            builderContext = decomposed.context;
+            builderOutputFormat = decomposed.outputFormat;
+            if (decomposed.language) builderLanguage = decomposed.language;
+            if (decomposed.guidelines !== undefined) builderGuidelines = decomposed.guidelines;
+        }
+
+        activeTab = "builder";
+    };
+
+    // 1. Simulate Send to Builder while targetModel was "midjourney"
+    const incomingDecomposed: DecomposedPrompt = {
+        role: "Senior Full Stack Engineer",
+        task: "Build an event-driven notification service in TypeScript",
+        context: "- Redis Streams, PostgreSQL, WebSockets",
+        outputFormat: "- Architecture overview\n- Code implementation",
+        language: "English",
+        guidelines: "- Do not use polling",
+    };
+
+    handleLoadFromOptimizer(incomingDecomposed, true);
+
+    // Verify draft was safely saved into history with midjourney model tag
+    assert.strictEqual(history.length, 1);
+    assert.strictEqual(history[0].model, "midjourney");
+    assert.strictEqual(history[0].task, "A cybernetic neon city at twilight, 8k render");
+
+    // Verify targetModel was automatically restored from midjourney to chatgpt
+    assert.strictEqual(targetModel, "chatgpt", "Model must switch from midjourney to chatgpt upon loading RTCF prompt");
+    assert.strictEqual(activeTab, "builder");
+    assert.strictEqual(builderRole, "Senior Full Stack Engineer");
+    assert.strictEqual(builderTask, "Build an event-driven notification service in TypeScript");
+    assert.strictEqual(builderContext, "- Redis Streams, PostgreSQL, WebSockets");
+    assert.strictEqual(builderOutputFormat, "- Architecture overview\n- Code implementation");
+    assert.strictEqual(builderGuidelines, "- Do not use polling");
+
+    // 2. Verify Claude and Gemini models are preserved without switching
+    targetModel = "claude";
+    handleLoadFromOptimizer(incomingDecomposed, true);
+    assert.strictEqual(targetModel, "claude", "Claude model must be preserved without switching");
+
+    targetModel = "gemini";
+    handleLoadFromOptimizer(incomingDecomposed, true);
+    assert.strictEqual(targetModel, "gemini", "Gemini model must be preserved without switching");
+});

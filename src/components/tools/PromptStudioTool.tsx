@@ -560,6 +560,10 @@ export function PromptStudioTool() {
                 saveHistoryToStorage([currentDraft, ...filtered].slice(0, 10));
             }
 
+            if (targetModel === "midjourney") {
+                setTargetModel("chatgpt");
+            }
+
             if (decomposed && !replaceAll) {
                 if (decomposed.role) setRole(decomposed.role);
                 if (decomposed.task) setTask(decomposed.task);

@@ -8,6 +8,10 @@ import {
     detectSpecificity,
     detectConstraints,
     GENERIC_OPTIMIZER_PHRASES,
+    RECOGNIZED_MD_HEADERS,
+    COLON_SECTION_LABEL_PATTERN,
+    decomposeStructuredPrompt,
+    maskFencedCodeBlocks,
     type InferredDomain,
     type DecomposedPrompt,
 } from "./promptOptimizer.ts";
@@ -289,11 +293,8 @@ function extractLanguageValue(rawSection: string): string | undefined {
     return trimmed;
 }
 
-const RECOGNIZED_MD_HEADERS =
-    "Role\\s*&\\s*Persona|Role\\s+and\\s+Persona|Role|Persona|Task\\s*&\\s*Objective|Task\\s+and\\s+Objective|Task|Objective|Context\\s*&\\s*Constraints|Context\\s+and\\s+Constraints|Context|Constraints|Guidelines\\s*&\\s*Negative\\s*Constraints|Desired\\s+Output\\s+Format|Output\\s+Format|Format|Response\\s+Language";
-
 /**
- * Parses an already-structured prompt (ChatGPT Markdown, Claude XML, Gemini bold headers, or Midjourney)
+ * Parses an already-structured prompt (ChatGPT Markdown, Claude XML, Gemini bold headers, Colon-labeled RTCF, or Midjourney)
  * so existing structured prompts are preserved and converted cleanly without header duplication.
  */
 export function parseExistingStructuredPrompt(text: string): ParsedStructuredPrompt | null {
@@ -323,29 +324,31 @@ export function parseExistingStructuredPrompt(text: string): ParsedStructuredPro
     const xmlTask = extractXml("task");
     const xmlContext = extractXml("context_and_constraints");
     const xmlFormat = extractXml("output_format");
+    const xmlGuide = extractXml("guidelines");
     const xmlLang = extractLanguageValue(extractXml("response_language"));
 
-    const matchedXmlCount = [xmlRole, xmlTask, xmlContext, xmlFormat].filter(Boolean).length;
+    const matchedXmlCount = [xmlRole, xmlTask, xmlContext, xmlFormat, xmlGuide].filter(Boolean).length;
     if (matchedXmlCount >= 2 || (xmlTask && /^\s*<(?:role|task)>/i.test(trimmed))) {
         return {
             role: xmlRole,
             task: xmlTask || trimmed,
             context: xmlContext,
             outputFormat: xmlFormat,
-            ...(xmlLang ? { responseLanguage: xmlLang } : {}),
+            ...(xmlGuide ? { guidelines: xmlGuide } : {}),
+            ...(xmlLang ? { responseLanguage: xmlLang, language: xmlLang } : {}),
         };
     }
 
     // 3. Gemini Bold Directive format
     if (
-        /(?:^|\n)\*\*(?:Primary Directive & Persona|Task & Objectives|Contextual Guidelines & Constraints|Output Specification):\*\*/i.test(
+        /(?:^|\n)\*\*(?:Primary Directive & Persona|Task & Objectives|Contextual Guidelines & Constraints|Output Specification|Guidelines & Negative Constraints):\*\*/i.test(
             trimmed
         )
     ) {
         const extractGemini = (header: string): string => {
             const escaped = header.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
             const regex = new RegExp(
-                `(?:^|\\n)\\*\\*${escaped}:\\*\\*[ \\t]*\\r?\\n([\\s\\S]*?)(?=\\r?\\n\\r?\\n\\*\\*(?:Primary Directive & Persona|Task & Objectives|Contextual Guidelines & Constraints|Output Specification|Output Language):\\*\\*|$)`,
+                `(?:^|\\n)\\*\\*${escaped}:\\*\\*[ \\t]*\\r?\\n([\\s\\S]*?)(?=\\r?\\n\\r?\\n\\*\\*(?:Primary Directive & Persona|Task & Objectives|Contextual Guidelines & Constraints|Output Specification|Guidelines & Negative Constraints|Output Language):\\*\\*|$)`,
                 "i"
             );
             const match = trimmed.match(regex);
@@ -356,48 +359,38 @@ export function parseExistingStructuredPrompt(text: string): ParsedStructuredPro
         const gTask = extractGemini("Task & Objectives");
         const gContext = extractGemini("Contextual Guidelines & Constraints");
         const gFormat = extractGemini("Output Specification");
+        const gGuide = extractGemini("Guidelines & Negative Constraints");
         const gLang = extractLanguageValue(extractGemini("Output Language"));
 
-        if ([gRole, gTask, gContext, gFormat].filter(Boolean).length >= 1) {
+        if ([gRole, gTask, gContext, gFormat, gGuide].filter(Boolean).length >= 1) {
             return {
                 role: gRole,
                 task: gTask || trimmed,
                 context: gContext,
                 outputFormat: gFormat,
-                ...(gLang ? { responseLanguage: gLang } : {}),
+                ...(gGuide ? { guidelines: gGuide } : {}),
+                ...(gLang ? { responseLanguage: gLang, language: gLang } : {}),
             };
         }
     }
 
-    // 4. ChatGPT H3 Markdown format — only delimited by recognized RTCF headers so arbitrary H3 headings inside sections are preserved
-    if (
-        new RegExp(`(?:^|\\n)###[ \\t]+(?:${RECOGNIZED_MD_HEADERS})[ \\t]*(?:\\r?\\n|$)`, "i").test(trimmed)
-    ) {
-        const extractMd = (headerPattern: string): string => {
-            const regex = new RegExp(
-                `(?:^|\\n)###[ \\t]+(?:${headerPattern})[ \\t]*\\r?\\n([\\s\\S]*?)(?=\\r?\\n###[ \\t]+(?:${RECOGNIZED_MD_HEADERS})[ \\t]*(?:\\r?\\n|$)|$)`,
-                "i"
-            );
-            const match = trimmed.match(regex);
-            return match ? match[1].trim() : "";
-        };
+    // 4. Markdown headings & 5. Colon-labeled sections (English or Arabic RTCF headings) outside fenced code blocks
+    const { maskedText } = maskFencedCodeBlocks(trimmed);
+    const hasMdHeadings = new RegExp(`(?:^|\\n)#{1,6}[ \\t]+(?:${RECOGNIZED_MD_HEADERS})[ \\t]*(?:\\r?\\n|$)`, "i").test(maskedText);
 
-        const role = extractMd("Role\\s*&\\s*Persona|Role\\s+and\\s+Persona|Role|Persona");
-        const task = extractMd("Task\\s*&\\s*Objective|Task\\s+and\\s+Objective|Task|Objective");
-        const context = extractMd("Context\\s*&\\s*Constraints|Context\\s+and\\s+Constraints|Context|Constraints");
-        const extraConstraints = extractMd("Guidelines\\s*&\\s*Negative\\s*Constraints");
-        const outputFormat = extractMd("Desired\\s+Output\\s+Format|Output\\s+Format|Format");
-        const mdLang = extractLanguageValue(extractMd("Response\\s+Language"));
+    // Colon-labeled sections (English or Arabic, at least 2 labels or Task + Context/Format/Role/Guidelines/Language)
+    const colonMatches = maskedText.match(new RegExp(`^[ \\t]*${COLON_SECTION_LABEL_PATTERN}`, "gim")) || [];
+    const hasColonSections =
+        colonMatches.length >= 2 ||
+        (/(?:^|\n)(?:Task|Objective|Goal|المهمة|الهدف)[ \t]*:/i.test(maskedText) &&
+            /(?:^|\n)(?:Context|Output|Format|Role|Guidelines|Response\s+Language|السياق|القيود|التنسيق|المخرجات|الدور|الإرشادات|اللغة)[ \t]*:/i.test(maskedText));
 
-        const combinedContext = [context, extraConstraints].filter(Boolean).join("\n\n");
-
-        if ([role, task, combinedContext, outputFormat].filter(Boolean).length >= 1) {
+    if (hasMdHeadings || hasColonSections) {
+        const decomposed = decomposeStructuredPrompt(trimmed);
+        if ([decomposed.role, decomposed.task, decomposed.context, decomposed.outputFormat, decomposed.guidelines].filter(Boolean).length >= 1) {
             return {
-                role,
-                task: task || trimmed,
-                context: combinedContext,
-                outputFormat,
-                ...(mdLang ? { responseLanguage: mdLang } : {}),
+                ...decomposed,
+                responseLanguage: decomposed.language,
             };
         }
     }
@@ -517,9 +510,10 @@ export function formatPromptForModel(
     const t = fields.task.trim();
     const c = fields.context.trim();
     const f = fields.outputFormat.trim();
-    const lang = responseLanguage ? responseLanguage.trim() : "";
+    const g = fields.guidelines?.trim();
+    const lang = responseLanguage ? responseLanguage.trim() : (fields.language ? fields.language.trim() : "");
 
-    if (!r && !t && !c && !f) {
+    if (!r && !t && !c && !f && !g) {
         return "";
     }
 
@@ -551,6 +545,7 @@ export function formatPromptForModel(
         if (t) sections.push(`<task>\n${t}\n</task>`);
         if (c) sections.push(`<context_and_constraints>\n${c}\n</context_and_constraints>`);
         if (f) sections.push(`<output_format>\n${f}\n</output_format>`);
+        if (g) sections.push(`<guidelines>\n${g}\n</guidelines>`);
         if (lang) sections.push(`<response_language>\nPlease provide the final response in ${lang}.\n</response_language>`);
         return sections.join("\n\n");
     }
@@ -562,6 +557,7 @@ export function formatPromptForModel(
         if (t) sections.push(`**Task & Objectives:**\n${t}`);
         if (c) sections.push(`**Contextual Guidelines & Constraints:**\n${c}`);
         if (f) sections.push(`**Output Specification:**\n${f}`);
+        if (g) sections.push(`**Guidelines & Negative Constraints:**\n${g}`);
         if (lang) sections.push(`**Output Language:**\nPlease provide the final response in ${lang}.`);
         return sections.join("\n\n");
     }
@@ -572,6 +568,7 @@ export function formatPromptForModel(
     if (t) sections.push(`### Task & Objective\n${t}`);
     if (c) sections.push(`### Context & Constraints\n${c}`);
     if (f) sections.push(`### Desired Output Format\n${f}`);
+    if (g) sections.push(`### Guidelines & Negative Constraints\n${g}`);
     if (lang) sections.push(`### Response Language\nPlease provide the final response in ${lang}.`);
     return sections.join("\n\n");
 }
@@ -787,9 +784,11 @@ export function generatePrompt(
             task: existingStructured.task,
             context: existingStructured.context,
             outputFormat: existingStructured.outputFormat,
+            ...(existingStructured.guidelines ? { guidelines: existingStructured.guidelines } : {}),
+            ...(existingStructured.language ? { language: existingStructured.language } : {}),
         };
 
-        const effectiveLanguage = responseLanguage ?? existingStructured.responseLanguage;
+        const effectiveLanguage = responseLanguage ?? existingStructured.responseLanguage ?? existingStructured.language;
         const wasMidjourneyInput = /^\/imagine\s+prompt:\s*/i.test(normalizedInput);
         const cleanedStructuredTask = cleanVisualTaskForMidjourney(fields.task || normalizedInput);
         const structuredTaskDomain = inferDomain(cleanedStructuredTask);

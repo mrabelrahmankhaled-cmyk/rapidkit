@@ -692,3 +692,215 @@ test("Generator 12: Already-structured prompts still report their unresolved pla
         ["{{Role_X}}", "{{Other}}"]
     );
 });
+
+test("Generator 13: Arabic Markdown structured prompt parsing and non-nesting (Phase 6.9A)", () => {
+    const arabicMd = `### الدور
+خبير في تطوير واجهات المستخدم وتجربة المستخدم
+
+### المهمة
+بناء لوحة تحكم متجاوبة وتفاعلية باستخدام React وTypeScript
+
+### السياق والقيود
+- التقنيات: Next.js 14, Tailwind CSS, TypeScript
+- الالتزام بأعلى معايير إمكانية الوصول والتوافق مع الجوال
+- دعم الوضع المظلم والفاتح
+
+### صيغة المخرجات
+- هيكل المكونات والأنواع
+- كود نظيف ومعياري مع توثيق الدوال
+
+### لغة الرد
+العربية
+
+### الإرشادات
+- تجنب الحشو والترحيبات الإنشائية واطرح الحلول مباشرة`;
+
+    const parsed = parseExistingStructuredPrompt(arabicMd);
+    assert.ok(parsed, "parseExistingStructuredPrompt must recognize Arabic Markdown headings");
+    assert.strictEqual(parsed.role, "خبير في تطوير واجهات المستخدم وتجربة المستخدم");
+    assert.strictEqual(parsed.task, "بناء لوحة تحكم متجاوبة وتفاعلية باستخدام React وTypeScript");
+    assert.ok(parsed.context.includes("Next.js 14, Tailwind CSS, TypeScript"));
+    assert.ok(parsed.context.includes("دعم الوضع المظلم والفاتح"));
+    assert.ok(parsed.outputFormat.includes("هيكل المكونات والأنواع"));
+    assert.strictEqual(parsed.language, "Arabic");
+    assert.strictEqual(parsed.guidelines, "- تجنب الحشو والترحيبات الإنشائية واطرح الحلول مباشرة");
+
+    // Must not nest into task or duplicate inferred context
+    const gen = generatePrompt(arabicMd);
+    assert.strictEqual(gen.metadata.userProvided.wasAlreadyStructured, true);
+    assert.strictEqual(gen.fields.task, "بناء لوحة تحكم متجاوبة وتفاعلية باستخدام React وTypeScript");
+    assert.strictEqual(gen.fields.role, "خبير في تطوير واجهات المستخدم وتجربة المستخدم");
+    assert.strictEqual(gen.metadata.genericBestPractices.length, 0);
+    assert.strictEqual(gen.metadata.inferred.inferredRole, null);
+    assert.strictEqual(gen.metadata.inferred.inferredFormat, null);
+
+    // Also support alternative Arabic labels: الشخصية, الهدف, السياق, التنسيق, المخرجات, اللغة
+    const arabicAltMd = `## الشخصية
+مهندس ذكاء اصطناعي
+
+## الهدف
+تحليل ومعالجة البيانات الضخمة
+
+## السياق
+Python, Pandas, PySpark
+
+## التنسيق
+سكريبت بايثون مع أمثلة
+
+## اللغة
+العربية`;
+
+    const parsedAlt = parseExistingStructuredPrompt(arabicAltMd);
+    assert.ok(parsedAlt);
+    assert.strictEqual(parsedAlt.role, "مهندس ذكاء اصطناعي");
+    assert.strictEqual(parsedAlt.task, "تحليل ومعالجة البيانات الضخمة");
+    assert.strictEqual(parsedAlt.context, "Python, Pandas, PySpark");
+    assert.strictEqual(parsedAlt.outputFormat, "سكريبت بايثون مع أمثلة");
+    assert.strictEqual(parsedAlt.language, "Arabic");
+});
+
+test("Generator 14: Colon-labeled structured prompt parsing (English, Arabic, mixed) (Phase 6.9A)", () => {
+    // English colon-labeled with multiline bodies
+    const englishColon = `Role: Senior Software Engineer and System Architect
+
+Task: Build a secure RESTful API in Go
+
+Context:
+- Use Go 1.22 and standard library routing
+- Follow clean architecture and hexagonal boundaries
+- Enforce strict authentication with JWT
+
+Output:
+1. Complete project directory structure
+2. Implementation of router and handlers
+3. Unit test coverage for core business logic
+
+Response Language: English
+
+Guidelines:
+- Never return sensitive credentials or stack traces in error responses`;
+
+    const parsedEn = parseExistingStructuredPrompt(englishColon);
+    assert.ok(parsedEn, "parseExistingStructuredPrompt must parse English colon-labeled prompts");
+    assert.strictEqual(parsedEn.role, "Senior Software Engineer and System Architect");
+    assert.strictEqual(parsedEn.task, "Build a secure RESTful API in Go");
+    assert.ok(parsedEn.context.includes("Use Go 1.22 and standard library routing"));
+    assert.ok(parsedEn.context.includes("Enforce strict authentication with JWT"));
+    assert.ok(parsedEn.outputFormat.includes("Complete project directory structure"));
+    assert.strictEqual(parsedEn.language, "English");
+    assert.strictEqual(parsedEn.guidelines, "- Never return sensitive credentials or stack traces in error responses");
+
+    const genEn = generatePrompt(englishColon);
+    assert.strictEqual(genEn.metadata.userProvided.wasAlreadyStructured, true);
+    assert.strictEqual(genEn.fields.task, "Build a secure RESTful API in Go");
+
+    // Arabic colon-labeled with multiline bodies
+    const arabicColon = `الدور: مهندس DevOps وبنية تحتية
+المهمة: إعداد مسار نشر مستمر باستخدام GitHub Actions
+السياق:
+- الحاويات: Docker, Kubernetes
+- الأمان: فحص الثغرات باستخدام Trivy
+المخرجات:
+- ملف workflow متكامل بصيغة YAML
+- شرح تفصيلي لمتغيرات البيئة
+لغة الرد: العربية
+الإرشادات:
+- تأكد من تشفير كافة الأسرار`;
+
+    const parsedAr = parseExistingStructuredPrompt(arabicColon);
+    assert.ok(parsedAr, "parseExistingStructuredPrompt must parse Arabic colon-labeled prompts");
+    assert.strictEqual(parsedAr.role, "مهندس DevOps وبنية تحتية");
+    assert.strictEqual(parsedAr.task, "إعداد مسار نشر مستمر باستخدام GitHub Actions");
+    assert.ok(parsedAr.context.includes("الحاويات: Docker, Kubernetes"));
+    assert.ok(parsedAr.outputFormat.includes("ملف workflow متكامل بصيغة YAML"));
+    assert.strictEqual(parsedAr.language, "Arabic");
+    assert.ok(parsedAr.guidelines?.includes("تأكد من تشفير كافة الأسرار"));
+
+    // Mixed English / Arabic colon-labeled prompt
+    const mixedColon = `Role: خبير أمان سيبراني
+Task: Review smart contract vulnerabilities
+Context:
+- Solidity 0.8.20
+- OpenZeppelin contracts
+Output:
+- قائمة الثغرات المصنفة حسب الخطورة
+Guidelines:
+- Provide PoC exploit scenario for critical findings`;
+
+    const parsedMixed = parseExistingStructuredPrompt(mixedColon);
+    assert.ok(parsedMixed, "parseExistingStructuredPrompt must parse mixed English/Arabic colon prompts");
+    assert.strictEqual(parsedMixed.role, "خبير أمان سيبراني");
+    assert.strictEqual(parsedMixed.task, "Review smart contract vulnerabilities");
+    assert.ok(parsedMixed.context.includes("Solidity 0.8.20"));
+    assert.ok(parsedMixed.outputFormat.includes("قائمة الثغرات المصنفة حسب الخطورة"));
+    assert.ok(parsedMixed.guidelines?.includes("Provide PoC exploit scenario for critical findings"));
+});
+
+test("Generator 15: Incomplete and malformed structured prompts resilience (Phase 6.9A)", () => {
+    // 1. Single unlabeled line is treated as unstructured, NOT structured
+    const singleLine = "Write a python script to scrape news headlines.";
+    assert.strictEqual(parseExistingStructuredPrompt(singleLine), null);
+    const genSingle = generatePrompt(singleLine);
+    assert.strictEqual(genSingle.metadata.userProvided.wasAlreadyStructured, false);
+
+    // 2. Structured prompt missing Role section (Role is empty, not falling over)
+    const noRole = `Task: Create an interactive SVG chart
+Context: D3.js and TypeScript
+Output: Clean standalone component`;
+    const parsedNoRole = parseExistingStructuredPrompt(noRole);
+    assert.ok(parsedNoRole);
+    assert.strictEqual(parsedNoRole.role, "");
+    assert.strictEqual(parsedNoRole.task, "Create an interactive SVG chart");
+    assert.strictEqual(parsedNoRole.context, "D3.js and TypeScript");
+    assert.strictEqual(parsedNoRole.outputFormat, "Clean standalone component");
+
+    // 3. Structured prompt missing Task section (does not consume other sections into Task)
+    const noTask = `Role: Senior SRE
+Context: AWS EKS with Prometheus
+Output: Terraform and Helm configuration`;
+    const parsedNoTask = parseExistingStructuredPrompt(noTask);
+    assert.ok(parsedNoTask);
+    assert.strictEqual(parsedNoTask.role, "Senior SRE");
+    assert.strictEqual(parsedNoTask.task, "");
+    assert.strictEqual(parsedNoTask.context, "AWS EKS with Prometheus");
+    assert.strictEqual(parsedNoTask.outputFormat, "Terraform and Helm configuration");
+});
+
+test("Generator 16: Exact preservation of fenced code blocks through end-to-end generatePrompt() (Phase 6.9A)", () => {
+    const rawStructuredWithCode = `### Role & Persona
+Staff Software Engineer
+
+### Task & Objective
+Build a microservice matching this spec:
+\`\`\`markdown
+### Task & Objective
+Nested spec in task
+### Context & Constraints
+Nested spec context
+\`\`\`
+
+### Context & Constraints
+- Docker 24, Kubernetes 1.28
+- Zero downtime deployments
+
+### Desired Output Format
+- Helm values.yaml
+- Deployment manifest
+
+### Guidelines & Negative Constraints
+- Do not use deprecated APIs`;
+
+    const parsed = parseExistingStructuredPrompt(rawStructuredWithCode);
+    assert.ok(parsed);
+    assert.ok(parsed.task.includes("Nested spec in task"));
+    assert.ok(parsed.task.includes("Nested spec context"));
+    assert.ok(parsed.context.includes("Docker 24, Kubernetes 1.28"));
+    assert.strictEqual(parsed.guidelines, "- Do not use deprecated APIs");
+
+    const result = generatePrompt(rawStructuredWithCode);
+    assert.strictEqual(result.metadata.userProvided.wasAlreadyStructured, true);
+    assert.ok(result.fields.task.includes("```markdown\n### Task & Objective\nNested spec in task"));
+    assert.ok(result.formattedPrompt.includes("```markdown\n### Task & Objective\nNested spec in task"));
+    assert.ok(result.formattedPrompt.includes("### Context & Constraints\n- Docker 24, Kubernetes 1.28"));
+    assert.ok(result.formattedPrompt.includes("### Guidelines & Negative Constraints\n- Do not use deprecated APIs"));
+});

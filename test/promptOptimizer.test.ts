@@ -5,7 +5,8 @@ import {
     inferDomain,
     detectContext,
     detectSpecificity,
-    detectConstraints
+    detectConstraints,
+    decomposeStructuredPrompt,
 } from "../src/lib/promptOptimizer.ts";
 
 test("Rule 1: Empty prompt handling", () => {
@@ -1092,4 +1093,167 @@ Next.js, NextAuth, JWT, معايير OWASP
     assert.strictEqual(decArMd.context, "Next.js, NextAuth, JWT, معايير OWASP");
     assert.strictEqual(decArMd.outputFormat, "تقرير تحليلي مع خطوات المعالجة");
     assert.strictEqual(decArMd.guidelines, "- لا تقدم افتراضات غير مؤكدة");
+});
+
+test("Phase 6.9A Regression: Fenced code block boundary protection (``` and ~~~, English and Arabic, unclosed)", () => {
+    // 1. English RTCF headings inside triple-backtick blocks
+    const enBacktickPrompt = `### Task & Objective
+Write an API documentation generator that produces this exact markdown template:
+\`\`\`markdown
+### Task & Objective
+Inner task example
+### Context & Constraints
+Inner context example
+### Desired Output Format
+Inner format example
+\`\`\`
+
+### Context & Constraints
+Must run on Node 20 with TypeScript.
+
+### Desired Output Format
+Clean TypeScript module.`;
+
+    const decEnBacktick = decomposeStructuredPrompt(enBacktickPrompt);
+    assert.ok(decEnBacktick.task.includes("### Task & Objective\nInner task example"), "Task must preserve inner task heading");
+    assert.ok(decEnBacktick.task.includes("### Context & Constraints\nInner context example"), "Task must preserve inner context heading");
+    assert.ok(decEnBacktick.task.includes("### Desired Output Format\nInner format example"), "Task must preserve inner format heading");
+    assert.strictEqual(decEnBacktick.context, "Must run on Node 20 with TypeScript.", "Context must not be terminated early or contaminated by inner heading");
+    assert.strictEqual(decEnBacktick.outputFormat, "Clean TypeScript module.");
+
+    // 2. Arabic RTCF headings inside triple-backtick blocks
+    const arBacktickPrompt = `### المهمة
+قم بكتابة سكربت أتمتة يولد الهيكل التالي:
+\`\`\`markdown
+### الدور
+مدير النظام
+### المهمة
+مهمة داخل الكود
+### السياق
+سياق داخل الكود
+### المخرجات
+مخرجات داخل الكود
+\`\`\`
+
+### السياق
+بيئة التشغيل: Go 1.22 و Docker`;
+
+    const decArBacktick = decomposeStructuredPrompt(arBacktickPrompt);
+    assert.ok(decArBacktick.task.includes("### الدور\nمدير النظام"), "Task must preserve inner Arabic role heading");
+    assert.ok(decArBacktick.task.includes("### المهمة\nمهمة داخل الكود"), "Task must preserve inner Arabic task heading");
+    assert.ok(decArBacktick.task.includes("### السياق\nسياق داخل الكود"), "Task must preserve inner Arabic context heading");
+    assert.strictEqual(decArBacktick.context, "بيئة التشغيل: Go 1.22 و Docker", "Arabic Context must not be terminated early");
+
+    // 3. English and Arabic headings inside triple-tilde blocks (~~~)
+    const tildePrompt = `### Task & Objective
+Review this documentation draft:
+~~~markdown
+### Task & Objective
+Nested English in tilde
+### المهمة
+Nested Arabic in tilde
+~~~
+
+### Desired Output Format
+Detailed JSON critique`;
+
+    const decTilde = decomposeStructuredPrompt(tildePrompt);
+    assert.ok(decTilde.task.includes("Nested English in tilde"));
+    assert.ok(decTilde.task.includes("Nested Arabic in tilde"));
+    assert.strictEqual(decTilde.outputFormat, "Detailed JSON critique");
+
+    // 4. Genuine RTCF headings immediately after a closing fence
+    const immediateAfterFence = `### Task & Objective
+Write code:
+\`\`\`typescript
+export function sum(a: number, b: number) { return a + b; }
+\`\`\`
+### Context & Constraints
+Production ready.
+\`\`\`python
+x = 42
+\`\`\`
+### Desired Output Format
+Unit tests.`;
+
+    const decImmediate = decomposeStructuredPrompt(immediateAfterFence);
+    assert.ok(decImmediate.task.includes("export function sum"));
+    assert.strictEqual(decImmediate.context, "Production ready.\n```python\nx = 42\n```");
+    assert.strictEqual(decImmediate.outputFormat, "Unit tests.");
+
+    // 5. Multiple fenced blocks inside one section
+    const multiFence = `### Task & Objective
+Block 1:
+\`\`\`javascript
+const first = true;
+\`\`\`
+Middle explanation.
+Block 2:
+~~~python
+second = True
+~~~
+End explanation.
+
+### Context & Constraints
+High throughput.`;
+
+    const decMulti = decomposeStructuredPrompt(multiFence);
+    assert.ok(decMulti.task.includes("const first = true;"));
+    assert.ok(decMulti.task.includes("Middle explanation."));
+    assert.ok(decMulti.task.includes("second = True"));
+    assert.ok(decMulti.task.includes("End explanation."));
+    assert.strictEqual(decMulti.context, "High throughput.");
+
+    // 6. Unclosed fenced blocks
+    const unclosedPrompt = `### Task & Objective
+Incomplete code:
+\`\`\`python
+def unfinished():
+    ### Context & Constraints
+    ### المهمة
+    return False`;
+
+    const decUnclosed = decomposeStructuredPrompt(unclosedPrompt);
+    assert.ok(decUnclosed.task.includes("def unfinished():"));
+    assert.ok(decUnclosed.task.includes("### Context & Constraints"));
+    assert.ok(decUnclosed.task.includes("### المهمة"));
+    assert.strictEqual(decUnclosed.context, "", "Unclosed fence must not spawn fake Context section");
+
+    // 7. Exact preservation of fenced block contents after parsing and regeneration
+    const preservationPrompt = `### Role & Persona
+Principal Systems Architect
+
+### Task & Objective
+Implement this parser:
+\`\`\`typescript
+import { z } from "zod";
+
+// Schema definition with indentation
+export const ConfigSchema = z.object({
+    host: z.string(),
+    port: z.number().default(8080),
+});
+\`\`\`
+
+### Context & Constraints
+Node.js 20 LTS.
+
+### Desired Output Format
+TypeScript module.`;
+
+    const decPreserve = decomposeStructuredPrompt(preservationPrompt);
+    const expectedCodeSnippet = `\`\`\`typescript
+import { z } from "zod";
+
+// Schema definition with indentation
+export const ConfigSchema = z.object({
+    host: z.string(),
+    port: z.number().default(8080),
+});
+\`\`\``;
+
+    assert.ok(decPreserve.task.includes(expectedCodeSnippet), "Code snippet inside Task must match verbatim");
+    assert.strictEqual(decPreserve.role, "Principal Systems Architect");
+    assert.strictEqual(decPreserve.context, "Node.js 20 LTS.");
+    assert.strictEqual(decPreserve.outputFormat, "TypeScript module.");
 });
