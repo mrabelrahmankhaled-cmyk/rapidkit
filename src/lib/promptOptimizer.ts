@@ -426,10 +426,10 @@ export function detectConstraints(text: string): boolean {
 }
 
 export const RECOGNIZED_MD_HEADERS =
-    "Role(?:\\s*&|\\s+and)?\\s*Persona|Role|Persona|Task(?:\\s*&|\\s+and)?\\s*Objective|Task|Objective|Goal|Context(?:\\s*&|\\s+and)?\\s*Constraints?|Context|Constraints?|Guidelines(?:\\s*&|\\s+and)?\\s*Negative\\s*Constraints|Guidelines|Negative\\s*Constraints|Desired\\s+Output\\s+Format|Output\\s+Format|Output|Format|Response\\s+Language|Output\\s+Language|Language|الدور(?:\\s*والشخصية)?|الدور|الشخصية|المهمة(?:\\s*والهدف)?|الهدف(?:\\s*والمهمة)?|المهمة|الهدف|السياق(?:\\s*والقيود)?|القيود(?:\\s*والمتطلبات)?|السياق|القيود|الخلفية|التنسيق|تنسيق|المخرجات|صيغة\\s+المخرجات|الإرشادات|لغة\\s+الرد|اللغة";
+    "Role(?:\\s*&|\\s+and)?\\s*Persona|Role|Persona|Task(?:\\s*&|\\s+and)?\\s*Objective|Task|Objective|Goal|المهمة(?:\\s*والهدف)?|الهدف(?:\\s*والمهمة)?|المهمة|الهدف|المطلوب|الغرض|Context(?:\\s*&|\\s+and)?\\s*Constraints?|Context|Constraints?|السياق(?:\\s*والقيود)?|القيود(?:\\s*والمتطلبات)?|السياق|القيود|الخلفية|المتطلبات|الشروط|Guidelines(?:\\s*&|\\s+and)?\\s*Negative\\s*Constraints|Guidelines|Negative\\s*Constraints|Desired\\s+Output\\s+Format|Output\\s+Format|Output|Format|التنسيق|تنسيق|المخرجات|صيغة\\s+المخرجات|شكل\\s+المخرجات|النتيجة\\s+المطلوبة|Response\\s+Language|Output\\s+Language|Language|الدور(?:\\s*والشخصية)?|الدور|الشخصية|الإرشادات|لغة\\s+الرد|اللغة";
 
 export const COLON_SECTION_LABEL_PATTERN =
-    "(?:Role|Persona|Task|Objective|Goal|Context|Constraints?|Technical\\s+Stack|Tech\\s*Stack|Background|Desired\\s+Output\\s+Format|Output\\s+Format|Output|Format|Response\\s+Language|Output\\s+Language|Language|Guidelines|Negative\\s+Constraints|الدور(?:\\s*والشخصية)?|الشخصية|المهمة(?:\\s*والهدف)?|الهدف(?:\\s*والمهمة)?|المهمة|الهدف|السياق(?:\\s*والقيود)?|القيود(?:\\s*والمتطلبات)?|السياق|القيود|الخلفية|التنسيق|تنسيق|المخرجات|صيغة\\s+المخرجات|الإرشادات|لغة\\s+الرد|اللغة)[ \\t]*:";
+    "(?:Role|Persona|Task|Objective|Goal|المهمة(?:\\s*والهدف)?|الهدف(?:\\s*والمهمة)?|المهمة|الهدف|المطلوب|الغرض|Context|Constraints?|Technical\\s+Stack|Tech\\s*Stack|Background|السياق(?:\\s*والقيود)?|القيود(?:\\s*والمتطلبات)?|السياق|القيود|الخلفية|المتطلبات|الشروط|Desired\\s+Output\\s+Format|Output\\s+Format|Output|Format|التنسيق|تنسيق|المخرجات|صيغة\\s+المخرجات|شكل\\s+المخرجات|النتيجة\\s+المطلوبة|Response\\s+Language|Output\\s+Language|Language|Guidelines|Negative\\s+Constraints|الدور(?:\\s*والشخصية)?|الشخصية|الدور|الإرشادات|لغة\\s+الرد|اللغة)[ \\t]*[:：]";
 
 export interface MaskedCodeBlocksResult {
     maskedText: string;
@@ -444,12 +444,16 @@ export interface MaskedCodeBlocksResult {
  * Handles unclosed code blocks safely (extending to end of text).
  */
 export function maskFencedCodeBlocks(text: string): MaskedCodeBlocksResult {
-    if (!text || (!text.includes("```") && !text.includes("~~~"))) {
-        return { maskedText: text, blocks: [], tokenPrefix: "" };
+    if (!text) {
+        return { maskedText: "", blocks: [], tokenPrefix: "" };
+    }
+
+    const normalized = text.replace(/\r\n/g, "\n");
+    if (!normalized.includes("```") && !normalized.includes("~~~")) {
+        return { maskedText: normalized, blocks: [], tokenPrefix: "" };
     }
 
     const tokenPrefix = `__RAPIDKIT_FENCE_${Math.random().toString(36).slice(2, 8)}_`;
-    const normalized = text.replace(/\r\n/g, "\n");
     const lines = normalized.split("\n");
     const blocks: string[] = [];
     const maskedLines: string[] = [];
@@ -526,18 +530,18 @@ export function decomposeStructuredPrompt(
     const unmask = (str: string): string => unmaskFencedCodeBlocks(str, blocks, tokenPrefix);
 
     const nextSectionLookahead =
-        `(?=(?:\\n#{1,6}[ \\t]+(?:${RECOGNIZED_MD_HEADERS})|\\n[ \\t]*${COLON_SECTION_LABEL_PATTERN}|$))`;
+        `(?=(?:\\n#{1,6}[ \\t]+(?:\\d+[.)\\-\\s]+)?(?:${RECOGNIZED_MD_HEADERS})|\\n[ \\t]*${COLON_SECTION_LABEL_PATTERN}|$))`;
 
     // 1. Role
     const mdRoleMatch = maskedText.match(
         new RegExp(
-            `(?:^|\\n)#{1,6}[ \\t]+(?:Role(?:\\s*&|\\s+and)?\\s*Persona|Role|Persona|الدور(?:\\s*والشخصية)?|الدور|الشخصية)[^\\n]*\\n([\\s\\S]*?)(?=\\n#{1,6}[ \\t]+(?:${RECOGNIZED_MD_HEADERS})|\\n*$)`,
+            `(?:^|\\n)#{1,6}[ \\t]+(?:\\d+[.)\\-\\s]+)?(?:Role(?:\\s*&|\\s+and)?\\s*Persona|Role|Persona|الدور(?:\\s*والشخصية)?|الدور|الشخصية)[^\\n]*\\n([\\s\\S]*?)(?=\\n#{1,6}[ \\t]+(?:\\d+[.)\\-\\s]+)?(?:${RECOGNIZED_MD_HEADERS})|\\n*$)`,
             "i"
         )
     );
     const explicitRoleMatch = maskedText.match(
         new RegExp(
-            "(?:^|\\n)(?:Role(?:\\s*&|\\s+and)?\\s*Persona|Role|Persona|الدور(?:\\s*والشخصية)?|الدور|الشخصية)[ \\t]*:[ \\t]*\\n?([\\s\\S]*?)" +
+            "(?:^|\\n)[ \\t]*(?:Role(?:\\s*&|\\s+and)?\\s*Persona|Role|Persona|الدور(?:\\s*والشخصية)?|الدور|الشخصية)[ \\t]*[:：][ \\t]*\\n?([\\s\\S]*?)" +
                 nextSectionLookahead,
             "i"
         )
@@ -552,21 +556,21 @@ export function decomposeStructuredPrompt(
     }
     role = role
         .replace(/^Act as\s+/i, "")
-        .replace(/^(?:Role|Persona|الدور|الشخصية)\s*:\s*/i, "")
+        .replace(/^(?:Role|Persona|الدور|الشخصية)\s*[:：]\s*/i, "")
         .replace(/\.$/, "")
         .trim();
 
     // 2. Task
     const explicitTaskMatch = maskedText.match(
         new RegExp(
-            "(?:^|\\n)(?:Task(?:\\s*&|\\s+and)?\\s*Objective|Task|Objective|Goal|المهمة(?:\\s*والهدف)?|الهدف(?:\\s*والمهمة)?|المهمة|الهدف)[ \\t]*:[ \\t]*\\n?([\\s\\S]*?)" +
+            "(?:^|\\n)[ \\t]*(?:Task(?:\\s*&|\\s+and)?\\s*Objective|Task|Objective|Goal|المهمة(?:\\s*والهدف)?|الهدف(?:\\s*والمهمة)?|المهمة|الهدف|المطلوب|الغرض)[ \\t]*[:：][ \\t]*\\n?([\\s\\S]*?)" +
                 nextSectionLookahead,
             "i"
         )
     );
     const mdTaskMatch = maskedText.match(
         new RegExp(
-            `(?:^|\\n)#{1,6}[ \\t]+(?:Task(?:\\s*&|\\s+and)?\\s*Objective|Task|Objective|Goal|الهدف(?:\\s*والمهمة)?|المهمة(?:\\s*والهدف)?|المهمة|الهدف)[^\\n]*\\n([\\s\\S]*?)(?=\\n#{1,6}[ \\t]+(?:${RECOGNIZED_MD_HEADERS})|\\n*$)`,
+            `(?:^|\\n)#{1,6}[ \\t]+(?:\\d+[.)\\-\\s]+)?(?:Task(?:\\s*&|\\s+and)?\\s*Objective|Task|Objective|Goal|الهدف(?:\\s*والمهمة)?|المهمة(?:\\s*والهدف)?|المهمة|الهدف|المطلوب|الغرض)[^\\n]*\\n([\\s\\S]*?)(?=\\n#{1,6}[ \\t]+(?:\\d+[.)\\-\\s]+)?(?:${RECOGNIZED_MD_HEADERS})|\\n*$)`,
             "i"
         )
     );
@@ -577,7 +581,7 @@ export function decomposeStructuredPrompt(
         // If mdTaskMatch body is a wrapper containing nested section labels, cut before the first nested section
         const innerCut = mdTaskMatch[1].search(
             new RegExp(
-                `\\n(?:Role|Persona|Context|Constraints?|Output|Format|Response\\s+Language|الدور|السياق|القيود|المخرجات|التنسيق)[ \\t]*:`,
+                `\\n[ \\t]*(?:Role|Persona|Context|Constraints?|Output|Format|Response\\s+Language|الدور|السياق|القيود|المخرجات|التنسيق|المطلوب|الغرض|المتطلبات|الشروط|شكل\\s+المخرجات|النتيجة\\s+المطلوبة)[ \\t]*[:：]`,
                 "i"
             )
         );
@@ -585,8 +589,8 @@ export function decomposeStructuredPrompt(
     } else if (
         !mdRoleMatch &&
         !explicitRoleMatch &&
-        !maskedText.match(new RegExp(`(?:^|\\n)#{1,6}[ \\t]+(?:Context|Constraints?|السياق|القيود|الخلفية|Desired|Output|Format|التنسيق|المخرجات)`, "i")) &&
-        !maskedText.match(new RegExp(`(?:^|\\n)(?:Context|Constraints?|Output|Format|السياق|القيود|المخرجات|التنسيق)[ \\t]*:`, "i"))
+        !maskedText.match(new RegExp(`(?:^|\\n)#{1,6}[ \\t]+(?:\\d+[.)\\-\\s]+)?(?:Context|Constraints?|السياق|القيود|الخلفية|المتطلبات|الشروط|Desired|Output|Format|التنسيق|المخرجات|شكل\\s+المخرجات|النتيجة\\s+المطلوبة)`, "i")) &&
+        !maskedText.match(new RegExp(`(?:^|\\n)[ \\t]*(?:Context|Constraints?|Output|Format|السياق|القيود|المخرجات|التنسيق|المتطلبات|الشروط|شكل\\s+المخرجات|النتيجة\\s+المطلوبة)[ \\t]*[:：]`, "i"))
     ) {
         task = maskedText;
     }
@@ -594,13 +598,13 @@ export function decomposeStructuredPrompt(
     // 3. Context
     const mdContextMatch = maskedText.match(
         new RegExp(
-            `(?:^|\\n)#{1,6}[ \\t]+(?:Context(?:\\s*&|\\s+and)?\\s*Constraints?|Context|Constraints?|السياق(?:\\s*والقيود)?|القيود(?:\\s*والمتطلبات)?|السياق|القيود|الخلفية)[^\\n]*\\n([\\s\\S]*?)(?=\\n#{1,6}[ \\t]+(?:${RECOGNIZED_MD_HEADERS})|\\n*$)`,
+            `(?:^|\\n)#{1,6}[ \\t]+(?:\\d+[.)\\-\\s]+)?(?:Context(?:\\s*&|\\s+and)?\\s*Constraints?|Context|Constraints?|السياق(?:\\s*والقيود)?|القيود(?:\\s*والمتطلبات)?|السياق|القيود|الخلفية|المتطلبات|الشروط)[^\\n]*\\n([\\s\\S]*?)(?=\\n#{1,6}[ \\t]+(?:\\d+[.)\\-\\s]+)?(?:${RECOGNIZED_MD_HEADERS})|\\n*$)`,
             "i"
         )
     );
     const explicitContextMatch = maskedText.match(
         new RegExp(
-            "(?:^|\\n)(?:Context(?:\\s*&|\\s+and)?\\s*Constraints?|Context|Constraints?|Technical\\s+Stack|Tech\\s*Stack|Background|السياق(?:\\s*والقيود)?|القيود(?:\\s*والمتطلبات)?|السياق|القيود|الخلفية)[ \\t]*:[ \\t]*\\n?([\\s\\S]*?)" +
+            "(?:^|\\n)[ \\t]*(?:Context(?:\\s*&|\\s+and)?\\s*Constraints?|Context|Constraints?|Technical\\s+Stack|Tech\\s*Stack|Background|السياق(?:\\s*والقيود)?|القيود(?:\\s*والمتطلبات)?|السياق|القيود|الخلفية|المتطلبات|الشروط)[ \\t]*[:：][ \\t]*\\n?([\\s\\S]*?)" +
                 nextSectionLookahead,
             "i"
         )
@@ -615,13 +619,13 @@ export function decomposeStructuredPrompt(
     // 4. Output Format
     const mdFormatMatch = maskedText.match(
         new RegExp(
-            `(?:^|\\n)#{1,6}[ \\t]+(?:Desired\\s+Output\\s+Format|Output\\s+Format|Format|Output|التنسيق|تنسيق|المخرجات|صيغة\\s+المخرجات)[^\\n]*\\n([\\s\\S]*?)(?=\\n#{1,6}[ \\t]+(?:${RECOGNIZED_MD_HEADERS})|\\n*$)`,
+            `(?:^|\\n)#{1,6}[ \\t]+(?:\\d+[.)\\-\\s]+)?(?:Desired\\s+Output\\s+Format|Output\\s+Format|Format|Output|التنسيق|تنسيق|المخرجات|صيغة\\s+المخرجات|شكل\\s+المخرجات|النتيجة\\s+المطلوبة)[^\\n]*\\n([\\s\\S]*?)(?=\\n#{1,6}[ \\t]+(?:\\d+[.)\\-\\s]+)?(?:${RECOGNIZED_MD_HEADERS})|\\n*$)`,
             "i"
         )
     );
     const explicitFormatMatch = maskedText.match(
         new RegExp(
-            "(?:^|\\n)(?:Desired\\s+Output\\s+Format|Output\\s+Format|Output|Format|التنسيق|تنسيق|المخرجات|صيغة\\s+المخرجات)[ \\t]*:[ \\t]*\\n?([\\s\\S]*?)" +
+            "(?:^|\\n)[ \\t]*(?:Desired\\s+Output\\s+Format|Output\\s+Format|Output|Format|التنسيق|تنسيق|المخرجات|صيغة\\s+المخرجات|شكل\\s+المخرجات|النتيجة\\s+المطلوبة)[ \\t]*[:：][ \\t]*\\n?([\\s\\S]*?)" +
                 nextSectionLookahead,
             "i"
         )
@@ -636,13 +640,13 @@ export function decomposeStructuredPrompt(
     // 5. Language
     const mdLangMatch = maskedText.match(
         new RegExp(
-            `(?:^|\\n)#{1,6}[ \\t]+(?:Response\\s+Language|Output\\s+Language|Language|لغة\\s+الرد|اللغة)[^\\n]*\\n(?:Please provide the final response in\\s+)?([^\\n.]*)`,
+            `(?:^|\\n)#{1,6}[ \\t]+(?:\\d+[.)\\-\\s]+)?(?:Response\\s+Language|Output\\s+Language|Language|لغة\\s+الرد|اللغة)[^\\n]*\\n(?:Please provide the final response in\\s+)?([^\\n.]*)`,
             "i"
         )
     );
     const explicitLangMatch = maskedText.match(
         new RegExp(
-            "(?:^|\\n)(?:Response\\s+Language|Output\\s+Language|Language|لغة\\s+الرد|اللغة)[ \\t]*:[ \\t]*\\n?([\\s\\S]*?)" +
+            "(?:^|\\n)[ \\t]*(?:Response\\s+Language|Output\\s+Language|Language|لغة\\s+الرد|اللغة)[ \\t]*[:：][ \\t]*\\n?([\\s\\S]*?)" +
                 nextSectionLookahead,
             "i"
         )
@@ -664,13 +668,13 @@ export function decomposeStructuredPrompt(
     // 6. Guidelines (kept separate so they are not wrongly injected into Context)
     const mdGuideMatch = maskedText.match(
         new RegExp(
-            `(?:^|\\n)#{1,6}[ \\t]+(?:Guidelines(?:\\s*&|\\s+and)?\\s*Negative\\s*Constraints|Guidelines|Negative\\s*Constraints|الإرشادات[^\\n]*)\\n([\\s\\S]*?)(?=\\n#{1,6}[ \\t]+(?:${RECOGNIZED_MD_HEADERS})|\\n*$)`,
+            `(?:^|\\n)#{1,6}[ \\t]+(?:\\d+[.)\\-\\s]+)?(?:Guidelines(?:\\s*&|\\s+and)?\\s*Negative\\s*Constraints|Guidelines|Negative\\s*Constraints|الإرشادات[^\\n]*)\\n([\\s\\S]*?)(?=\\n#{1,6}[ \\t]+(?:\\d+[.)\\-\\s]+)?(?:${RECOGNIZED_MD_HEADERS})|\\n*$)`,
             "i"
         )
     );
     const explicitGuideMatch = maskedText.match(
         new RegExp(
-            "(?:^|\\n)(?:Guidelines(?:\\s*&|\\s+and)?\\s*Negative\\s*Constraints|Guidelines|Negative\\s*Constraints|الإرشادات)[ \\t]*:[ \\t]*\\n?([\\s\\S]*?)" +
+            "(?:^|\\n)[ \\t]*(?:Guidelines(?:\\s*&|\\s+and)?\\s*Negative\\s*Constraints|Guidelines|Negative\\s*Constraints|الإرشادات)[ \\t]*[:：][ \\t]*\\n?([\\s\\S]*?)" +
                 nextSectionLookahead,
             "i"
         )

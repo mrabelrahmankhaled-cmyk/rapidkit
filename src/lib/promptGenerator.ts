@@ -376,14 +376,14 @@ export function parseExistingStructuredPrompt(text: string): ParsedStructuredPro
 
     // 4. Markdown headings & 5. Colon-labeled sections (English or Arabic RTCF headings) outside fenced code blocks
     const { maskedText } = maskFencedCodeBlocks(trimmed);
-    const hasMdHeadings = new RegExp(`(?:^|\\n)#{1,6}[ \\t]+(?:${RECOGNIZED_MD_HEADERS})[ \\t]*(?:\\r?\\n|$)`, "i").test(maskedText);
+    const hasMdHeadings = new RegExp(`(?:^|\\n)#{1,6}[ \\t]+(?:\\d+[.)\\-\\s]+)?(?:${RECOGNIZED_MD_HEADERS})[ \\t]*[:：\\-\\.]*[ \\t]*(?:\\r?\\n|$)`, "i").test(maskedText);
 
     // Colon-labeled sections (English or Arabic, at least 2 labels or Task + Context/Format/Role/Guidelines/Language)
     const colonMatches = maskedText.match(new RegExp(`^[ \\t]*${COLON_SECTION_LABEL_PATTERN}`, "gim")) || [];
     const hasColonSections =
         colonMatches.length >= 2 ||
-        (/(?:^|\n)(?:Task|Objective|Goal|المهمة|الهدف)[ \t]*:/i.test(maskedText) &&
-            /(?:^|\n)(?:Context|Output|Format|Role|Guidelines|Response\s+Language|السياق|القيود|التنسيق|المخرجات|الدور|الإرشادات|اللغة)[ \t]*:/i.test(maskedText));
+        (/(?:^|\n)[ \t]*(?:Task|Objective|Goal|المهمة|الهدف|المطلوب|الغرض)[ \t]*[:：]/i.test(maskedText) &&
+            /(?:^|\n)[ \t]*(?:Context|Output|Format|Role|Guidelines|Response\s+Language|السياق|القيود|التنسيق|المخرجات|الدور|الإرشادات|اللغة|المتطلبات|الشروط|شكل\s+المخرجات|النتيجة\s+المطلوبة)[ \t]*[:：]/i.test(maskedText));
 
     if (hasMdHeadings || hasColonSections) {
         const decomposed = decomposeStructuredPrompt(trimmed);

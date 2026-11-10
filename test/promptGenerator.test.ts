@@ -904,3 +904,235 @@ Nested spec context
     assert.ok(result.formattedPrompt.includes("### Context & Constraints\n- Docker 24, Kubernetes 1.28"));
     assert.ok(result.formattedPrompt.includes("### Guidelines & Negative Constraints\n- Do not use deprecated APIs"));
 });
+
+test("Generator 17: Phase 6.9A Final Reliability Matrix (All 15 targeted scenarios)", () => {
+    // 1. Arabic Markdown headings without punctuation
+    const p1 = `### الدور
+خبير برمجيات أول
+### المهمة
+بناء تطبيق ويب
+### السياق
+- كود نظيف
+### التنسيق
+- كود برمجي`;
+    const res1 = generatePrompt(p1);
+    assert.strictEqual(res1.metadata.userProvided.wasAlreadyStructured, true);
+    assert.strictEqual(res1.fields.role, "خبير برمجيات أول");
+    assert.strictEqual(res1.fields.task, "بناء تطبيق ويب");
+    assert.strictEqual(res1.fields.context, "- كود نظيف");
+    assert.strictEqual(res1.fields.outputFormat, "- كود برمجي");
+    assert.ok(!res1.fields.task.includes("خبير برمجيات أول"), "Role must not leak into Task");
+
+    // 2. Arabic Markdown headings with trailing ASCII colon
+    const p2 = `### الدور:
+خبير ذكاء اصطناعي
+### المهمة:
+تدريب نموذج تصنيف
+### السياق:
+- بايثون وPyTorch
+### التنسيق:
+- كود وخطوات`;
+    const res2 = generatePrompt(p2);
+    assert.strictEqual(res2.metadata.userProvided.wasAlreadyStructured, true);
+    assert.strictEqual(res2.fields.role, "خبير ذكاء اصطناعي");
+    assert.strictEqual(res2.fields.task, "تدريب نموذج تصنيف");
+    assert.ok(res2.fields.context.includes("بايثون وPyTorch"));
+    assert.ok(res2.fields.outputFormat.includes("كود وخطوات"));
+    assert.ok(!res2.fields.task.includes("خبير ذكاء اصطناعي"), "Role must not be duplicated into Task");
+
+    // 3. Arabic Markdown headings with fullwidth colon
+    const p3 = `### الدور：
+مهندس معمارية سحابية
+### المهمة：
+تصميم بنية AWS
+### السياق：
+- Kubernetes
+### التنسيق：
+- مخطط وتوثيق`;
+    const res3 = generatePrompt(p3);
+    assert.strictEqual(res3.metadata.userProvided.wasAlreadyStructured, true);
+    assert.strictEqual(res3.fields.role, "مهندس معمارية سحابية");
+    assert.strictEqual(res3.fields.task, "تصميم بنية AWS");
+    assert.ok(!res3.fields.task.includes("مهندس معمارية"), "Role must not duplicate in Task");
+
+    // 4. Numbered Arabic Markdown headings
+    const p4 = `### 1. الدور
+مهندس بيانات
+### 2 - المهمة -
+بناء خط أنابيب ETL
+### 3. السياق:
+- Spark وKafka
+### 4) التنسيق:
+- كود SQL وبايثون`;
+    const res4 = generatePrompt(p4);
+    assert.strictEqual(res4.metadata.userProvided.wasAlreadyStructured, true);
+    assert.strictEqual(res4.fields.role, "مهندس بيانات");
+    assert.strictEqual(res4.fields.task, "بناء خط أنابيب ETL");
+    assert.ok(res4.fields.context.includes("Spark وKafka"));
+
+    // 5. English colon labels with leading spaces
+    const p5 = `  Role: Senior Full Stack Engineer
+    Task: Build an analytics dashboard
+  Context:
+    - React 19, TypeScript
+  Output:
+    - Modular components`;
+    const res5 = generatePrompt(p5);
+    assert.strictEqual(res5.metadata.userProvided.wasAlreadyStructured, true);
+    assert.strictEqual(res5.fields.role, "Senior Full Stack Engineer");
+    assert.strictEqual(res5.fields.task, "Build an analytics dashboard");
+    assert.ok(res5.fields.context.includes("React 19"));
+    assert.ok(res5.fields.outputFormat.includes("Modular components"));
+
+    // 6. Arabic colon labels with leading spaces
+    const p6 = `  الدور: مهندس واجهات
+    المهمة: تحسين أداء الموقع
+  السياق:
+    - Next.js 16
+  المخرجات:
+    - تقرير بالأداء`;
+    const res6 = generatePrompt(p6);
+    assert.strictEqual(res6.metadata.userProvided.wasAlreadyStructured, true);
+    assert.strictEqual(res6.fields.role, "مهندس واجهات");
+    assert.strictEqual(res6.fields.task, "تحسين أداء الموقع");
+    assert.ok(res6.fields.context.includes("Next.js 16"));
+    assert.ok(res6.fields.outputFormat.includes("تقرير بالأداء"));
+
+    // 7. Fullwidth colon in English and Arabic labels
+    const p7En = `Role： Lead Architect\nTask： Refactor auth module\nContext： OAuth 2.0\nOutput： Diff and tests`;
+    const res7En = generatePrompt(p7En);
+    assert.strictEqual(res7En.metadata.userProvided.wasAlreadyStructured, true);
+    assert.strictEqual(res7En.fields.role, "Lead Architect");
+    assert.strictEqual(res7En.fields.task, "Refactor auth module");
+
+    const p7Ar = `الدور： خبير أمني\nالمهمة： تدقيق الكود\nالسياق： Rust\nالمخرجات： قائمة الملاحظات`;
+    const res7Ar = generatePrompt(p7Ar);
+    assert.strictEqual(res7Ar.metadata.userProvided.wasAlreadyStructured, true);
+    assert.strictEqual(res7Ar.fields.role, "خبير أمني");
+    assert.strictEqual(res7Ar.fields.task, "تدقيق الكود");
+
+    // 8. All newly added Arabic synonyms (المطلوب، الغرض، المتطلبات، الشروط، شكل المخرجات، النتيجة المطلوبة)
+    const p8 = `الدور: مهندس نظم
+المطلوب: إعداد سيرفر الإنتاج
+المتطلبات:
+- Ubuntu 24.04
+الشروط:
+- إغلاق المنافذ غير المستخدمة
+شكل المخرجات:
+- سكربت bash
+النتيجة المطلوبة:
+- ملف تنفيذ جاهز`;
+    const res8 = generatePrompt(p8);
+    assert.strictEqual(res8.metadata.userProvided.wasAlreadyStructured, true);
+    assert.strictEqual(res8.fields.role, "مهندس نظم");
+    assert.strictEqual(res8.fields.task, "إعداد سيرفر الإنتاج");
+    assert.ok(res8.fields.context.includes("Ubuntu 24.04"));
+    assert.ok(res8.fields.outputFormat.includes("سكربت bash"));
+
+    const p8Alt = `### الدور
+خبير قواعد بيانات
+### الغرض
+تحسين استعلامات SQL البطيئة
+### الشروط
+عدم تعديل الفهارس الحالية
+### شكل المخرجات
+جدول خطة التنفيذ`;
+    const res8Alt = generatePrompt(p8Alt);
+    assert.strictEqual(res8Alt.metadata.userProvided.wasAlreadyStructured, true);
+    assert.strictEqual(res8Alt.fields.role, "خبير قواعد بيانات");
+    assert.strictEqual(res8Alt.fields.task, "تحسين استعلامات SQL البطيئة");
+    assert.ok(res8Alt.fields.context.includes("عدم تعديل الفهارس الحالية"));
+    assert.ok(res8Alt.fields.outputFormat.includes("جدول خطة التنفيذ"));
+
+    // 9. Mixed Arabic/English structured prompts
+    const p9 = `Role: خبير هندسة برمجيات
+Task: Implement a rate limiter in Node.js
+Context:
+- Redis 7
+- معالجة 50 ألف طلب بالدقيقة
+Output:
+- Clean TypeScript code
+Guidelines:
+- Don't use external npm libraries`;
+    const res9 = generatePrompt(p9);
+    assert.strictEqual(res9.metadata.userProvided.wasAlreadyStructured, true);
+    assert.strictEqual(res9.fields.role, "خبير هندسة برمجيات");
+    assert.strictEqual(res9.fields.task, "Implement a rate limiter in Node.js");
+    assert.ok(res9.fields.context.includes("معالجة 50 ألف طلب بالدقيقة"));
+    assert.ok(res9.fields.guidelines?.includes("Don't use external npm libraries"));
+
+    // 10. Backtick and tilde fenced code containing RTCF headings
+    const p10 = `### Role & Persona
+DevOps Specialist
+
+### Task & Objective
+Write a README file with this structure:
+~~~markdown
+### Context & Constraints
+Inside tilde fence
+### Desired Output Format
+Inside tilde fence
+~~~
+\`\`\`markdown
+### Role & Persona
+Inside backtick fence
+\`\`\`
+
+### Context & Constraints
+- Valid YAML syntax
+
+### Desired Output Format
+- Complete file`;
+    const res10 = generatePrompt(p10);
+    assert.strictEqual(res10.metadata.userProvided.wasAlreadyStructured, true);
+    assert.strictEqual(res10.fields.role, "DevOps Specialist");
+    assert.ok(res10.fields.task.includes("Inside tilde fence"));
+    assert.ok(res10.fields.task.includes("Inside backtick fence"));
+    assert.strictEqual(res10.fields.context, "- Valid YAML syntax");
+    assert.strictEqual(res10.fields.outputFormat, "- Complete file");
+
+    // 11. Multiple fenced code blocks
+    const p11 = `Role: Senior Backend Dev
+Task: Compare these two implementations:
+\`\`\`js
+// Context: version 1
+const a = 1;
+\`\`\`
+and
+\`\`\`js
+// Output: version 2
+const b = 2;
+\`\`\`
+Context: Node.js 22
+Output: Performance comparison`;
+    const res11 = generatePrompt(p11);
+    assert.strictEqual(res11.metadata.userProvided.wasAlreadyStructured, true);
+    assert.strictEqual(res11.fields.role, "Senior Backend Dev");
+    assert.ok(res11.fields.task.includes("version 1"));
+    assert.ok(res11.fields.task.includes("version 2"));
+    assert.strictEqual(res11.fields.context, "Node.js 22");
+    assert.strictEqual(res11.fields.outputFormat, "Performance comparison");
+
+    // 12. Unclosed fenced code block
+    const p12 = `Role: Technical Writer
+Task: Document this unfinished snippet:
+\`\`\`typescript
+### Context
+function example() {
+    return true;
+Context: TypeScript
+Output: JSDoc`;
+    const res12 = generatePrompt(p12);
+    assert.strictEqual(res12.metadata.userProvided.wasAlreadyStructured, true);
+    assert.strictEqual(res12.fields.role, "Technical Writer");
+    assert.ok(res12.fields.task.includes("function example()"));
+
+    // 13. CRLF and LF input
+    const p13CRLF = "### الدور:\r\nمهندس أول\r\n\r\n### المهمة:\r\nبناء كود\r\n\r\n### السياق:\r\n- معايير\r\n\r\n### التنسيق:\r\n- ملف";
+    const res13 = generatePrompt(p13CRLF);
+    assert.strictEqual(res13.metadata.userProvided.wasAlreadyStructured, true);
+    assert.strictEqual(res13.fields.role, "مهندس أول");
+    assert.strictEqual(res13.fields.task, "بناء كود");
+    assert.ok(res13.fields.context.includes("معايير"));
+    assert.ok(res13.fields.outputFormat.includes("ملف"));
+});
