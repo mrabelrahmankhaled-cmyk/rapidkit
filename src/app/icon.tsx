@@ -6,8 +6,8 @@ export const runtime = "edge";
 // Image metadata
 export const alt = "RapidKit Logo";
 export const size = {
-    width: 32,
-    height: 32,
+    width: 192,
+    height: 192,
 };
 export const contentType = "image/png";
 
@@ -18,24 +18,23 @@ export default function Icon() {
             // ImageResponse JSX element
             <div
                 style={{
-                    fontSize: 24,
                     background: "linear-gradient(to bottom right, #8b5cf6, #06b6d4)",
                     width: "100%",
                     height: "100%",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    borderRadius: "8px",
+                    borderRadius: "44px",
                 }}
             >
-                {/* Simple Bolt SVG (Zap equivalent) */}
+                {/* Bolt SVG (Zap equivalent) */}
                 <svg
-                    width="16"
-                    height="16"
+                    width="104"
+                    height="104"
                     viewBox="0 0 24 24"
                     fill="white"
                     stroke="white"
-                    strokeWidth="2"
+                    strokeWidth="1.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                 >
@@ -45,8 +44,6 @@ export default function Icon() {
         ),
         // ImageResponse options
         {
-            // For convenience, we can re-use the exported icons size metadata
-            // config to also set the ImageResponse's width and height.
             ...size,
         }
     );

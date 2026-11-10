@@ -6,8 +6,8 @@ export const runtime = "edge";
 // Image metadata
 export const alt = "RapidKit Logo";
 export const size = {
-    width: 256,
-    height: 256,
+    width: 180,
+    height: 180,
 };
 export const contentType = "image/png";
 
@@ -24,13 +24,13 @@ export default function AppleIcon() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    borderRadius: "64px",
+                    borderRadius: "44px",
                 }}
             >
                 {/* Bolt SVG (Zap equivalent) */}
                 <svg
-                    width="128"
-                    height="128"
+                    width="96"
+                    height="96"
                     viewBox="0 0 24 24"
                     fill="white"
                     stroke="white"
