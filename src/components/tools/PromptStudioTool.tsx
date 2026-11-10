@@ -31,11 +31,33 @@ import {
     ChevronDown,
     ChevronUp,
     FolderHeart,
-    Lock
+    Lock,
+    Layers,
+    Gauge,
+    FlaskConical
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PromptLibraryTab } from "./prompt-studio/PromptLibraryTab";
+import { PromptOptimizerTab } from "./prompt-studio/PromptOptimizerTab";
+import { PromptLabTab } from "./prompt-studio/PromptLabTab";
+import { PromptTemplate } from "@/data/promptTemplates";
 
 export type TargetModel = "chatgpt" | "claude" | "gemini" | "midjourney";
+export type StudioTab = "builder" | "optimizer" | "library" | "lab";
+
+interface StudioTabItem {
+    id: StudioTab;
+    label: string;
+    icon: typeof Wand2;
+    badge?: string;
+}
+
+const STUDIO_TABS: StudioTabItem[] = [
+    { id: "builder", label: "Builder", icon: Wand2 },
+    { id: "optimizer", label: "Optimizer", icon: Gauge, badge: "Soon" },
+    { id: "library", label: "Library", icon: Layers, badge: "20" },
+    { id: "lab", label: "Lab", icon: FlaskConical, badge: "Soon" },
+];
 
 interface ModelOption {
     id: TargetModel;
@@ -190,6 +212,12 @@ export function PromptStudioTool() {
     const [favorites, setFavorites] = useState<SavedPrompt[]>([]);
     const [showMyPrompts, setShowMyPrompts] = useState(false);
     const [promptsTab, setPromptsTab] = useState<"favorites" | "history">("favorites");
+
+    // ─── Phase 4: Modular Tabbed Architecture State ──────────────────
+    const [activeMainTab, setActiveMainTab] = useState<StudioTab>("builder");
+    const [variableInputs, setVariableInputs] = useState<Record<string, string>>({});
+    const [showVariableFiller, setShowVariableFiller] = useState(false);
+    const [variablesApplied, setVariablesApplied] = useState(false);
 
     // ─── LocalStorage Persistence ────────────────────────────────────
     useEffect(() => {
@@ -438,6 +466,96 @@ export function PromptStudioTool() {
         URL.revokeObjectURL(url);
     }, [constructedPrompt, targetModel]);
 
+    // ─── Phase 4: Template Selection & Variable Injection ────────────
+    const handleSelectTemplate = useCallback((template: PromptTemplate) => {
+        // Guard against silent data loss: preserve current work to history before loading
+        if (role.trim() || task.trim()) {
+            const currentDraft: SavedPrompt = {
+                id: Date.now().toString(),
+                timestamp: Date.now(),
+                title: role.trim() || task.trim().slice(0, 36) || `${targetModel.toUpperCase()} Draft`,
+                model: targetModel,
+                role,
+                task,
+                context,
+                outputFormat,
+                language,
+            };
+            const filtered = history.filter((h) => h.role !== role || h.task !== task);
+            saveHistoryToStorage([currentDraft, ...filtered].slice(0, 10));
+        }
+
+        setRole(template.role);
+        setTask(template.task);
+        setContext(template.context);
+        setOutputFormat(template.outputFormat);
+        setActivePreset(null);
+
+        // Switch model only if user was on Midjourney and template is text-based (or vice-versa)
+        if (template.recommendedModel && targetModel === "midjourney" && template.recommendedModel !== "midjourney") {
+            setTargetModel(template.recommendedModel);
+        }
+
+        // Initialize template variables
+        const initialVars: Record<string, string> = {};
+        template.variables.forEach((v) => {
+            initialVars[v] = "";
+        });
+        setVariableInputs(initialVars);
+        setShowVariableFiller(true);
+
+        // Switch to Builder tab
+        setActiveMainTab("builder");
+
+        if (typeof window !== "undefined") {
+            window.scrollTo({ top: 100, behavior: "smooth" });
+        }
+    }, [role, task, context, outputFormat, language, targetModel, history, saveHistoryToStorage]);
+
+    // Variable Quick-Fill Handler (safe against special characters like $, $$, $1)
+    const handleApplyVariables = useCallback(() => {
+        let nextRole = role;
+        let nextTask = task;
+        let nextContext = context;
+        let nextFormat = outputFormat;
+
+        Object.entries(variableInputs).forEach(([placeholder, value]) => {
+            const trimmed = value.trim();
+            if (trimmed) {
+                const regex = new RegExp(placeholder.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g");
+                // Use function replacement to prevent $1, $& pattern corruption
+                nextRole = nextRole.replace(regex, () => trimmed);
+                nextTask = nextTask.replace(regex, () => trimmed);
+                nextContext = nextContext.replace(regex, () => trimmed);
+                nextFormat = nextFormat.replace(regex, () => trimmed);
+            }
+        });
+
+        setRole(nextRole);
+        setTask(nextTask);
+        setContext(nextContext);
+        setOutputFormat(nextFormat);
+        setVariablesApplied(true);
+        setTimeout(() => setVariablesApplied(false), 2500);
+    }, [variableInputs, role, task, context, outputFormat]);
+
+    // WAI-ARIA Keyboard Navigation for Tabs (Left / Right Arrows)
+    const handleTabKeyDown = (e: React.KeyboardEvent, index: number) => {
+        if (e.key === "ArrowRight") {
+            e.preventDefault();
+            const nextIndex = (index + 1) % STUDIO_TABS.length;
+            setActiveMainTab(STUDIO_TABS[nextIndex].id);
+            const nextBtn = document.getElementById(`tab-${STUDIO_TABS[nextIndex].id}`);
+            nextBtn?.focus();
+        } else if (e.key === "ArrowLeft") {
+            e.preventDefault();
+            const prevIndex = (index - 1 + STUDIO_TABS.length) % STUDIO_TABS.length;
+            setActiveMainTab(STUDIO_TABS[prevIndex].id);
+            const prevBtn = document.getElementById(`tab-${STUDIO_TABS[prevIndex].id}`);
+            prevBtn?.focus();
+        }
+    };
+
     const activeModelConfig = MODEL_OPTIONS.find((m) => m.id === targetModel) || MODEL_OPTIONS[0];
 
     return (
@@ -456,6 +574,55 @@ export function PromptStudioTool() {
                 </p>
             </div>
 
+            {/* ─── Studio Mode Navigation Tabs (Part 1) ────────────── */}
+            <div
+                role="tablist"
+                aria-label="AI Prompt Power Studio Modes"
+                className="flex items-center justify-center p-1.5 rounded-2xl bg-[rgb(12,12,18)] border border-[rgb(38,38,58)] shadow-lg max-w-xl mx-auto"
+            >
+                {STUDIO_TABS.map((tab, idx) => {
+                    const isSelected = activeMainTab === tab.id;
+                    const IconComp = tab.icon;
+                    return (
+                        <button
+                            key={tab.id}
+                            id={`tab-${tab.id}`}
+                            role="tab"
+                            type="button"
+                            aria-selected={isSelected}
+                            aria-controls={`panel-${tab.id}`}
+                            tabIndex={isSelected ? 0 : -1}
+                            onClick={() => setActiveMainTab(tab.id)}
+                            onKeyDown={(e) => handleTabKeyDown(e, idx)}
+                            className={cn(
+                                "flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500",
+                                isSelected
+                                    ? "bg-violet-600 text-white shadow-md shadow-violet-600/30"
+                                    : "text-[rgb(140,140,175)] hover:text-white hover:bg-[rgb(18,18,28)]"
+                            )}
+                        >
+                            <IconComp className="w-4 h-4 shrink-0" />
+                            <span>{tab.label}</span>
+                            {tab.badge && (
+                                <span
+                                    className={cn(
+                                        "text-[10px] px-1.5 py-0.2 rounded-full font-mono",
+                                        isSelected
+                                            ? "bg-white/20 text-white"
+                                            : "bg-[rgb(22,22,34)] text-violet-300 border border-violet-500/30"
+                                    )}
+                                >
+                                    {tab.badge}
+                                </span>
+                            )}
+                        </button>
+                    );
+                })}
+            </div>
+
+            {/* ─── Tab 1: Builder Panel (Preserves Phase 1–3 Features) ── */}
+            {activeMainTab === "builder" && (
+                <div id="panel-builder" role="tabpanel" aria-labelledby="tab-builder" className="space-y-8 animate-in fade-in duration-150">
             {/* ─── Target AI Model Selector ────────────────────────── */}
             <div className="p-4 rounded-3xl bg-[rgb(12,12,18)] border border-[rgb(38,38,58)] shadow-xl space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
@@ -1060,21 +1227,92 @@ export function PromptStudioTool() {
                             )}
                         </div>
 
-                        {/* ─── Bonus: Detected Variables Info Badge ─── */}
+                        {/* ─── Detected Variables & Quick-Fill Drawer ─── */}
                         {detectedVariables.length > 0 && (
-                            <div className="p-3 rounded-2xl bg-violet-500/10 border border-violet-500/25 flex items-start gap-2 text-xs text-violet-200">
-                                <Variable className="w-4 h-4 text-violet-400 shrink-0 mt-0.5" />
-                                <div>
-                                    <span className="font-bold text-violet-300">
-                                        {detectedVariables.length} Template Variable{detectedVariables.length > 1 ? "s" : ""} Detected:{" "}
-                                    </span>
-                                    <span className="font-mono text-[11px] text-white">
-                                        {detectedVariables.join(", ")}
-                                    </span>
-                                    <p className="text-[10px] text-violet-300/80 mt-0.5">
-                                        Remember to replace placeholder variables with your real context before submitting to your AI.
-                                    </p>
+                            <div className="p-3.5 rounded-2xl bg-violet-500/10 border border-violet-500/30 space-y-3">
+                                <div className="flex items-start justify-between gap-2">
+                                    <div className="flex items-start gap-2 text-xs text-violet-200">
+                                        <Variable className="w-4 h-4 text-violet-400 shrink-0 mt-0.5" />
+                                        <div>
+                                            <span className="font-bold text-violet-300">
+                                                {detectedVariables.length} Template Variable{detectedVariables.length > 1 ? "s" : ""} Detected:{" "}
+                                            </span>
+                                            <span className="font-mono text-[11px] text-white">
+                                                {detectedVariables.join(", ")}
+                                            </span>
+                                            <p className="text-[10px] text-violet-300/80 mt-0.5">
+                                                Fill variables below to inject your context directly into the prompt without manual searching.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowVariableFiller(!showVariableFiller)}
+                                        className="text-[11px] font-semibold text-violet-300 hover:text-white px-2.5 py-1 rounded-lg bg-violet-500/20 hover:bg-violet-500/30 transition-all shrink-0 border border-violet-500/30 flex items-center gap-1"
+                                    >
+                                        <span>{showVariableFiller ? "Hide Filler" : "Fill Variables"}</span>
+                                        {showVariableFiller ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                                    </button>
                                 </div>
+
+                                {/* Quick-Fill Mini Form */}
+                                {showVariableFiller && (
+                                    <div className="pt-2 border-t border-violet-500/20 space-y-2.5 animate-in fade-in duration-150">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                            {detectedVariables.map((variable) => {
+                                                const cleanLabel = variable.replace(/[{}]/g, "");
+                                                return (
+                                                    <div key={variable} className="space-y-1">
+                                                        <label className="text-[10px] font-mono font-bold text-violet-300 block truncate">
+                                                            {cleanLabel}
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            value={variableInputs[variable] || ""}
+                                                            onChange={(e) =>
+                                                                setVariableInputs((prev) => ({
+                                                                    ...prev,
+                                                                    [variable]: e.target.value,
+                                                                }))
+                                                            }
+                                                            placeholder={`e.g. ${cleanLabel}`}
+                                                            className="w-full px-2.5 py-1.5 rounded-xl bg-[rgb(12,12,18)] border border-violet-500/30 focus:border-violet-400 focus:outline-none text-xs text-white placeholder-[rgb(100,100,130)]"
+                                                        />
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+
+                                        <div className="flex items-center justify-between pt-1">
+                                            <span className="text-[10px] text-[rgb(120,120,150)]">
+                                                * Blank variables remain as placeholders
+                                            </span>
+                                            <button
+                                                type="button"
+                                                onClick={handleApplyVariables}
+                                                className={cn(
+                                                    "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-md",
+                                                    variablesApplied
+                                                        ? "bg-emerald-500 text-white shadow-emerald-500/20"
+                                                        : "bg-violet-600 hover:bg-violet-500 text-white shadow-violet-600/30"
+                                                )}
+                                            >
+                                                {variablesApplied ? (
+                                                    <>
+                                                        <Check className="w-3.5 h-3.5" />
+                                                        <span>Variables Injected!</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Sparkles className="w-3.5 h-3.5" />
+                                                        <span>Inject Variables into Prompt</span>
+                                                    </>
+                                                )}
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
 
@@ -1184,6 +1422,35 @@ export function PromptStudioTool() {
                     </div>
                 </div>
             </div>
+            </div>
+            )}
+
+            {/* ─── Tab 2: Optimizer Panel ───────────────────────────── */}
+            {activeMainTab === "optimizer" && (
+                <div id="panel-optimizer" role="tabpanel" aria-labelledby="tab-optimizer">
+                    <PromptOptimizerTab
+                        onNavigateToBuilder={() => setActiveMainTab("builder")}
+                        onNavigateToLibrary={() => setActiveMainTab("library")}
+                    />
+                </div>
+            )}
+
+            {/* ─── Tab 3: Library Panel ─────────────────────────────── */}
+            {activeMainTab === "library" && (
+                <div id="panel-library" role="tabpanel" aria-labelledby="tab-library">
+                    <PromptLibraryTab onSelectTemplate={handleSelectTemplate} />
+                </div>
+            )}
+
+            {/* ─── Tab 4: Lab Panel ─────────────────────────────────── */}
+            {activeMainTab === "lab" && (
+                <div id="panel-lab" role="tabpanel" aria-labelledby="tab-lab">
+                    <PromptLabTab
+                        onNavigateToBuilder={() => setActiveMainTab("builder")}
+                        onNavigateToLibrary={() => setActiveMainTab("library")}
+                    />
+                </div>
+            )}
 
             {/* ─── Unobtrusive Bottom Affiliate Recommendations ──── */}
             <div className="p-6 rounded-3xl bg-[rgb(12,12,18)] border border-[rgb(38,38,58)] shadow-lg space-y-4">
