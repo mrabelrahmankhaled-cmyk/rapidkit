@@ -37,14 +37,16 @@ import {
     FlaskConical
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PromptGeneratorTab } from "./prompt-studio/PromptGeneratorTab";
 import { PromptLibraryTab } from "./prompt-studio/PromptLibraryTab";
 import { PromptOptimizerTab } from "./prompt-studio/PromptOptimizerTab";
 import { PromptLabTab } from "./prompt-studio/PromptLabTab";
 import { PromptTemplate } from "@/data/promptTemplates";
 import { DecomposedPrompt } from "@/lib/promptOptimizer";
+import { type GeneratorDomain } from "@/lib/promptGenerator";
 
 export type TargetModel = "chatgpt" | "claude" | "gemini" | "midjourney";
-export type StudioTab = "builder" | "optimizer" | "library" | "lab";
+export type StudioTab = "generator" | "builder" | "optimizer" | "library" | "lab";
 
 interface StudioTabItem {
     id: StudioTab;
@@ -54,6 +56,7 @@ interface StudioTabItem {
 }
 
 const STUDIO_TABS: StudioTabItem[] = [
+    { id: "generator", label: "Generator", icon: Sparkles, badge: "Start" },
     { id: "builder", label: "Builder", icon: Wand2 },
     { id: "optimizer", label: "Optimizer", icon: Gauge, badge: "New" },
     { id: "library", label: "Library", icon: Layers, badge: "20" },
@@ -214,11 +217,19 @@ export function PromptStudioTool() {
     const [showMyPrompts, setShowMyPrompts] = useState(false);
     const [promptsTab, setPromptsTab] = useState<"favorites" | "history">("favorites");
 
-    // ─── Phase 4: Modular Tabbed Architecture State ──────────────────
-    const [activeMainTab, setActiveMainTab] = useState<StudioTab>("builder");
+    // ─── Phase 4 & 6: Modular Tabbed Architecture & Generator State ──
+    const [activeMainTab, setActiveMainTab] = useState<StudioTab>("generator");
     const [variableInputs, setVariableInputs] = useState<Record<string, string>>({});
     const [showVariableFiller, setShowVariableFiller] = useState(false);
     const [variablesApplied, setVariablesApplied] = useState(false);
+
+    // ─── Phase 6: Natural Language Generator Persistent State ────────
+    const [generatorInput, setGeneratorInput] = useState("");
+    const [generatorDomain, setGeneratorDomain] = useState<GeneratorDomain | "auto">("auto");
+    const [generatorIncludeBestPractices, setGeneratorIncludeBestPractices] = useState(true);
+    const [generatorHasGenerated, setGeneratorHasGenerated] = useState(false);
+    const [optimizerInitialPrompt, setOptimizerInitialPrompt] = useState("");
+    const [optimizerSessionKey, setOptimizerSessionKey] = useState(0);
 
     // ─── LocalStorage Persistence ────────────────────────────────────
     useEffect(() => {
@@ -506,6 +517,7 @@ export function PromptStudioTool() {
         setShowVariableFiller(true);
 
         // Switch to Builder tab
+        setOptimizerInitialPrompt("");
         setActiveMainTab("builder");
 
         if (typeof window !== "undefined") {
@@ -513,9 +525,10 @@ export function PromptStudioTool() {
         }
     }, [role, task, context, outputFormat, language, targetModel, history, saveHistoryToStorage]);
 
-    // Send to Builder Handler from Optimizer (safe against destroying active draft)
+    // Send to Builder Handler from Optimizer or Generator (safe against destroying active draft)
     const handleLoadFromOptimizer = useCallback(
-        (decomposed?: DecomposedPrompt) => {
+        (decomposed?: DecomposedPrompt, replaceAll = false) => {
+            setOptimizerInitialPrompt("");
             // Guard against silent data loss: preserve current work to history before loading
             if (role.trim() || task.trim()) {
                 const currentDraft: SavedPrompt = {
@@ -533,12 +546,29 @@ export function PromptStudioTool() {
                 saveHistoryToStorage([currentDraft, ...filtered].slice(0, 10));
             }
 
-            if (decomposed) {
+            if (decomposed && !replaceAll) {
                 if (decomposed.role) setRole(decomposed.role);
                 if (decomposed.task) setTask(decomposed.task);
                 if (decomposed.context) setContext(decomposed.context);
                 if (decomposed.outputFormat) setOutputFormat(decomposed.outputFormat);
                 setActivePreset(null);
+            } else if (decomposed) {
+                setRole(decomposed.role);
+                setTask(decomposed.task);
+                setContext(decomposed.context);
+                setOutputFormat(decomposed.outputFormat);
+                setActivePreset(null);
+
+                const fullContent = `${decomposed.role} ${decomposed.task} ${decomposed.context} ${decomposed.outputFormat}`;
+                const matches = fullContent.match(/\{\{([^}]+)\}\}/g);
+                if (matches && matches.length > 0) {
+                    const nextVars: Record<string, string> = {};
+                    Array.from(new Set(matches)).forEach((v) => {
+                        nextVars[v] = "";
+                    });
+                    setVariableInputs(nextVars);
+                    setShowVariableFiller(true);
+                }
             }
 
             setActiveMainTab("builder");
@@ -549,6 +579,85 @@ export function PromptStudioTool() {
         },
         [role, task, context, outputFormat, language, targetModel, history, saveHistoryToStorage]
     );
+
+    // Shared Copy & Auto-Save History Handler for Generator
+    const handleCopyFromGenerator = useCallback(
+        async (formattedPrompt: string, fields: DecomposedPrompt, model: TargetModel): Promise<boolean> => {
+            if (!formattedPrompt) return false;
+            let copiedOk = false;
+            try {
+                if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+                    await navigator.clipboard.writeText(formattedPrompt);
+                    copiedOk = true;
+                }
+            } catch {
+                copiedOk = false;
+            }
+
+            const entry: SavedPrompt = {
+                id: Date.now().toString(),
+                timestamp: Date.now(),
+                title:
+                    fields.role.trim() ||
+                    fields.task.trim().slice(0, 36) ||
+                    `${model.toUpperCase()} Prompt`,
+                model,
+                role: fields.role,
+                task: fields.task,
+                context: fields.context,
+                outputFormat: fields.outputFormat,
+                language,
+            };
+
+            const updatedHistory = [
+                entry,
+                ...history.filter((h) => h.role !== fields.role || h.task !== fields.task),
+            ].slice(0, 10);
+            saveHistoryToStorage(updatedHistory);
+            return copiedOk;
+        },
+        [history, language, saveHistoryToStorage]
+    );
+
+    // Shared Save to Favorites Handler for Generator
+    const handleFavoriteFromGenerator = useCallback(
+        (formattedPrompt: string, fields: DecomposedPrompt, model: TargetModel) => {
+            if (!formattedPrompt) return;
+
+            const newFav: SavedPrompt = {
+                id: Date.now().toString(),
+                timestamp: Date.now(),
+                title:
+                    fields.role.trim() ||
+                    fields.task.trim().slice(0, 36) ||
+                    `${model.toUpperCase()} Prompt`,
+                model,
+                role: fields.role,
+                task: fields.task,
+                context: fields.context,
+                outputFormat: fields.outputFormat,
+                language,
+            };
+
+            const updatedFavs = [
+                newFav,
+                ...favorites.filter((f) => f.role !== fields.role || f.task !== fields.task),
+            ];
+            saveFavoritesToStorage(updatedFavs);
+        },
+        [favorites, language, saveFavoritesToStorage]
+    );
+
+    // Send Generated Prompt to Optimizer Tab
+    const handleSendToOptimizerFromGenerator = useCallback((formattedPrompt: string) => {
+        if (!formattedPrompt.trim()) return;
+        setOptimizerInitialPrompt(formattedPrompt);
+        setOptimizerSessionKey((prev) => prev + 1);
+        setActiveMainTab("optimizer");
+        if (typeof window !== "undefined") {
+            window.scrollTo({ top: 100, behavior: "smooth" });
+        }
+    }, []);
 
     // Variable Quick-Fill Handler (safe against special characters like $, $$, $1)
     const handleApplyVariables = useCallback(() => {
@@ -577,20 +686,39 @@ export function PromptStudioTool() {
         setTimeout(() => setVariablesApplied(false), 2500);
     }, [variableInputs, role, task, context, outputFormat]);
 
-    // WAI-ARIA Keyboard Navigation for Tabs (Left / Right Arrows)
+    // WAI-ARIA Keyboard Navigation for Tabs (Left / Right / Home / End)
+    const goToTab = (id: StudioTab) => {
+        if (id !== "optimizer" && optimizerInitialPrompt) {
+            setOptimizerInitialPrompt("");
+            setOptimizerSessionKey((prev) => prev + 1);
+        }
+        setActiveMainTab(id);
+    };
+
     const handleTabKeyDown = (e: React.KeyboardEvent, index: number) => {
         if (e.key === "ArrowRight") {
             e.preventDefault();
             const nextIndex = (index + 1) % STUDIO_TABS.length;
-            setActiveMainTab(STUDIO_TABS[nextIndex].id);
+            goToTab(STUDIO_TABS[nextIndex].id);
             const nextBtn = document.getElementById(`tab-${STUDIO_TABS[nextIndex].id}`);
             nextBtn?.focus();
         } else if (e.key === "ArrowLeft") {
             e.preventDefault();
             const prevIndex = (index - 1 + STUDIO_TABS.length) % STUDIO_TABS.length;
-            setActiveMainTab(STUDIO_TABS[prevIndex].id);
+            goToTab(STUDIO_TABS[prevIndex].id);
             const prevBtn = document.getElementById(`tab-${STUDIO_TABS[prevIndex].id}`);
             prevBtn?.focus();
+        } else if (e.key === "Home") {
+            e.preventDefault();
+            goToTab(STUDIO_TABS[0].id);
+            const firstBtn = document.getElementById(`tab-${STUDIO_TABS[0].id}`);
+            firstBtn?.focus();
+        } else if (e.key === "End") {
+            e.preventDefault();
+            const lastIndex = STUDIO_TABS.length - 1;
+            goToTab(STUDIO_TABS[lastIndex].id);
+            const lastBtn = document.getElementById(`tab-${STUDIO_TABS[lastIndex].id}`);
+            lastBtn?.focus();
         }
     };
 
@@ -616,7 +744,7 @@ export function PromptStudioTool() {
             <div
                 role="tablist"
                 aria-label="AI Prompt Power Studio Modes"
-                className="flex items-center justify-center p-1.5 rounded-2xl bg-[rgb(12,12,18)] border border-[rgb(38,38,58)] shadow-lg max-w-xl mx-auto"
+                className="flex flex-wrap sm:flex-nowrap items-center justify-center p-1.5 rounded-2xl bg-[rgb(12,12,18)] border border-[rgb(38,38,58)] shadow-lg max-w-2xl mx-auto gap-1"
             >
                 {STUDIO_TABS.map((tab, idx) => {
                     const isSelected = activeMainTab === tab.id;
@@ -630,10 +758,10 @@ export function PromptStudioTool() {
                             aria-selected={isSelected}
                             aria-controls={`panel-${tab.id}`}
                             tabIndex={isSelected ? 0 : -1}
-                            onClick={() => setActiveMainTab(tab.id)}
+                            onClick={() => goToTab(tab.id)}
                             onKeyDown={(e) => handleTabKeyDown(e, idx)}
                             className={cn(
-                                "flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500",
+                                "flex-auto sm:flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2 sm:py-2.5 px-2.5 sm:px-3 rounded-xl text-xs sm:text-sm font-bold transition-all relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500",
                                 isSelected
                                     ? "bg-violet-600 text-white shadow-md shadow-violet-600/30"
                                     : "text-[rgb(140,140,175)] hover:text-white hover:bg-[rgb(18,18,28)]"
@@ -644,7 +772,7 @@ export function PromptStudioTool() {
                             {tab.badge && (
                                 <span
                                     className={cn(
-                                        "text-[10px] px-1.5 py-0.2 rounded-full font-mono",
+                                        "hidden sm:inline text-[10px] px-1.5 py-0.2 rounded-full font-mono",
                                         isSelected
                                             ? "bg-white/20 text-white"
                                             : "bg-[rgb(22,22,34)] text-violet-300 border border-violet-500/30"
@@ -657,6 +785,34 @@ export function PromptStudioTool() {
                     );
                 })}
             </div>
+
+            {/* ─── Tab 0: Natural Language Generator Panel (Default) ─ */}
+            {activeMainTab === "generator" && (
+                <div
+                    id="panel-generator"
+                    role="tabpanel"
+                    aria-labelledby="tab-generator"
+                >
+                    <PromptGeneratorTab
+                        rawInput={generatorInput}
+                        onRawInputChange={setGeneratorInput}
+                        targetModel={targetModel}
+                        onTargetModelChange={setTargetModel}
+                        domain={generatorDomain}
+                        onDomainChange={setGeneratorDomain}
+                        language={language}
+                        onLanguageChange={setLanguage}
+                        includeBestPractices={generatorIncludeBestPractices}
+                        onIncludeBestPracticesChange={setGeneratorIncludeBestPractices}
+                        hasGenerated={generatorHasGenerated}
+                        onHasGeneratedChange={setGeneratorHasGenerated}
+                        onCopyPrompt={handleCopyFromGenerator}
+                        onSaveToFavorites={handleFavoriteFromGenerator}
+                        onSendToBuilder={(fields) => handleLoadFromOptimizer(fields, true)}
+                        onSendToOptimizer={handleSendToOptimizerFromGenerator}
+                    />
+                </div>
+            )}
 
             {/* ─── Tab 1: Builder Panel (Preserves Phase 1–3 Features) ── */}
             {activeMainTab === "builder" && (
@@ -1467,8 +1623,10 @@ export function PromptStudioTool() {
             {activeMainTab === "optimizer" && (
                 <div id="panel-optimizer" role="tabpanel" aria-labelledby="tab-optimizer">
                     <PromptOptimizerTab
+                        key={optimizerSessionKey}
+                        initialPrompt={optimizerInitialPrompt}
                         onNavigateToBuilder={handleLoadFromOptimizer}
-                        onNavigateToLibrary={() => setActiveMainTab("library")}
+                        onNavigateToLibrary={() => goToTab("library")}
                     />
                 </div>
             )}

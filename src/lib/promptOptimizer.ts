@@ -175,6 +175,18 @@ export function detectAlreadyMentionedTech(text: string): string[] {
         }
     }
 
+    // Contextual Go detection (avoids false positives on English verb "go")
+    if (
+        /\b(?:golang|goroutines?|go\s+(?:api|server|service|backend|microservice|runtime|module|package|sdk|cli|handler|struct|interface|channel|concurrency|code|app|application|program|version|\d+\.\d+))\b/i.test(
+            text
+        ) ||
+        /\bin\s+Go\b/.test(text)
+    ) {
+        if (!found.includes("Go")) {
+            found.push("Go");
+        }
+    }
+
     return found;
 }
 
@@ -184,20 +196,26 @@ export function detectAlreadyMentionedTech(text: string): string[] {
  * Never invent credentials or personal facts.
  */
 export function detectRole(text: string): { hasRole: boolean; detectedRoleText?: string } {
+    // Strip unresolved {{...}} placeholders so bare role placeholders do not earn Role points
+    const cleaned = text.replace(/\{\{[^}]+\}\}/g, " ");
+
     const roleRegexes = [
-        /(?:^|\n|[.!?]\s+)(?:#+\s*)?(?:role(?:\s*&|\s+and)?\s*persona|role|persona)(?::|\s*\n)\s*([^\n.!?]+)/i,
-        /(?:^|\n|[.!?]\s+)(?:act\s+as(?:\s+an?)?|you\s+are(?:\s+an?)?|assume\s+the\s+role\s+of|take\s+on\s+the\s+role\s+of|role:\s*|persona:\s*)([^\n.!?]+)/i,
+        /(?:^|\n|[.!?]\s+)(?:#+\s*)?(?:role(?:\s*&|\s+and)?\s*persona|role|persona)(?::|\s*\n)\s*(?:act\s+as(?:\s+an?)?\s+|تصرف\s+ك(?:ـ)?\s*)?([a-zA-Z\u0600-\u06FF][^\n.!?]{2,})/i,
+        /(?:^|\n|[.!?]\s+)(?:act\s+as(?:\s+an?)?|you\s+are(?:\s+an?)?|assume\s+the\s+role\s+of|take\s+on\s+the\s+role\s+of|role:\s*|persona:\s*)\s*([a-zA-Z\u0600-\u06FF][^\n.!?]{2,})/i,
         /(?:^|\n|[.!?]\s+)(?:as\s+an?\s+(?:senior|lead|principal|staff|expert|specialist|architect|engineer|developer|copywriter|marketer|designer)[^\n.!?]*)/i,
-        /(?:تصرف\s+ك(?:ـ)?|أنت\s+خبير|بصفتك|العب\s+دور|قم\s+بدور|دورك:\s*)([^\n.!?]+)/i,
+        /(?:تصرف\s+ك(?:ـ)?|أنت\s+خبير|بصفتك|العب\s+دور|قم\s+بدور|دورك:\s*)\s*([\u0600-\u06FFa-zA-Z][^\n.!?]{2,})/i,
     ];
 
     for (const reg of roleRegexes) {
-        const match = text.match(reg);
+        const match = cleaned.match(reg);
         if (match) {
-            return {
-                hasRole: true,
-                detectedRoleText: match[0].trim(),
-            };
+            const roleBody = (match[1] || match[0]).trim();
+            if (/[a-zA-Z\u0600-\u06FF]{3,}/.test(roleBody)) {
+                return {
+                    hasRole: true,
+                    detectedRoleText: match[0].trim(),
+                };
+            }
         }
     }
 
@@ -252,6 +270,12 @@ export const GENERIC_OPTIMIZER_PHRASES = [
     /do\s+not\s+include\s+speculative\s+claims\s+or\s+unverified\s+assumptions;?\s*if\s+information\s+is\s+missing,\s*state\s+it\s+explicitly\.?/gi,
     /avoid\s+conversational\s+filler\s+and\s+pleasantries;?\s*jump\s+straight\s+into\s+the\s+solution\s+with\s+high\s+information\s+density\.?/gi,
     /specifically,\s*provide\s+a\s+step-by-step\s+resolution\s+that\s+directly\s+fulfills?\s+this\s+objective\.?/gi,
+    /اتبع\s+أفضل\s+ممارسات\s+كتابة\s+الكود\s+المنظم\s+ومعالجة\s+الأخطاء\s+بوضوح،?\s*ولا\s+تفترض\s+وجود\s+مكتبات\s+أو\s+واجهات\s+غير\s+موثقة\.?/gi,
+    /ركز\s+على\s+توافق\s+المحتوى\s+مع\s+نية\s+الباحث\s+والتسلسل\s+المنطقي\s+للعناوين\s+وتجنب\s+حشو\s+الكلمات\s+المفتاحية\.?/gi,
+    /حافظ\s+على\s+الإيجاز\s+والوضوح،?\s*وتجنب\s+المقدمات\s+الإنشائية\s+الطويلة،?\s*وركز\s+مباشرة\s+على\s+حل\s+مشكلة\s+العميل\s+المحتمل\.?/gi,
+    /ركز\s+على\s+الفوائد\s+الملموسة\s+للعميل\s+بدلاً\s+من\s+العبارات\s+العامة،?\s*ولا\s+تختلق\s+إحصائيات\s+أو\s+شهادات\s+غير\s+حقيقية\.?/gi,
+    /تجنب\s+الحشو\s+والتكرار\s+والمقدمات\s+البديهية،?\s*وحافظ\s+على\s+سلاسة\s+الأسلوب\s+ودقة\s+المعلومات\.?/gi,
+    /لا\s+تختلق\s+معلومات\s+أو\s+افتراضات\s+غير\s+مؤكدة\.?\s*إذا\s+كانت\s+هناك\s+تفاصيل\s+ناقصة،?\s*وضح\s+الافتراضات\s+بشكل\s+صريح\.?/gi,
 ];
 
 /**
@@ -280,30 +304,37 @@ export function detectContext(text: string): {
         " "
     );
 
-    // 4. Strip empty label bullets like "- Framework: React (already specified)" or "- Target Audience:"
+    // 4a. Strip generator/optimizer annotation bullets like "- Framework: React (already specified)"
     cleaned = cleaned.replace(
-        /(?:^|\n)\s*[-*•]\s*(?:framework|technical\s+stack|target\s+audience|product\s*\/\s*offer|business\s+goal|key\s+constraints|error\s+message[^\n:]*|relevant\s+component[^\n:]*)?(?::\s*)?(?:\([^)]*\))?\s*$/gim,
+        /(?:^|\n)[ \t]*[-*•][ \t]*[^\n]*\((?:already\s+specified|محددة?\s+مسبقاً)\)[ \t]*$/gim,
+        " "
+    );
+
+    // 4b. Strip empty English & Arabic label bullets left behind after {{placeholder}} removal
+    cleaned = cleaned.replace(
+        /(?:^|\n)[ \t]*[-*•][ \t]*(?:framework|technical\s+stack|runtime\s+environment|key\s+features[^\n:]*|target\s+audience|product\s*\/\s*offer|business\s+goal|primary\s+keyword|key\s+constraints|error\s+message[^\n:]*|unexpected\s+behavior[^\n:]*|relevant\s+component[^\n:]*|التقنيات\s+المستخدمة|التقنيات\s+المحددة|الجمهور\s+المستهدف|الفئة\s+المستهدفة|المنتج\s+أو\s+القيمة\s+المقترحة|الكلمة\s+المفتاحية\s+المستهدفة|السياق\s+الأساسي|رسالة\s+الخطأ[^\n:]*|القيود\s+والمتطلبات[^\n:]*)?(?::[ \t]*)?(?:\([^)]*\))?[ \t]*$/gim,
         " "
     );
 
     // 5. Check if the remaining text has substantive user-provided context
     const substantiveContextPatterns = [
         // Target audience / context with real entity
-        /\b(?:target\s+audience|audience|context|background)\s*:\s*[a-zA-Z0-9\s]{4,}/i,
+        /\b(?:target\s+audience|audience|context|background)[ \t]*:[ \t]*[a-zA-Z0-9][a-zA-Z0-9 \t,.-]{3,}/i,
         /\bfor\s+(?:[a-zA-Z]+\s+)?(?:beginners|seniors?|juniors?|developers?|engineers?|executives?|enterprises?|b2b|b2c|students?|admins?|administrators?|clients?|customers?|teams?|users?)\b/i,
-        /(?:الجمهور\s+المستهدف|المستهدفين|للمبتدئين|للشركات)/i,
+        /(?:الجمهور\s+المستهدف|الفئة\s+المستهدفة|المستهدفين|المنتج\s+أو\s+القيمة\s+المقترحة|الكلمة\s+المفتاحية\s+المستهدفة|السياق\s+الأساسي)[ \t]*[:\-][ \t]*[\u0600-\u06FFa-zA-Z0-9][\u0600-\u06FFa-zA-Z0-9 \t،,.-]{2,}/i,
+        /(?:للمبتدئين|للشركات|للمطورين|لرواد\s+الأعمال|للعملاء|لأصحاب\s+[\u0600-\u06FF\s]{3,})/i,
         // Tech stack with concrete details, versions, or environments
-        /\b(?:tech(?:nical)?\s+stack|framework|database|runtime|environment|using|with)\s*:\s*[a-zA-Z0-9\s,.]{3,}/i,
+        /\b(?:tech(?:nical)?\s+stack|framework|database|runtime(?:\s+environment)?|environment|key\s+features(?:\s*&|\s+and)?\s*scope|key\s+constraints|product(?:\s*\/\s*offer)?|business\s+goal|primary\s+keyword|using|with)[ \t]*:[ \t]*[a-zA-Z0-9][a-zA-Z0-9 \t,.-]{2,}/i,
         /\b(?:react\s+\d+|next\.?js\s+\d+|node\s+\d+|python\s+\d+|postgres(?:ql)?\s+\d+|aws\s+[a-z0-9.]+|db\.[a-z0-9.]+|\d+\s*gb\s*ram|\d+\s*qps|\d+\s*queries\s+per\s+second)\b/i,
         // Workloads, SLAs, or limits
         /\b(?:workload|zero\s+downtime|under\s+\d+\s*(?:ms|seconds|minutes)|budget\s+(?:under|of)?\s*\$?\d+|traffic\s+of\s+\d+)\b/i,
         // Error messages, stack traces, or code blocks
-        /\b(?:error(?:\s*message)?|exception|trace|stack\s*trace|typeerror|referenceerror|unexpected\s+behavior)\s*:\s*[a-zA-Z0-9\s_.]{3,}/i,
+        /\b(?:error(?:\s*message)?|exception|trace|stack\s*trace|typeerror|referenceerror|unexpected\s+behavior)[ \t]*:[ \t]*[a-zA-Z0-9_][a-zA-Z0-9 \t_.-]{2,}/i,
         /```[\s\S]{10,}```/,
         // Context statements
-        /\bin\s+the\s+context\s+of\s+[a-zA-Z0-9\s]{4,}/i,
-        /\bbackground\s*:\s*[a-zA-Z0-9\s]{4,}/i,
-        /(الخلفية|بيئة\s+العمل|التقنيات\s+المستخدمة|القيود\s*:\s*[\u0600-\u06FF\w\s]{4,})/i,
+        /\bin\s+the\s+context\s+of\s+[a-zA-Z0-9][a-zA-Z0-9\s]{3,}/i,
+        /\bbackground[ \t]*:[ \t]*[a-zA-Z0-9][a-zA-Z0-9 \t,.-]{3,}/i,
+        /(?:الخلفية|بيئة\s+العمل|التقنيات\s+المستخدمة|التقنيات\s+المحددة|القيود(?:\s+والمتطلبات)?|رسالة\s+الخطأ)[ \t]*[:\-][ \t]*[\u0600-\u06FF\w][\u0600-\u06FF\w \t،,.-]{3,}/i,
     ];
 
     for (const pattern of substantiveContextPatterns) {
@@ -631,19 +662,19 @@ export function optimizePrompt(rawText: string): OptimizationResult {
 
         if (hasExistingHeadings) {
             let resultText = normalizedPrompt;
-            if (roleSug) {
+            if (roleSug && !/^###\s+(?:Role|الدور)/im.test(resultText)) {
                 resultText = `### Role & Persona\n${roleSug.proposedAddition}\n\n${resultText}`;
             }
-            if (taskSug) {
+            if (taskSug && !resultText.includes(taskSug.proposedAddition)) {
                 resultText = `${resultText}\n\n${taskSug.proposedAddition}`;
             }
-            if (contextSug) {
+            if (contextSug && !/^###\s+(?:Context|السياق)/im.test(resultText)) {
                 resultText = `${resultText}\n\n### Context & Constraints\n${contextSug.proposedAddition}`;
             }
-            if (formatSug) {
+            if (formatSug && !/^###\s+(?:Desired Output Format|Output Format|تنسيق المخرجات)/im.test(resultText)) {
                 resultText = `${resultText}\n\n### Desired Output Format\n${formatSug.proposedAddition}`;
             }
-            if (constraintSugs.length > 0) {
+            if (constraintSugs.length > 0 && !/^###\s+(?:Guidelines|إرشادات)/im.test(resultText)) {
                 const combinedConstraints = constraintSugs.map((c) => `- ${c.proposedAddition}`).join("\n");
                 resultText = `${resultText}\n\n### Guidelines & Negative Constraints\n${combinedConstraints}`;
             }
