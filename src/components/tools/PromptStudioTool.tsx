@@ -41,6 +41,7 @@ import { PromptLibraryTab } from "./prompt-studio/PromptLibraryTab";
 import { PromptOptimizerTab } from "./prompt-studio/PromptOptimizerTab";
 import { PromptLabTab } from "./prompt-studio/PromptLabTab";
 import { PromptTemplate } from "@/data/promptTemplates";
+import { DecomposedPrompt } from "@/lib/promptOptimizer";
 
 export type TargetModel = "chatgpt" | "claude" | "gemini" | "midjourney";
 export type StudioTab = "builder" | "optimizer" | "library" | "lab";
@@ -54,7 +55,7 @@ interface StudioTabItem {
 
 const STUDIO_TABS: StudioTabItem[] = [
     { id: "builder", label: "Builder", icon: Wand2 },
-    { id: "optimizer", label: "Optimizer", icon: Gauge, badge: "Soon" },
+    { id: "optimizer", label: "Optimizer", icon: Gauge, badge: "New" },
     { id: "library", label: "Library", icon: Layers, badge: "20" },
     { id: "lab", label: "Lab", icon: FlaskConical, badge: "Soon" },
 ];
@@ -511,6 +512,43 @@ export function PromptStudioTool() {
             window.scrollTo({ top: 100, behavior: "smooth" });
         }
     }, [role, task, context, outputFormat, language, targetModel, history, saveHistoryToStorage]);
+
+    // Send to Builder Handler from Optimizer (safe against destroying active draft)
+    const handleLoadFromOptimizer = useCallback(
+        (decomposed?: DecomposedPrompt) => {
+            // Guard against silent data loss: preserve current work to history before loading
+            if (role.trim() || task.trim()) {
+                const currentDraft: SavedPrompt = {
+                    id: Date.now().toString(),
+                    timestamp: Date.now(),
+                    title: role.trim() || task.trim().slice(0, 36) || `${targetModel.toUpperCase()} Draft`,
+                    model: targetModel,
+                    role,
+                    task,
+                    context,
+                    outputFormat,
+                    language,
+                };
+                const filtered = history.filter((h) => h.role !== role || h.task !== task);
+                saveHistoryToStorage([currentDraft, ...filtered].slice(0, 10));
+            }
+
+            if (decomposed) {
+                if (decomposed.role) setRole(decomposed.role);
+                if (decomposed.task) setTask(decomposed.task);
+                if (decomposed.context) setContext(decomposed.context);
+                if (decomposed.outputFormat) setOutputFormat(decomposed.outputFormat);
+                setActivePreset(null);
+            }
+
+            setActiveMainTab("builder");
+
+            if (typeof window !== "undefined") {
+                window.scrollTo({ top: 100, behavior: "smooth" });
+            }
+        },
+        [role, task, context, outputFormat, language, targetModel, history, saveHistoryToStorage]
+    );
 
     // Variable Quick-Fill Handler (safe against special characters like $, $$, $1)
     const handleApplyVariables = useCallback(() => {
@@ -1429,7 +1467,7 @@ export function PromptStudioTool() {
             {activeMainTab === "optimizer" && (
                 <div id="panel-optimizer" role="tabpanel" aria-labelledby="tab-optimizer">
                     <PromptOptimizerTab
-                        onNavigateToBuilder={() => setActiveMainTab("builder")}
+                        onNavigateToBuilder={handleLoadFromOptimizer}
                         onNavigateToLibrary={() => setActiveMainTab("library")}
                     />
                 </div>
