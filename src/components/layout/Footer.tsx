@@ -15,7 +15,7 @@ export function Footer() {
                     {/* Column 1: Brand */}
                     <div className="col-span-2 md:col-span-3 lg:col-span-1 flex flex-col justify-between">
                         <div>
-                            <Link href="/" className="inline-flex items-center gap-2 mb-4 group">
+                            <Link href="/" aria-label="RapidKit Home" className="inline-flex items-center gap-2 mb-4 group">
                                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center transition-transform group-hover:scale-105 shadow-md shadow-violet-500/20">
                                     <Zap className="w-4 h-4 text-white" fill="white" />
                                 </div>
@@ -171,7 +171,11 @@ export function Footer() {
                 <div className="container-wide space-y-4">
                     <p className="text-xs text-[rgb(110,110,145)] leading-relaxed text-center sm:text-left">
                         Disclosure: RapidKit is reader-supported. Some links on our site are affiliate links, meaning we may earn a small commission if you make a purchase through them — at no extra cost to you.{" "}
-                        <Link href="/affiliate-disclosure" className="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+                        <Link
+                            href="/affiliate-disclosure"
+                            aria-label="Read our full affiliate disclosure"
+                            className="text-violet-400 hover:text-violet-300 underline underline-offset-2"
+                        >
                             Read our full affiliate disclosure
                         </Link>
                         .

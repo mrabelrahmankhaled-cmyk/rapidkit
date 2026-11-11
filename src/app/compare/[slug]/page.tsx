@@ -162,7 +162,11 @@ function ProductDetailCard({
                     </AffiliateLink>
                     <p className="mt-2 text-[11px] text-[rgb(100,100,140)] text-center">
                         Partner link — we may earn a commission at no extra cost to you.{" "}
-                        <Link href="/affiliate-disclosure" className="text-violet-400 hover:underline">
+                        <Link
+                            href="/affiliate-disclosure"
+                            aria-label="Read our full affiliate disclosure"
+                            className="text-violet-400 hover:underline"
+                        >
                             Disclosure
                         </Link>
                     </p>

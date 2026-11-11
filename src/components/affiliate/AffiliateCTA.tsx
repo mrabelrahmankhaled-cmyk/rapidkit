@@ -38,6 +38,7 @@ export function AffiliateCTA({
                     Partner recommendation ·{" "}
                     <Link
                         href="/affiliate-disclosure"
+                        aria-label="Read our full affiliate disclosure"
                         className="underline decoration-[rgb(80,80,120)] hover:text-violet-300 transition-colors"
                     >
                         Affiliate disclosure
@@ -98,7 +99,11 @@ export function AffiliateCTA({
 
             <p className="mt-3 text-[11px] text-[rgb(80,80,120)] leading-relaxed">
                 Disclosure: Some links above are affiliate links. If you choose to purchase through them, RapidKit may earn a commission at no extra cost to you.{" "}
-                <Link href="/affiliate-disclosure" className="text-violet-400 hover:text-violet-300 underline">
+                <Link
+                    href="/affiliate-disclosure"
+                    aria-label="Read our full affiliate disclosure"
+                    className="text-violet-400 hover:text-violet-300 underline"
+                >
                     Learn more
                 </Link>
                 .
