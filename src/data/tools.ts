@@ -1785,7 +1785,7 @@ export const TOOLS: Tool[] = [
         isFeatured: true,
         isPopular: true,
         seo: {
-            title: "AI Prompt Studio — Structured Prompt Builder for Developers & Marketers | RapidKit",
+            title: "AI Prompt Studio — Structured Prompt Builder for Developers & Marketers",
             description:
                 "Generate structured, production-ready AI prompts using the Role-Task-Context-Format framework. Free, 100% client-side, no signup required.",
             keywords: [

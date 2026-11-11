@@ -756,9 +756,9 @@ export function PromptStudioTool() {
                     <Sparkles className="w-3.5 h-3.5" />
                     <span>Role-Task-Context-Format Framework</span>
                 </div>
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight">
+                <p className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight">
                     AI Prompt Studio
-                </h1>
+                </p>
                 <p className="text-sm sm:text-base text-[rgb(140,140,175)] max-w-2xl mx-auto">
                     Professional AI Prompts for Developers &amp; Marketers. Free to Use. No Signup Required.
                 </p>
