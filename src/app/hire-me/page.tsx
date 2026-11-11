@@ -79,7 +79,7 @@ export default function HireMePage() {
             title: "RapidKit",
             tagline: "Developer & Marketer Toolkit",
             badge: "Live Production SaaS",
-            highlight: "35+ Browser-Native Tools",
+            highlight: "40+ Browser-Native Tools",
             description:
                 "Full-featured suite of developer and marketing utilities running 100% client-side. Architected programmatic SEO comparisons, dynamic sitemaps, JSON-LD schemas, and affiliate engine.",
             stack: ["React.js", "Next.js", "TypeScript", "Tailwind CSS", "Programmatic SEO"],

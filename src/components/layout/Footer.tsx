@@ -29,7 +29,7 @@ export function Footer() {
                             </p>
                             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[rgb(24,24,37)] border border-[rgb(45,45,65)]/60 text-xs text-[rgb(148,148,186)]">
                                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                                <span>35 Free Tools • No Sign-up</span>
+                                <span>{TOOLS.length} Free Tools • No Sign-up</span>
                             </div>
                         </div>
                     </div>
@@ -82,7 +82,7 @@ export function Footer() {
                                     href="/tools"
                                     className="text-sm font-medium text-violet-400 hover:text-violet-300 transition-colors inline-flex items-center gap-1"
                                 >
-                                    Explore 35 Tools →
+                                    Explore {TOOLS.length} Tools →
                                 </Link>
                             </li>
                         </ul>
