@@ -6,7 +6,7 @@ import {
   QrCode, Clock, Hash, Fingerprint, Link as LinkIcon,
   FileText, FileCode, MessageCircle, ShieldAlert,
   FileSearch, Search, Table, Shapes, Box,
-  PenTool, Layers, Maximize, Monitor, Timer,
+  PenTool, Layers, Maximize, Monitor, Timer, Terminal,
 } from "lucide-react";
 import { CATEGORIES, getFeaturedTools, getNewTools, TOOLS } from "@/data/tools";
 import { buildWebSiteJsonLd } from "@/lib/seo";
@@ -44,6 +44,7 @@ const ICON_MAP: Record<string, React.ElementType> = {
   Maximize,
   Monitor,
   Timer,
+  Terminal,
 };
 
 function ToolCard({ tool, index }: { tool: ReturnType<typeof getFeaturedTools>[0]; index: number }) {

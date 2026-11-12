@@ -213,6 +213,11 @@ const PromptStudioTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const CurlToCodeTool = dynamic(
+    () => import("@/components/tools/CurlToCodeTool").then((m) => ({ default: m.CurlToCodeTool })),
+    { loading: Spinner, ssr: false }
+);
+
 // ─── Map slug → Component ────────────────────────────────────────
 const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "youtube-thumbnail-downloader": YoutubeThumbnailTool,
@@ -255,6 +260,7 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "jwt-decoder": JwtDecoderTool,
     "web-code-playground": WebCodePlaygroundTool,
     "prompt-studio": PromptStudioTool,
+    "curl-to-code": CurlToCodeTool,
 };
 
 type Props = {

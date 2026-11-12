@@ -1835,6 +1835,90 @@ export const TOOLS: Tool[] = [
         relatedToolSlugs: ["markdown-editor", "json-formatter", "code-to-image"],
         affiliateIds: ["hostinger"],
     },
+    // ─── Developer: cURL to Code Converter ─────────────────────────
+    {
+        id: "curl-to-code",
+        name: "cURL to Code Converter",
+        slug: "curl-to-code",
+        description: "Convert cURL commands to clean JavaScript fetch and Python requests code online.",
+        longDescription:
+            "Convert single-line or multiline cURL commands into clean, ready-to-run JavaScript fetch() and Python requests snippets in your browser. Preserves headers, query parameters, JSON payloads, form fields, cookies, and Basic Auth while warning honestly about flags that cannot map 1:1.",
+        categoryId: "developer",
+        icon: "Terminal",
+        tags: ["curl", "fetch", "python", "requests", "api", "developer", "converter"],
+        isNew: true,
+        isFeatured: true,
+        seo: {
+            title: "cURL to Code Converter — Convert cURL to Fetch & Python",
+            description:
+                "Convert cURL commands to clean JavaScript fetch and Python requests code online. Preserves headers, JSON bodies, auth, and multiline flags in your browser.",
+            keywords: [
+                "curl to code",
+                "curl converter",
+                "curl to fetch",
+                "curl to python",
+                "convert curl to javascript fetch",
+                "curl to python requests online",
+            ],
+        },
+        howToSteps: [
+            "Copy a cURL command from your terminal, API documentation, or Chrome/Firefox DevTools ('Copy as cURL (bash)').",
+            "Paste the single-line or backslash-continued multiline command into the cURL Command input box.",
+            "Switch between JavaScript (fetch) and Python (requests) tabs to inspect the generated request code and parsed request summary.",
+            "Review any Conversion Notices (such as local @file paths, -k insecure TLS, or browser Cookie restrictions), then click 'Copy Code'.",
+        ],
+        useCases: [
+            {
+                title: "Browser DevTools to Frontend Code",
+                description:
+                    "Turn 'Copy as cURL (bash)' network captures directly into clean JavaScript fetch() calls with headers, query params, and JSON payloads preserved.",
+            },
+            {
+                title: "API Docs to Python Scripts",
+                description:
+                    "Translate README and API reference cURL snippets into idiomatic Python requests code using dicts, params, auth tuples, and json payloads.",
+            },
+            {
+                title: "Inspecting Flags & Edge Cases",
+                description:
+                    "Break down complex multiline flags, duplicate query parameters, and form uploads safely without executing untrusted shell commands or hitting live APIs.",
+            },
+        ],
+        codeExamplesHeading: "Curl to Fetch & Python Examples",
+        codeExamples: [
+            {
+                title: "POST JSON Request (cURL → JavaScript fetch)",
+                description:
+                    "Multiline -H headers and -d JSON objects are serialized cleanly into fetch() options without unescaped template interpolation.",
+                code: `// Input: curl -X POST https://api.example.com/v1/items \\\n//   -H "Content-Type: application/json" \\\n//   -d '{"name":"widget","count":2}'\n\nconst response = await fetch("https://api.example.com/v1/items", {\n  method: "POST",\n  headers: {\n    "Content-Type": "application/json",\n  },\n  body: JSON.stringify({\n    "name": "widget",\n    "count": 2\n  }),\n});`,
+            },
+            {
+                title: "GET with Auth & Query Params (cURL → Python requests)",
+                description:
+                    "Basic Auth (-u), cookies (-b), and repeated query parameters translate into explicit Python params, auth, and cookies arguments.",
+                code: `# Input: curl -G "https://api.example.com/search" -u "alice:secret" -d "q=sdk" -d "tag=a" -d "tag=b"\n\nimport requests\n\nurl = "https://api.example.com/search"\nparams = [\n    ("q", "sdk"),\n    ("tag", "a"),\n    ("tag", "b"),\n]\nauth = ("alice", "secret")\n\nresponse = requests.get(\n    url,\n    params=params,\n    auth=auth,\n)`,
+            },
+        ],
+        faqs: [
+            {
+                question: "Does this cURL converter execute commands or send my API keys anywhere?",
+                answer: "No. Conversion runs 100% client-side in your browser using a pure text tokenizer and code generator. It never runs shell commands, executes HTTP requests, or saves pasted commands in localStorage.",
+            },
+            {
+                question: "How do I copy a request as cURL from Chrome, Edge, or Firefox DevTools?",
+                answer: "Open DevTools (F12), go to the Network tab, right-click the API request you want to convert, and choose Copy > Copy as cURL (bash). If you copy the Windows cmd format with caret (^) escapes, the tool warns you so you can switch to bash formatting for cleaner results.",
+            },
+            {
+                question: "Why does the converter warn about flags like -F @file, -b cookies.txt, or -k?",
+                answer: "Web browsers cannot read local disk paths from @file or cookie-jar files, and disabling TLS verification (-k/--insecure) automatically would be unsafe. Instead of silently dropping flags or emitting broken code, the converter generates safe placeholders and explains what needs manual review.",
+            },
+            {
+                question: "How are query parameters, JSON payloads, and Basic Auth (-u) translated?",
+                answer: "Query strings and -G data params populate URLSearchParams in JavaScript and params dicts or tuple lists (when duplicate keys exist) in Python. Valid JSON bodies use JSON.stringify() or requests json=..., while -u username:password emits UTF-8-safe Basic Authorization headers in fetch() and auth=(username, password) in Python.",
+            },
+        ],
+        relatedToolSlugs: ["url-parser", "json-formatter", "base64-converter", "jwt-decoder"],
+    },
     {
         id: "prompt-studio",
         name: "AI Prompt Studio",
