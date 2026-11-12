@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import {
     PenTool,
@@ -8,8 +8,6 @@ import {
     Download,
     Copy,
     Check,
-    Undo,
-    Settings2,
     Palette,
     Info,
     Sparkles,
@@ -33,19 +31,103 @@ const THICKNESS = [
 
 export function SignaturePadTool() {
     const sigCanvas = useRef<SignatureCanvas>(null);
+    const lastCanvasSize = useRef<{ width: number; height: number; ratio: number } | null>(null);
     const [penColor, setPenColor] = useState("#000000");
+    const penColorRef = useRef(penColor);
     const [penWidth, setPenWidth] = useState(3);
     const [isEmpty, setIsEmpty] = useState(true);
-    const [copied, setCopied] = useState(false);
+    const [isDrawing, setIsDrawing] = useState(false);
+    const [copyState, setCopyState] = useState<"idle" | "copied" | "error">("idle");
+
+    useEffect(() => {
+        penColorRef.current = penColor;
+    }, [penColor]);
+
+    useEffect(() => {
+        const pad = sigCanvas.current;
+        if (!pad) return;
+
+        const canvas = pad.getCanvas();
+        lastCanvasSize.current = {
+            width: canvas.offsetWidth,
+            height: canvas.offsetHeight,
+            ratio: Math.max(window.devicePixelRatio ?? 1, 1),
+        };
+
+        const handleResize = () => {
+            const currentPad = sigCanvas.current;
+            if (!currentPad) return;
+
+            const currentCanvas = currentPad.getCanvas();
+            const nextWidth = currentCanvas.offsetWidth;
+            const nextHeight = currentCanvas.offsetHeight;
+            const nextRatio = Math.max(window.devicePixelRatio ?? 1, 1);
+
+            if (nextWidth === 0 || nextHeight === 0) return;
+
+            const prev = lastCanvasSize.current;
+            if (
+                prev &&
+                prev.width === nextWidth &&
+                prev.height === nextHeight &&
+                prev.ratio === nextRatio
+            ) {
+                return;
+            }
+
+            const data = currentPad.toData();
+            const scaleX = prev && prev.width > 0 ? nextWidth / prev.width : 1;
+            const scaleY = prev && prev.height > 0 ? nextHeight / prev.height : 1;
+
+            currentCanvas.width = nextWidth * nextRatio;
+            currentCanvas.height = nextHeight * nextRatio;
+            const ctx = currentCanvas.getContext("2d");
+            if (ctx) {
+                ctx.scale(nextRatio, nextRatio);
+            }
+
+            if (data.length > 0) {
+                const scaledData =
+                    scaleX !== 1 || scaleY !== 1
+                        ? data.map((group) =>
+                              group.map((point) =>
+                                  Object.assign({}, point, {
+                                      x: point.x * scaleX,
+                                      y: point.y * scaleY,
+                                  })
+                              )
+                          )
+                        : data;
+                currentPad.fromData(scaledData);
+                currentPad.getSignaturePad().penColor = penColorRef.current;
+            } else {
+                currentPad.clear();
+            }
+
+            lastCanvasSize.current = {
+                width: nextWidth,
+                height: nextHeight,
+                ratio: nextRatio,
+            };
+            setIsEmpty(currentPad.isEmpty());
+        };
+
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     const clear = () => {
         sigCanvas.current?.clear();
+        setIsDrawing(false);
         setIsEmpty(true);
     };
 
     const trim = () => {
-        if (sigCanvas.current?.isEmpty()) return null;
-        return sigCanvas.current?.getTrimmedCanvas().toDataURL("image/png");
+        if (!sigCanvas.current || sigCanvas.current.isEmpty()) {
+            setIsEmpty(true);
+            return null;
+        }
+        return sigCanvas.current.getTrimmedCanvas().toDataURL("image/png");
     };
 
     const download = () => {
@@ -58,21 +140,29 @@ export function SignaturePadTool() {
         link.click();
     };
 
-    const copyToClipboard = async () => {
-        const dataURL = trim();
-        if (!dataURL) return;
-
-        try {
-            const resp = await fetch(dataURL);
-            const blob = await resp.blob();
-            await navigator.clipboard.write([
-                new ClipboardItem({ "image/png": blob })
-            ]);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        } catch (err) {
-            console.error("Failed to copy", err);
+    const copyToClipboard = () => {
+        if (!sigCanvas.current || sigCanvas.current.isEmpty()) {
+            setIsEmpty(true);
+            return;
         }
+
+        sigCanvas.current.getTrimmedCanvas().toBlob((blob) => {
+            if (!blob || !navigator.clipboard?.write || typeof ClipboardItem === "undefined") {
+                setCopyState("error");
+                setTimeout(() => setCopyState("idle"), 2500);
+                return;
+            }
+            navigator.clipboard
+                .write([new ClipboardItem({ "image/png": blob })])
+                .then(() => {
+                    setCopyState("copied");
+                    setTimeout(() => setCopyState("idle"), 2000);
+                })
+                .catch(() => {
+                    setCopyState("error");
+                    setTimeout(() => setCopyState("idle"), 2500);
+                });
+        }, "image/png");
     };
 
     return (
@@ -98,17 +188,22 @@ export function SignaturePadTool() {
                     <div className="w-full aspect-[2/1] bg-white rounded-[2.5rem] relative overflow-hidden cursor-crosshair group">
                         <SignatureCanvas
                             ref={sigCanvas}
+                            clearOnResize={false}
                             penColor={penColor}
                             velocityFilterWeight={0.7}
                             minWidth={penWidth * 0.5}
                             maxWidth={penWidth}
-                            onBegin={() => setIsEmpty(false)}
+                            onBegin={() => setIsDrawing(true)}
+                            onEnd={() => {
+                                setIsDrawing(false);
+                                setIsEmpty(sigCanvas.current?.isEmpty() ?? true);
+                            }}
                             canvasProps={{
                                 className: "w-full h-full",
                                 style: { width: '100%', height: '100%' }
                             }}
                         />
-                        {isEmpty && (
+                        {isEmpty && !isDrawing && (
                             <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center text-gray-300">
                                 <MousePointer2 className="w-12 h-12 mb-4 opacity-20" />
                                 <p className="text-sm font-medium opacity-40">Start signing here...</p>
@@ -125,8 +220,8 @@ export function SignaturePadTool() {
                                 isEmpty ? "opacity-50 grayscale cursor-not-allowed bg-[rgb(17,17,27)] border border-[rgb(35,35,55)]" : "bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] text-white hover:bg-[rgb(30,30,46)]"
                             )}
                         >
-                            {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-indigo-400" />}
-                            {copied ? "Copied PNG!" : "Copy to Clip"}
+                            {copyState === "copied" ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-indigo-400" />}
+                            {copyState === "copied" ? "Copied PNG!" : copyState === "error" ? "Copy Failed" : "Copy to Clip"}
                         </button>
                         <button
                             onClick={download}
@@ -202,7 +297,7 @@ export function SignaturePadTool() {
                         <div className="p-5 rounded-3xl bg-indigo-500/5 border border-indigo-500/10 flex gap-4">
                             <Sparkles className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5" />
                             <p className="text-[10px] text-[rgb(120,120,160)] leading-relaxed italic">
-                                Tip: Use the "Fine" pen for detailed signatures and "Bold" for stylistic initials.
+                                Tip: Use the &quot;Fine&quot; pen for detailed signatures and &quot;Bold&quot; for stylistic initials.
                             </p>
                         </div>
                     </div>
