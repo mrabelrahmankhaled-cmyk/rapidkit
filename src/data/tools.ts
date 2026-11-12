@@ -10,6 +10,12 @@ export type ToolUseCase = {
     description: string;
 };
 
+export type ToolCodeExample = {
+    title: string;
+    description: string;
+    code: string;
+};
+
 export type ToolCategory = {
     id: string;
     name: string;
@@ -39,6 +45,8 @@ export type Tool = {
     };
     howToSteps: string[];
     useCases?: ToolUseCase[];
+    codeExamplesHeading?: string;
+    codeExamples?: ToolCodeExample[];
     faqs: ToolFAQ[];
     relatedToolSlugs: string[];
     affiliateIds?: AffiliateId[];
@@ -403,7 +411,7 @@ export const TOOLS: Tool[] = [
         slug: "css-gradient-generator",
         description: "Create stunning CSS gradients visually and copy the code instantly.",
         longDescription:
-            "Design linear and radial CSS gradients with a live visual editor. Add or remove color stops, tweak angles, pick curated presets, and copy standard CSS background-image declarations in one click.",
+            "Design linear, radial, and conic CSS gradients with a live visual editor. Add up to 6 color stops, adjust linear-gradient() angles in degrees, explore curated presets, and copy standard CSS background declarations in one click.",
         categoryId: "developer",
         icon: "Palette",
         tags: ["css", "gradient", "color", "design", "developer"],
@@ -414,12 +422,41 @@ export const TOOLS: Tool[] = [
             keywords: ["css gradient generator", "gradient maker", "linear gradient css", "background gradient generator"],
         },
         howToSteps: [
-            "Select a gradient type (Linear or Radial) and adjust the direction angle slider.",
-            "Click any color stop to pick a new HEX color or adjust its percentage position.",
-            "Preview the gradient live in the canvas area or pick from the curated preset swatches.",
-            "Click 'Copy CSS' to copy the background declaration into your stylesheet.",
+            "Choose Linear, Radial, or Conic gradient type. For linear gradients, adjust the angle slider (0°–360°) to set the linear-gradient() direction—90deg runs left to right and 135deg runs diagonally.",
+            "Click any color stop swatch to pick a color, drag its percentage slider (0%–100%) to control where the transition sits, or click '+ Add Stop' to layer up to 6 stops.",
+            "Preview the live result, select one of the preset swatches, or click 'Random' to experiment with multi-stop combinations.",
+            "Click 'Copy CSS' to copy the complete background: linear-gradient(...) declaration into your CSS stylesheet.",
+        ],
+        codeExamplesHeading: "Linear Gradient CSS Examples",
+        codeExamples: [
+            {
+                title: "Angles & Direction Keywords",
+                description:
+                    "The first argument of linear-gradient() sets flow direction using degrees (0deg points upward, rotating clockwise) or keywords such as to right and to bottom.",
+                code: `/* Left to right using degrees */\nbackground: linear-gradient(90deg, #7c3aed, #2563eb);\n\n/* Equivalent direction keyword */\nbackground: linear-gradient(to right, #7c3aed, #2563eb);\n\n/* Diagonal gradient at 135 degrees */\nbackground: linear-gradient(135deg, #7c3aed, #2563eb);`,
+            },
+            {
+                title: "Color Stop Positions (%)",
+                description:
+                    "Percentage color stops set each color's position along the gradient line. Equal stop positions create a sharp split with no blur.",
+                code: `/* Concentrated middle blend (35% to 65%) */\nbackground: linear-gradient(90deg, #0ea5e9 35%, #6366f1 65%);\n\n/* Hard two-tone split at 50% */\nbackground: linear-gradient(90deg, #10b981 50%, #0f172a 50%);`,
+            },
+            {
+                title: "Multi-Stop Linear Gradients",
+                description:
+                    "Include three or more color stops separated by commas to build layered color transitions or avoid muted midtones.",
+                code: `/* Three-stop warm sunset blend */\nbackground: linear-gradient(135deg, #f97316 0%, #ef4444 50%, #7c3aed 100%);\n\n/* Four-stop dark UI surface */\nbackground: linear-gradient(180deg, #0f172a 0%, #1e1b4b 45%, #312e81 80%, #1e293b 100%);`,
+            },
         ],
         faqs: [
+            {
+                question: "How does linear-gradient() syntax work in CSS?",
+                answer: "CSS linear gradients use background: linear-gradient(direction, color-stop-1, color-stop-2, ...). The optional first parameter sets the angle (such as 90deg or 135deg) or keyword (like 'to right'), defaulting to 'to bottom' (180deg). Each stop pairs a color value with an optional percentage position.",
+            },
+            {
+                question: "How do percentage color stops affect a CSS linear gradient?",
+                answer: "A percentage sets the position of that color stop along the gradient line (0% = start, 100% = end). The browser blends colors between adjacent stops; equal adjacent positions create a hard edge.",
+            },
             {
                 question: "What is the difference between linear-gradient and radial-gradient in CSS?",
                 answer: "A linear-gradient transitions colors along a straight line at a specified angle (such as 135deg), whereas a radial-gradient radiates colors outward from a central origin point in a circle or ellipse.",

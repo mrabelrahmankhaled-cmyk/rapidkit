@@ -202,6 +202,30 @@ export default async function ToolPage({ params }: Props) {
                         </section>
                     )}
 
+                    {/* ─── Static Code Examples ───────────────── */}
+                    {tool.codeExamples && tool.codeExamples.length > 0 && (
+                        <section className="glass-card p-6 mb-6" aria-labelledby="code-examples-heading">
+                            <h2 id="code-examples-heading" className="text-lg font-bold text-white mb-4">
+                                {tool.codeExamplesHeading ?? "Code Examples"}
+                            </h2>
+                            <div className="space-y-4">
+                                {tool.codeExamples.map((example, idx) => (
+                                    <div key={idx} className="rounded-xl bg-[rgb(17,17,27)] border border-[rgb(30,30,46)] p-4">
+                                        <h3 className="text-sm font-semibold text-white mb-1">
+                                            {example.title}
+                                        </h3>
+                                        <p className="text-sm text-[rgb(140,140,180)] leading-relaxed mb-3">
+                                            {example.description}
+                                        </p>
+                                        <pre className="overflow-x-auto rounded-lg bg-[rgb(10,10,15)] border border-[rgb(30,30,46)] p-3 text-xs text-emerald-300 font-mono leading-relaxed">
+                                            <code>{example.code}</code>
+                                        </pre>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    )}
+
                     {/* ─── Frequently Asked Questions ─────────── */}
                     {tool.faqs.length > 0 && (
                         <section className="glass-card p-6 mb-6" aria-labelledby="faq-heading">
