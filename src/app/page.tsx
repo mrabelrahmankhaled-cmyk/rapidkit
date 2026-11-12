@@ -9,6 +9,7 @@ import {
   PenTool, Layers, Maximize, Monitor, Timer,
 } from "lucide-react";
 import { CATEGORIES, getFeaturedTools, getNewTools, TOOLS } from "@/data/tools";
+import { buildWebSiteJsonLd } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -101,9 +102,14 @@ export default function HomePage() {
   const featured = getFeaturedTools();
   const newTools = getNewTools();
   const allCategories = CATEGORIES;
+  const websiteJsonLd = buildWebSiteJsonLd();
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+      />
       {/* ─── HERO ──────────────────────────────────────────── */}
       <section className="relative min-h-[90vh] flex flex-col items-center justify-center text-center px-4 pt-20 pb-16 grid-pattern overflow-hidden">
         {/* Glow Orbs */}
@@ -254,7 +260,7 @@ export default function HomePage() {
         <div className="container-wide">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3">
-              Why <span className="gradient-text">RapidKit</span>?
+              Why <span className="gradient-text">RapidKit Tools</span>?
             </h2>
             <p className="text-[rgb(80,80,120)] max-w-xl mx-auto">
               We built the tools we always wanted but couldn&apos;t find in one place.
@@ -266,7 +272,7 @@ export default function HomePage() {
               { icon: "🚀", title: "Lightning Fast", desc: "Most tools process directly in your browser with no file uploads to slow servers." },
               { icon: "🔒", title: "Privacy-First", desc: "Files, images, and text stay on your device for all local browser utilities." },
               { icon: "💸", title: "Always Free", desc: "Every tool is completely free. No hidden fees, no premium plan, no credit card needed." },
-              { icon: "📱", title: "Works Everywhere", desc: "Optimized for desktop and mobile. Use RapidKit from any device, any browser." },
+              { icon: "📱", title: "Works Everywhere", desc: "Optimized for desktop and mobile. Use RapidKit Tools from any device, any browser." },
               { icon: "🎯", title: "No Sign-up", desc: "Just open a tool and use it. No accounts, no emails, no friction." },
               { icon: "♾️", title: "Regular Updates", desc: "New tools added regularly based on user feedback and community requests." },
             ].map((item, i) => (
@@ -291,7 +297,7 @@ export default function HomePage() {
             Ready to work <span className="gradient-text">smarter</span>?
           </h2>
           <p className="text-[rgb(148,148,186)] mb-8 max-w-md mx-auto">
-            Use RapidKit&apos;s browser-native utilities for development, design, and digital marketing.
+            Use browser-native utilities from RapidKit Tools for development, design, and digital marketing.
           </p>
           <Link
             href="/tools"

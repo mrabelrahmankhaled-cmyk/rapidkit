@@ -17,7 +17,7 @@ import { ALTERNATIVES, getAlternativesBySlug, type AlternativeProduct } from "@/
 import { getComparisonsBySlugs } from "@/data/comparisons";
 import { getToolBySlug, getCategoryById } from "@/data/tools";
 import { getAffiliateById, isAffiliateConfigured } from "@/data/affiliates";
-import { canonicalUrl, buildBreadcrumbJsonLd, buildFaqJsonLd } from "@/lib/seo";
+import { SITE_NAME, canonicalUrl, buildBreadcrumbJsonLd, buildFaqJsonLd } from "@/lib/seo";
 import { AffiliateLink } from "@/components/affiliate/AffiliateLink";
 import { AffiliateCTA } from "@/components/affiliate/AffiliateCTA";
 
@@ -53,14 +53,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             canonical: pageUrl,
         },
         openGraph: {
-            title: `${alt.seo.title} | RapidKit`,
+            title: `${alt.seo.title} | ${SITE_NAME}`,
             description: alt.seo.description,
             url: pageUrl,
+            siteName: SITE_NAME,
             type: "article",
         },
         twitter: {
             card: "summary_large_image",
-            title: `${alt.seo.title} | RapidKit`,
+            title: `${alt.seo.title} | ${SITE_NAME}`,
             description: alt.seo.description,
         },
     };

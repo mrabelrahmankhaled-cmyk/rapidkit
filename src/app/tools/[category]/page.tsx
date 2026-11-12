@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 import { CATEGORIES, TOOLS, getCategoryById } from "@/data/tools";
-import { canonicalUrl, buildBreadcrumbJsonLd } from "@/lib/seo";
+import { SITE_NAME, canonicalUrl, buildBreadcrumbJsonLd } from "@/lib/seo";
 
 type Props = { params: Promise<{ category: string }> };
 
@@ -24,9 +24,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             canonical: pageUrl,
         },
         openGraph: {
-            title: `${cat.name} — ${count} Free Online Tools | RapidKit`,
+            title: `${cat.name} — ${count} Free Online Tools | ${SITE_NAME}`,
             description: `Discover ${count} free online ${cat.name.toLowerCase()} on RapidKit. Fast, private, and no sign-up required.`,
             url: pageUrl,
+            siteName: SITE_NAME,
             type: "website",
         },
     };

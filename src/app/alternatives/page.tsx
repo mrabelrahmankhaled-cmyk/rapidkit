@@ -4,7 +4,7 @@ import { Layers, ArrowRight, ChevronRight, Wrench } from "lucide-react";
 import { INDEXABLE_ALTERNATIVES, HAS_INDEXABLE_ALTERNATIVES } from "@/data/alternatives";
 import { INDEXABLE_COMPARISONS, HAS_INDEXABLE_COMPARISONS } from "@/data/comparisons";
 import { getToolBySlug } from "@/data/tools";
-import { canonicalUrl, buildBreadcrumbJsonLd } from "@/lib/seo";
+import { SITE_NAME, canonicalUrl, buildBreadcrumbJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = {
     title: "Software Alternatives for Developers, Creators & Marketers",
@@ -18,15 +18,16 @@ export const metadata: Metadata = {
         canonical: canonicalUrl("/alternatives"),
     },
     openGraph: {
-        title: "Software Alternatives for Developers, Creators & Marketers | RapidKit",
+        title: `Software Alternatives for Developers, Creators & Marketers | ${SITE_NAME}`,
         description:
             "Explore curated alternatives to TinyPNG, Canva, and Semrush — comparing cloud platforms, WordPress plugins, and free browser-first RapidKit tools.",
         url: canonicalUrl("/alternatives"),
+        siteName: SITE_NAME,
         type: "website",
     },
     twitter: {
         card: "summary_large_image",
-        title: "Software Alternatives for Developers, Creators & Marketers | RapidKit",
+        title: "Software Alternatives for Developers, Creators & Marketers | RapidKit Tools",
         description:
             "Explore curated alternatives to TinyPNG, Canva, and Semrush — comparing cloud platforms, WordPress plugins, and free browser-first RapidKit tools.",
     },

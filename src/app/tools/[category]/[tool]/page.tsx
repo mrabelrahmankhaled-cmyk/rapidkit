@@ -11,6 +11,7 @@ import {
 import { getComparisonsBySlugs, HAS_INDEXABLE_COMPARISONS } from "@/data/comparisons";
 import { getAlternativesBySlugs, HAS_INDEXABLE_ALTERNATIVES } from "@/data/alternatives";
 import {
+    SITE_NAME,
     canonicalUrl,
     buildToolJsonLd,
     buildBreadcrumbJsonLd,
@@ -42,23 +43,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 
     const pageUrl = canonicalUrl(`/tools/${tool.categoryId}/${tool.slug}`);
+    const normalizedTitle = tool.seo.title
+        .replace(/\s*\|\s*RapidKit(?:\s+Tools)?\s*$/i, "")
+        .trim();
 
     return {
-        title: tool.seo.title,
+        title: normalizedTitle,
         description: tool.seo.description,
         keywords: tool.seo.keywords,
         alternates: {
             canonical: pageUrl,
         },
         openGraph: {
-            title: `${tool.seo.title} | RapidKit`,
+            title: `${normalizedTitle} | ${SITE_NAME}`,
             description: tool.seo.description,
             url: pageUrl,
+            siteName: SITE_NAME,
             type: "website",
         },
         twitter: {
             card: "summary_large_image",
-            title: `${tool.seo.title} | RapidKit`,
+            title: `${normalizedTitle} | ${SITE_NAME}`,
             description: tool.seo.description,
         },
     };

@@ -4,7 +4,7 @@ import { Scale, ArrowRight, ChevronRight, Wrench } from "lucide-react";
 import { INDEXABLE_COMPARISONS, HAS_INDEXABLE_COMPARISONS } from "@/data/comparisons";
 import { INDEXABLE_ALTERNATIVES, HAS_INDEXABLE_ALTERNATIVES } from "@/data/alternatives";
 import { getToolBySlug } from "@/data/tools";
-import { canonicalUrl, buildBreadcrumbJsonLd } from "@/lib/seo";
+import { SITE_NAME, canonicalUrl, buildBreadcrumbJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = {
     title: "Software Comparisons for Developers & Creators",
@@ -18,15 +18,16 @@ export const metadata: Metadata = {
         canonical: canonicalUrl("/compare"),
     },
     openGraph: {
-        title: "Software Comparisons for Developers & Creators | RapidKit",
+        title: `Software Comparisons for Developers & Creators | ${SITE_NAME}`,
         description:
             "Side-by-side informational comparisons of hosting platforms, creator newsletter tools, and YouTube SEO suites.",
         url: canonicalUrl("/compare"),
+        siteName: SITE_NAME,
         type: "website",
     },
     twitter: {
         card: "summary_large_image",
-        title: "Software Comparisons for Developers & Creators | RapidKit",
+        title: "Software Comparisons for Developers & Creators | RapidKit Tools",
         description:
             "Side-by-side informational comparisons of hosting platforms, creator newsletter tools, and YouTube SEO suites.",
     },

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { TOOLS, CATEGORIES } from "@/data/tools";
-import { canonicalUrl, buildBreadcrumbJsonLd } from "@/lib/seo";
+import { SITE_NAME, canonicalUrl, buildBreadcrumbJsonLd } from "@/lib/seo";
 import { Zap, ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -11,9 +11,10 @@ export const metadata: Metadata = {
         canonical: canonicalUrl("/tools"),
     },
     openGraph: {
-        title: "All Free Online Tools | RapidKit",
+        title: `All Free Online Tools | ${SITE_NAME}`,
         description: `Browse all ${TOOLS.length} free online tools at RapidKit. Fast, private, and no sign-up required.`,
         url: canonicalUrl("/tools"),
+        siteName: SITE_NAME,
         type: "website",
     },
 };

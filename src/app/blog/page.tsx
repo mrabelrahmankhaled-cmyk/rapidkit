@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BLOG_POSTS, BLOG_CATEGORIES } from "@/lib/blog-registry";
-import { canonicalUrl } from "@/lib/seo";
+import { SITE_NAME, canonicalUrl } from "@/lib/seo";
 import { Clock, ArrowRight, BookOpen, Tag } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -13,9 +13,10 @@ export const metadata: Metadata = {
         canonical: canonicalUrl("/blog"),
     },
     openGraph: {
-        title: "RapidKit Blog — Free How-to Guides & Tutorials",
+        title: `${SITE_NAME} Blog — Free How-to Guides & Tutorials`,
         description: "Practical how-to guides for every tool in RapidKit's toolkit.",
         url: canonicalUrl("/blog"),
+        siteName: SITE_NAME,
         type: "website",
     },
 };

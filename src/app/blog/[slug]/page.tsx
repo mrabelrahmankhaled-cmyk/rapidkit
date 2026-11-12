@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { BLOG_POSTS, getBlogPostBySlug, getRelatedPosts } from "@/lib/blog-registry";
-import { canonicalUrl, SITE_URL, buildBreadcrumbJsonLd } from "@/lib/seo";
+import { canonicalUrl, SITE_URL, SITE_NAME, SITE_ALTERNATE_NAME, buildBreadcrumbJsonLd } from "@/lib/seo";
 import { Clock, ArrowLeft, ArrowRight, ExternalLink, Tag, BookOpen } from "lucide-react";
 
 // ─── Static Params ────────────────────────────────────────────────
@@ -29,11 +29,12 @@ export async function generateMetadata({
         title: cleanTitle,
         description: post.seo.description,
         keywords: post.seo.keywords,
-        authors: [{ name: "RapidKit", url: SITE_URL }],
+        authors: [{ name: SITE_NAME, url: SITE_URL }],
         openGraph: {
-            title: post.seo.title,
+            title: `${cleanTitle} | ${SITE_NAME}`,
             description: post.seo.description,
             url: pageUrl,
+            siteName: SITE_NAME,
             type: "article",
             publishedTime: post.publishedAt,
             modifiedTime: post.updatedAt,
@@ -87,10 +88,11 @@ export default async function BlogPostPage({
         description: post.description,
         datePublished: post.publishedAt,
         dateModified: post.updatedAt,
-        author: { "@type": "Organization", name: "RapidKit", url: SITE_URL },
+        author: { "@type": "Organization", name: SITE_NAME, alternateName: SITE_ALTERNATE_NAME, url: SITE_URL },
         publisher: {
             "@type": "Organization",
-            name: "RapidKit",
+            name: SITE_NAME,
+            alternateName: SITE_ALTERNATE_NAME,
             url: SITE_URL,
             logo: { "@type": "ImageObject", url: `${SITE_URL}/icon` },
         },

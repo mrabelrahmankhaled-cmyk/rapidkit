@@ -2,19 +2,20 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Zap, Heart, Globe, Mail } from "lucide-react";
 import { TOOLS, CATEGORIES } from "@/data/tools";
-import { canonicalUrl, SITE_DOMAIN } from "@/lib/seo";
+import { canonicalUrl, SITE_DOMAIN, SITE_NAME } from "@/lib/seo";
 
 export const metadata: Metadata = {
-    title: "About RapidKit — Free Online Tools for Everyone",
+    title: "About RapidKit Tools — Free Online Tools for Everyone",
     description:
-        "Learn about RapidKit — a collection of free, fast, and private online tools built for developers, creators, and everyday users. No sign-up. No tracking.",
+        "Learn about RapidKit Tools — a collection of free, fast, and private online tools built for developers, creators, and everyday users. No sign-up. No tracking.",
     robots: { index: true, follow: true },
     alternates: { canonical: canonicalUrl("/about") },
     openGraph: {
-        title: "About RapidKit — Free Online Tools for Everyone | RapidKit",
+        title: `About RapidKit Tools — Free Online Tools for Everyone | ${SITE_NAME}`,
         description:
-            "Learn about RapidKit — a collection of free, fast, and private online tools built for developers, creators, and everyday users.",
+            "Learn about RapidKit Tools — a collection of free, fast, and private online tools built for developers, creators, and everyday users.",
         url: canonicalUrl("/about"),
+        siteName: SITE_NAME,
         type: "website",
     },
 };
@@ -30,7 +31,7 @@ export default function AboutPage() {
                     </div>
                     <h1 className="text-4xl sm:text-5xl font-bold mb-4">
                         <span className="gradient-text">About</span>{" "}
-                        <span className="text-white">RapidKit</span>
+                        <span className="text-white">RapidKit Tools</span>
                     </h1>
                     <p className="text-[rgb(120,120,160)] text-lg max-w-xl mx-auto">
                         Free, fast, private online tools — built for real people who get things done.
@@ -44,10 +45,10 @@ export default function AboutPage() {
                     <h2 className="text-2xl font-bold text-white mb-4">Our Mission</h2>
                     <p className="text-[rgb(120,120,160)] leading-relaxed text-base">
                         The internet is full of tools that make you create an account, charge a monthly fee, or harvest your data
-                        just to do a simple task. We built RapidKit because <strong className="text-white">that&apos;s ridiculous</strong>.
+                        just to do a simple task. We built RapidKit Tools because <strong className="text-white">that&apos;s ridiculous</strong>.
                     </p>
                     <p className="text-[rgb(120,120,160)] leading-relaxed text-base mt-3">
-                        RapidKit is a growing collection of free, no-nonsense tools that work instantly in your browser. Whether
+                        RapidKit Tools is a growing collection of free, no-nonsense tools that work instantly in your browser. Whether
                         you&apos;re a developer, a content creator, a student, or just someone who needs to convert a unit or compress
                         an image — we&apos;ve got you.
                     </p>
@@ -74,9 +75,9 @@ export default function AboutPage() {
 
                 {/* ─── Tech Stack ────────────────────────────── */}
                 <section>
-                    <h2 className="text-2xl font-bold text-white mb-4">How RapidKit Is Built</h2>
+                    <h2 className="text-2xl font-bold text-white mb-4">How RapidKit Tools Is Built</h2>
                     <p className="text-[rgb(120,120,160)] leading-relaxed text-base mb-5">
-                        RapidKit is built on modern web technologies to ensure speed, reliability, and excellent SEO:
+                        RapidKit Tools is built on modern web technologies to ensure speed, reliability, and excellent SEO:
                     </p>
                     <div className="flex flex-wrap gap-3">
                         {["Next.js 16", "React 19", "TypeScript", "Tailwind CSS", "Framer Motion", "Vercel"].map((tech) => (
@@ -92,7 +93,7 @@ export default function AboutPage() {
 
                 {/* ─── Stats ─────────────────────────────────── */}
                 <section>
-                    <h2 className="text-2xl font-bold text-white mb-6">RapidKit by the Numbers</h2>
+                    <h2 className="text-2xl font-bold text-white mb-6">RapidKit Tools by the Numbers</h2>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
                         {[
                             { number: `${TOOLS.length}`, label: "Free Tools" },

@@ -1,8 +1,19 @@
 import type { Tool, ToolFAQ } from "@/data/tools";
 
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://getrapidkit.me").replace(/\/$/, "");
-export const SITE_NAME = "RapidKit";
+export const SITE_NAME = "RapidKit Tools";
+export const SITE_ALTERNATE_NAME = "RapidKit";
 export const SITE_DOMAIN = "getrapidkit.me";
+
+export function buildWebSiteJsonLd() {
+    return {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: SITE_NAME,
+        alternateName: SITE_ALTERNATE_NAME,
+        url: SITE_URL,
+    };
+}
 
 export function canonicalUrl(path: string): string {
     if (!path || path === "/") return SITE_URL;
@@ -62,6 +73,7 @@ export function buildToolJsonLd(tool: Tool, categoryName: string) {
         publisher: {
             "@type": "Organization",
             name: SITE_NAME,
+            alternateName: SITE_ALTERNATE_NAME,
             url: SITE_URL,
         },
     };

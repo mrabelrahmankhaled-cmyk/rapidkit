@@ -21,7 +21,7 @@ import {
     FileCode,
     ExternalLink,
 } from "lucide-react";
-import { canonicalUrl, buildBreadcrumbJsonLd } from "@/lib/seo";
+import { SITE_NAME, canonicalUrl, buildBreadcrumbJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = {
     title: "Hire Abdelkhalek Elsaeed | Full-Stack Web Developer",
@@ -35,6 +35,7 @@ export const metadata: Metadata = {
         description:
             "Available for freelance web development, SaaS building, and custom web apps using Next.js, React, and Node.js.",
         url: canonicalUrl("/hire-me"),
+        siteName: SITE_NAME,
         type: "profile",
     },
     twitter: {

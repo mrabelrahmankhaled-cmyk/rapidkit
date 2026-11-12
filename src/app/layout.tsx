@@ -22,11 +22,11 @@ const gscVerification = process.env.NEXT_PUBLIC_GSC_VERIFICATION;
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "RapidKit — Free Online Tools for Developers & Marketers",
-    template: "%s | RapidKit",
+    default: "RapidKit Tools — Free Online Tools for Developers & Marketers",
+    template: "%s | RapidKit Tools",
   },
   description:
-    "RapidKit is your all-in-one toolkit. Free online tools for developers, digital marketers, images, YouTube, and text. Fast, private, and no sign-up needed.",
+    "RapidKit Tools is your all-in-one toolkit. Free online tools for developers, digital marketers, images, YouTube, and text. Fast, private, and no sign-up needed.",
   keywords: [
     "online tools",
     "free developer tools",
@@ -46,12 +46,12 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: canonicalUrl("/"),
     siteName: SITE_NAME,
-    title: "RapidKit — Free Online Tools for Developers & Marketers",
+    title: "RapidKit Tools — Free Online Tools for Developers & Marketers",
     description: "Your all-in-one free online toolkit. Fast, private, and no sign-up required.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "RapidKit — Free Online Tools for Developers & Marketers",
+    title: "RapidKit Tools — Free Online Tools for Developers & Marketers",
     description: "Your all-in-one free online toolkit. Fast, private, and no sign-up required.",
   },
   robots: {

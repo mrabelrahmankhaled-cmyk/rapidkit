@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { canonicalUrl, SITE_DOMAIN } from "@/lib/seo";
+import { SITE_NAME, canonicalUrl, SITE_DOMAIN } from "@/lib/seo";
 
 export const metadata: Metadata = {
     title: "Privacy Policy",
@@ -9,10 +9,11 @@ export const metadata: Metadata = {
     robots: { index: true, follow: true },
     alternates: { canonical: canonicalUrl("/privacy") },
     openGraph: {
-        title: "Privacy Policy | RapidKit",
+        title: `Privacy Policy | ${SITE_NAME}`,
         description:
             "Learn how RapidKit handles your privacy, client-side tool execution, Google Analytics, and affiliate cookies.",
         url: canonicalUrl("/privacy"),
+        siteName: SITE_NAME,
         type: "website",
     },
 };

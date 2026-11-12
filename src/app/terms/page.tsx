@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { canonicalUrl, SITE_DOMAIN } from "@/lib/seo";
+import { SITE_NAME, canonicalUrl, SITE_DOMAIN } from "@/lib/seo";
 
 export const metadata: Metadata = {
     title: "Terms of Service",
@@ -8,9 +8,10 @@ export const metadata: Metadata = {
     robots: { index: true, follow: true },
     alternates: { canonical: canonicalUrl("/terms") },
     openGraph: {
-        title: "Terms of Service | RapidKit",
+        title: `Terms of Service | ${SITE_NAME}`,
         description: "Read RapidKit's Terms of Service. Free tools, fair terms.",
         url: canonicalUrl("/terms"),
+        siteName: SITE_NAME,
         type: "website",
     },
 };

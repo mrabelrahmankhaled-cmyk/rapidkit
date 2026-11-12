@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { canonicalUrl, SITE_DOMAIN } from "@/lib/seo";
+import { SITE_NAME, canonicalUrl, SITE_DOMAIN } from "@/lib/seo";
 
 export const metadata: Metadata = {
     title: "Affiliate Disclosure",
@@ -9,10 +9,11 @@ export const metadata: Metadata = {
     robots: { index: true, follow: true },
     alternates: { canonical: canonicalUrl("/affiliate-disclosure") },
     openGraph: {
-        title: "Affiliate Disclosure | RapidKit",
+        title: `Affiliate Disclosure | ${SITE_NAME}`,
         description:
             "How RapidKit uses affiliate links to keep all browser tools free, private, and unlocked.",
         url: canonicalUrl("/affiliate-disclosure"),
+        siteName: SITE_NAME,
         type: "website",
     },
 };
