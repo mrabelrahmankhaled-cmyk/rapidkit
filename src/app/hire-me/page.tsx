@@ -20,6 +20,8 @@ import {
     Globe,
     FileCode,
     ExternalLink,
+    Lock,
+    BookOpen,
 } from "lucide-react";
 import { SITE_NAME, canonicalUrl, buildBreadcrumbJsonLd } from "@/lib/seo";
 
@@ -94,7 +96,7 @@ export default function HireMePage() {
             description:
                 "Responsive CRM dashboard integrated with WhatsApp Cloud API and an intelligent AI chatbot to qualify incoming leads, manage customer communication, and track sales pipelines.",
             stack: ["Next.js", "React", "Tailwind CSS", "Node.js", "Supabase"],
-            liveDemo: "https://invest-crm.vercel.app",
+            isPrivate: true,
         },
         {
             title: "Vertex Media",
@@ -145,6 +147,61 @@ export default function HireMePage() {
                 "Dedicated online education platform engineered for structured video course delivery, student progress analytics, interactive assessments, and teacher administration.",
             stack: ["Next.js", "React", "Tailwind CSS", "Node.js", "PostgreSQL"],
             liveDemo: "https://mrabdelrahman-eight.vercel.app",
+        },
+    ];
+
+    const caseStudies = [
+        {
+            id: "case-study-rapidkit",
+            title: "RapidKit",
+            badge: "Production SaaS · Live at getrapidkit.me",
+            href: "https://getrapidkit.me",
+            confidentialityNote: null,
+            problem:
+                "Single-purpose online utilities are often slow, cluttered with ads, or upload user inputs to remote servers. Developers and creators need fast utilities that run locally in the browser.",
+            role: "Solo full-stack engineer owning product architecture, client-side utility engines, programmatic SEO infrastructure, and production deployment.",
+            decisions: [
+                "Built 42 browser-native tools across 10 categories in Next.js App Router, React, and strict TypeScript, using dynamic client imports (ssr: false) and node:test verification for pure utility logic.",
+                "Centralized tool metadata, FAQ/WebApplication JSON-LD schemas, and dynamic sitemap generation to publish 84 static pages including 10 blog posts, 2 comparison guides, and 3 alternatives pages.",
+                "Isolated affiliate and newsletter CTA modules at the layout and template layer so tool engines remain pure, responsive, and server-free.",
+            ],
+            outcome:
+                "Live in production at getrapidkit.me with zero server-side collection of tool payloads, consistent structured metadata across all static routes, and verified unit-test coverage on core utilities.",
+        },
+        {
+            id: "case-study-classora",
+            title: "Classora",
+            badge: "B2B EdTech SaaS",
+            href: "https://classora-center.vercel.app",
+            confidentialityNote: null,
+            problem:
+                "Educational centers frequently coordinate class schedules, attendance records, teacher assignments, and student billing in separate spreadsheets, creating manual errors and poor tenant isolation.",
+            role: "Full-stack developer handling Next.js and React frontend architecture alongside Supabase and PostgreSQL data workflows.",
+            decisions: [
+                "Structured a multi-tenant PostgreSQL data model on Supabase so scheduling, attendance, and student billing records stay cleanly separated across centers.",
+                "Unified recurring student and teacher operations—class timetables, attendance tracking, and billing management—inside cohesive Next.js workspace views.",
+                "Applied consistent Tailwind CSS interface patterns across admin tables and daily operational screens for responsive desktop and tablet usage.",
+            ],
+            outcome:
+                "Delivered a centralized B2B web platform that consolidates daily scheduling, attendance tracking, and student billing into one multi-tenant workflow.",
+        },
+        {
+            id: "case-study-invest-crm",
+            title: "Invest CRM",
+            badge: "Private Client Platform · CRM",
+            href: null,
+            confidentialityNote:
+                "Confidential client system: technical architecture is summarized at a high level with no proprietary client metrics or data exposed.",
+            problem:
+                "Real estate sales teams handling inbound messaging risk losing leads or duplicating follow-ups when chat conversations, qualification questions, and pipeline stages live outside one system.",
+            role: "Full-stack developer building the CRM web interface, messaging workflow integration, and backend lead pipeline tracking.",
+            decisions: [
+                "Connected WhatsApp Cloud API with Next.js, Node.js, and Supabase so incoming prospect conversations feed into a structured, responsive CRM dashboard.",
+                "Integrated an AI lead-qualification chatbot flow to gather initial buyer intent before sales agents take over conversations.",
+                "Designed pipeline-tracking and lead-status views in React and Tailwind CSS backed by Supabase persistence for clear team follow-up.",
+            ],
+            outcome:
+                "Replaced scattered manual WhatsApp follow-ups with a private CRM workspace uniting automated initial lead qualification and pipeline tracking.",
         },
     ];
 
@@ -383,19 +440,132 @@ export default function HireMePage() {
                                     </div>
 
                                     <div className="pt-4 border-t border-[rgb(30,30,46)] flex items-center justify-between">
-                                        <a
-                                            href={project.liveDemo}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20 hover:border-cyan-500/50 hover:text-white transition-all group/btn"
-                                        >
-                                            <span>Live Demo</span>
-                                            <ExternalLink className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
-                                        </a>
+                                        {project.liveDemo ? (
+                                            <>
+                                                <a
+                                                    href={project.liveDemo}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20 hover:border-cyan-500/50 hover:text-white transition-all group/btn"
+                                                >
+                                                    <span>Live Demo</span>
+                                                    <ExternalLink className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+                                                </a>
 
-                                        <span className="text-[11px] text-[rgb(90,90,130)]">
-                                            Production / Live
-                                        </span>
+                                                <span className="text-[11px] text-[rgb(90,90,130)]">
+                                                    Production / Live
+                                                </span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/25 text-amber-200">
+                                                    <Lock className="w-3.5 h-3.5" />
+                                                    <span>Private client project</span>
+                                                </span>
+
+                                                <a
+                                                    href="#case-study-invest-crm"
+                                                    className="text-[11px] font-medium text-cyan-300 hover:text-white transition-colors"
+                                                >
+                                                    Case study ↓
+                                                </a>
+                                            </>
+                                        )}
+                                    </div>
+                                </article>
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* ─── Case Studies ────────────────────────────── */}
+                    <section id="case-studies" className="mb-16 sm:mb-20 scroll-mt-24">
+                        <div className="flex items-center gap-2 mb-3">
+                            <BookOpen className="w-4 h-4 text-violet-400" />
+                            <h2 className="text-xs font-bold uppercase tracking-wider text-violet-300">
+                                Case Studies
+                            </h2>
+                        </div>
+                        <h3 className="text-2xl sm:text-3xl font-bold text-white mb-3">
+                            Architecture &amp; Delivery Breakdown
+                        </h3>
+                        <p className="text-sm text-[rgb(130,130,170)] max-w-2xl mb-8 leading-relaxed">
+                            A closer look at the problem statements, engineering decisions, and outcomes behind three recent systems.
+                        </p>
+
+                        <div className="space-y-6">
+                            {caseStudies.map((study) => (
+                                <article
+                                    key={study.id}
+                                    id={study.id}
+                                    className="glass-card p-6 sm:p-8 scroll-mt-24 space-y-5 hover:border-violet-500/40 transition-all"
+                                >
+                                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[rgb(30,30,46)] pb-4">
+                                        <div>
+                                            <span className="inline-block text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-violet-500/15 text-violet-300 border border-violet-500/30 mb-2">
+                                                {study.badge}
+                                            </span>
+                                            <h4 className="text-xl sm:text-2xl font-bold text-white">
+                                                {study.title}
+                                            </h4>
+                                        </div>
+
+                                        {study.href ? (
+                                            <a
+                                                href={study.href}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20 hover:text-white transition-all"
+                                            >
+                                                <span>Visit Live Site</span>
+                                                <ExternalLink className="w-3.5 h-3.5" />
+                                            </a>
+                                        ) : (
+                                            <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/25 text-amber-200">
+                                                <Lock className="w-3.5 h-3.5" />
+                                                <span>Private client project</span>
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {study.confidentialityNote && (
+                                        <p className="text-xs text-amber-200/90 bg-amber-500/10 border border-amber-500/25 rounded-xl px-3.5 py-2.5 leading-relaxed">
+                                            {study.confidentialityNote}
+                                        </p>
+                                    )}
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm leading-relaxed">
+                                        <div>
+                                            <h5 className="text-xs font-bold uppercase tracking-wider text-cyan-300 mb-1.5">
+                                                Problem
+                                            </h5>
+                                            <p className="text-[rgb(155,155,190)]">{study.problem}</p>
+                                        </div>
+                                        <div>
+                                            <h5 className="text-xs font-bold uppercase tracking-wider text-cyan-300 mb-1.5">
+                                                My Role
+                                            </h5>
+                                            <p className="text-[rgb(155,155,190)]">{study.role}</p>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h5 className="text-xs font-bold uppercase tracking-wider text-cyan-300 mb-2">
+                                            Key Decisions
+                                        </h5>
+                                        <ul className="space-y-1.5 text-sm text-[rgb(155,155,190)] leading-relaxed list-disc pl-5">
+                                            {study.decisions.map((decision, idx) => (
+                                                <li key={idx}>{decision}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+
+                                    <div className="pt-3 border-t border-[rgb(30,30,46)]">
+                                        <h5 className="text-xs font-bold uppercase tracking-wider text-emerald-300 mb-1.5">
+                                            Outcome
+                                        </h5>
+                                        <p className="text-sm text-[rgb(185,185,215)] leading-relaxed">
+                                            {study.outcome}
+                                        </p>
                                     </div>
                                 </article>
                             ))}
