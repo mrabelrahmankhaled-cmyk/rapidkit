@@ -5,6 +5,11 @@ export type ToolFAQ = {
     answer: string;
 };
 
+export type ToolUseCase = {
+    title: string;
+    description: string;
+};
+
 export type ToolCategory = {
     id: string;
     name: string;
@@ -33,6 +38,7 @@ export type Tool = {
         keywords: string[];
     };
     howToSteps: string[];
+    useCases?: ToolUseCase[];
     faqs: ToolFAQ[];
     relatedToolSlugs: string[];
     affiliateIds?: AffiliateId[];
@@ -1386,7 +1392,7 @@ export const TOOLS: Tool[] = [
         slug: "signature-pad",
         description: "Create and download professional digital signatures as transparent PNGs.",
         longDescription:
-            "Draw your handwritten signature smoothly using a mouse, trackpad, stylus, or touchscreen, customize ink color and stroke width, and download a high-resolution PNG with a transparent background for PDFs and documents.",
+            "Capture your handwritten signature online using a mouse, trackpad, stylus, or touchscreen. Customize ink color and stroke weight, copy to clipboard, or download a cropped PNG with a transparent background for PDFs, documents, and forms.",
         categoryId: "design",
         icon: "PenTool",
         tags: ["design", "signature", "office", "productivity", "png"],
@@ -1398,23 +1404,44 @@ export const TOOLS: Tool[] = [
             keywords: ["digital signature pad", "online signature maker", "draw signature online", "signature png generator", "electronic signature"],
         },
         howToSteps: [
-            "Select your preferred ink color (black, navy blue, or custom) and stroke thickness.",
-            "Draw your signature inside the canvas pad using your finger, stylus, trackpad, or mouse.",
-            "Use 'Clear' to redraw until you are happy with the stroke.",
-            "Click 'Download PNG' to save the signature with a transparent background ready to place over PDF lines.",
+            "Draw your signature inside the white canvas pad using your mouse, trackpad, stylus, or touchscreen.",
+            "Adjust your ink color (Ink Black, Royal Blue, Dark Red, or Emerald) and stroke weight (Fine, Medium, or Bold), using 'Clear' to redraw until it looks clean.",
+            "Click 'Download .PNG' to save a tightly cropped signature image with a transparent background, or choose 'Copy to Clip' to copy the PNG directly.",
+            "Insert the PNG into Microsoft Word (Insert > Pictures), Google Docs (Insert > Image), or a PDF reader/editor, then position and resize it over the signature line.",
+        ],
+        useCases: [
+            {
+                title: "Word Documents & PDFs",
+                description:
+                    "Sign contracts, invoices, offer letters, and permission slips without printing and scanning. Transparency lets printed signature lines and form text show cleanly underneath.",
+            },
+            {
+                title: "Online Forms & Onboarding",
+                description:
+                    "Capture a clean handwritten signature image whenever HR onboarding portals, expense sheets, or application forms ask you to upload a PNG signature.",
+            },
+            {
+                title: "Email Signatures & Proposals",
+                description:
+                    "Copy the trimmed PNG to your clipboard or download the file to add a personal handwritten sign-off to email footers, freelance proposals, and client letters.",
+            },
         ],
         faqs: [
             {
                 question: "Is my drawn signature saved on any server?",
-                answer: "No. Your signature is drawn directly on an HTML5 Canvas inside your browser and exported locally to your device. No stroke data or image is ever transmitted.",
+                answer: "No. This digital signature pad runs 100% client-side on an HTML5 Canvas inside your browser and exports locally to your device. No stroke coordinates or PNG image data ever leave your browser.",
+            },
+            {
+                question: "How do I add the signature PNG to a PDF, Word document, or Google Docs?",
+                answer: "In Microsoft Word, choose Insert > Pictures > This Device and set text wrapping to 'In Front of Text' so you can drag the signature over the line. In Google Docs, use Insert > Image > Upload from computer and select 'In front of text'. In PDF tools like Adobe Acrobat or macOS Preview, add the downloaded transparent PNG as a signature or image stamp and resize it to fit.",
+            },
+            {
+                question: "Is a drawn digital signature legally valid?",
+                answer: "A signature exported as a PNG is a visual electronic signature, not a certificate-backed cryptographic digital signature. A PNG signature may be accepted for some routine documents, but acceptance depends on your jurisdiction, document type, and recipient requirements. Regulated filings or high-value contracts often require identity verification and an audit trail—confirm requirements directly and do not treat this as legal advice.",
             },
             {
                 question: "Why is a transparent PNG better than a JPG for signatures?",
                 answer: "A JPG always has a solid white rectangle background that covers up the signature line or text underneath it on a document, whereas a transparent PNG lets the document lines show cleanly through.",
-            },
-            {
-                question: "What is the difference between an electronic signature image and a cryptographic digital signature?",
-                answer: "An electronic signature image is a visual representation of your handwritten mark placed on a document. If a contract requires cryptographic certificate verification or an audit trail, you should use a dedicated e-signature platform.",
             },
         ],
         relatedToolSlugs: ["image-compressor", "webp-converter", "pomodoro-timer"],

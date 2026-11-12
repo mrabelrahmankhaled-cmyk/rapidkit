@@ -181,6 +181,27 @@ export default async function ToolPage({ params }: Props) {
                         </ol>
                     </div>
 
+                    {/* ─── Common Use Cases ───────────────────── */}
+                    {tool.useCases && tool.useCases.length > 0 && (
+                        <section className="glass-card p-6 mb-6" aria-labelledby="use-cases-heading">
+                            <h2 id="use-cases-heading" className="text-lg font-bold text-white mb-4">
+                                Common Use Cases
+                            </h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                {tool.useCases.map((useCase, idx) => (
+                                    <div key={idx} className="rounded-xl bg-[rgb(17,17,27)] border border-[rgb(30,30,46)] p-4">
+                                        <h3 className="text-sm font-semibold text-white mb-1.5">
+                                            {useCase.title}
+                                        </h3>
+                                        <p className="text-sm text-[rgb(140,140,180)] leading-relaxed">
+                                            {useCase.description}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    )}
+
                     {/* ─── Frequently Asked Questions ─────────── */}
                     {tool.faqs.length > 0 && (
                         <section className="glass-card p-6 mb-6" aria-labelledby="faq-heading">
