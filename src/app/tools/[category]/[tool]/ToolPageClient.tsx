@@ -218,6 +218,11 @@ const CurlToCodeTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const CssClampTool = dynamic(
+    () => import("@/components/tools/CssClampTool").then((m) => ({ default: m.CssClampTool })),
+    { loading: Spinner, ssr: false }
+);
+
 // ─── Map slug → Component ────────────────────────────────────────
 const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "youtube-thumbnail-downloader": YoutubeThumbnailTool,
@@ -261,6 +266,7 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "web-code-playground": WebCodePlaygroundTool,
     "prompt-studio": PromptStudioTool,
     "curl-to-code": CurlToCodeTool,
+    "css-clamp-generator": CssClampTool,
 };
 
 type Props = {

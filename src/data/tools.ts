@@ -1919,6 +1919,90 @@ export const TOOLS: Tool[] = [
         ],
         relatedToolSlugs: ["url-parser", "json-formatter", "base64-converter", "jwt-decoder"],
     },
+    // ─── Developer: CSS Clamp Generator ────────────────────────────
+    {
+        id: "css-clamp-generator",
+        name: "CSS Clamp Generator",
+        slug: "css-clamp-generator",
+        description: "Calculate responsive CSS clamp() typography and spacing with live viewport preview.",
+        longDescription:
+            "Generate exact CSS clamp() values and Tailwind arbitrary classes for fluid typography and layout spacing. Adjust minimum and maximum viewport widths, switch cleanly between rem and px units, inspect the linear scaling curve across viewports, and copy valid CSS instantly.",
+        categoryId: "developer",
+        icon: "SlidersHorizontal",
+        tags: ["css", "clamp", "fluid typography", "responsive", "tailwind", "rem", "vw"],
+        isNew: true,
+        isFeatured: true,
+        seo: {
+            title: "CSS Clamp Generator — Fluid Typography & Spacing Calculator",
+            description:
+                "Generate responsive CSS clamp() values and Tailwind classes for fluid typography and spacing. Live viewport slider preview, rem accessibility defaults, and zero server uploads.",
+            keywords: [
+                "css clamp generator",
+                "fluid typography calculator",
+                "css clamp calculator",
+                "responsive font size clamp",
+                "tailwind clamp generator",
+                "rem vw calculator",
+            ],
+        },
+        howToSteps: [
+            "Select rem (recommended for respecting root font preferences) or px units and confirm your root font-size (default 16px).",
+            "Enter minimum and maximum viewport widths (px) plus minimum and maximum sizes, or pick one of the presets (Body, H2, H1, Spacing).",
+            "Drag the Live Viewport Preview slider and inspect the SVG curve to verify exact pixel and rem sizing below, between, and above your breakpoints.",
+            "Click Copy CSS or Copy Tailwind to paste the generated clamp() expression straight into your styles.",
+        ],
+        useCases: [
+            {
+                title: "Fluid Headings & Body Copy",
+                description:
+                    "Scale H1, H2, and body text smoothly between 375px mobile and 1280px desktop screens without writing chained media queries.",
+            },
+            {
+                title: "Responsive Section Spacing",
+                description:
+                    "Apply clamp() to section padding, margins, and grid gaps so layout breathing room adapts proportionally across viewports.",
+            },
+            {
+                title: "Tailwind Arbitrary Utilities",
+                description:
+                    "Copy space-safe text-[clamp(...)] classes with underscore-encoded operator whitespace and swap prefixes for p-, m-, or gap-.",
+            },
+        ],
+        codeExamplesHeading: "CSS Clamp Examples",
+        codeExamples: [
+            {
+                title: "Fluid H1 & Body Typography (375px → 1280px, 16px root)",
+                description:
+                    "H1 scales smoothly from 2rem (32px) at 375px to 3.5rem (56px) at 1280px; Body copy scales from 1rem (16px) to 1.25rem (20px).",
+                code: `/* H1: 375px (2rem) to 1280px (3.5rem) at 16px root */\n.hero-title {\n  font-size: clamp(2rem, 1.3785rem + 2.6519vw, 3.5rem);\n  line-height: 1.15;\n}\n\n/* Body: 375px (1rem) to 1280px (1.25rem) at 16px root */\n.prose-copy {\n  font-size: clamp(1rem, 0.8964rem + 0.442vw, 1.25rem);\n}`,
+            },
+            {
+                title: "Fluid Section Spacing & Tailwind Arbitrary Class (375px → 1280px, 16px root)",
+                description:
+                    "Standard CSS spacing uses operators surrounded by spaces; Tailwind arbitrary utility classes encode those operator spaces with underscores.",
+                code: `/* Spacing: 375px (1.5rem) to 1280px (4rem) at 16px root */\n.section-shell {\n  padding-block: clamp(1.5rem, 0.4641rem + 4.4199vw, 4rem);\n}\n\n<!-- H2 Tailwind class: 375px (1.5rem) to 1280px (2.25rem) -->\n<h2 class="text-[clamp(1.5rem,1.1892rem_+_1.326vw,2.25rem)] font-bold">\n  Responsive Heading\n</h2>`,
+            },
+        ],
+        faqs: [
+            {
+                question: "What does CSS clamp() do?",
+                answer: "CSS clamp(min, preferred, max) keeps a computed value bounded between a minimum floor and maximum ceiling while letting the middle preferred expression scale fluidly with viewport width—eliminating repetitive font-size media queries.",
+            },
+            {
+                question: "Why does the generator default to rem instead of px, and how does browser zoom behave?",
+                answer: "Using rem respects the user's browser root font-size preference, whereas pure px endpoints ignore it. However, even with rem + vw, very steep vw slopes can limit effective browser text zoom up to 200%, so you should still test readability under browser zoom.",
+            },
+            {
+                question: "Which browsers support CSS clamp()?",
+                answer: "CSS clamp() is supported natively across modern evergreen browsers including Chrome 79+, Edge 79+, Firefox 75+, and Safari 13.1+ without vendor prefixes.",
+            },
+            {
+                question: "How is the clamp() slope and intercept formula calculated?",
+                answer: "Converting min and max sizes to pixels, slope = (maxSize - minSize) / (maxVw - minVw) gives the vw term (slope * 100)vw, and intercept = minSize - slope * minVw gives the base offset—producing clamp(min, intercept + (slope * 100)vw, max).",
+            },
+        ],
+        relatedToolSlugs: ["css-gradient-generator", "box-shadow-generator", "aspect-ratio-calculator", "unit-converter"],
+    },
     {
         id: "prompt-studio",
         name: "AI Prompt Studio",
