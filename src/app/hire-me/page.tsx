@@ -84,7 +84,7 @@ export default function HireMePage() {
             description:
                 "Full-featured suite of developer and marketing utilities running 100% client-side. Architected programmatic SEO comparisons, dynamic sitemaps, JSON-LD schemas, and affiliate engine.",
             stack: ["React.js", "Next.js", "TypeScript", "Tailwind CSS", "Programmatic SEO"],
-            liveDemo: "https://rapidkit-nine.vercel.app",
+            liveDemo: "https://getrapidkit.me",
         },
         {
             title: "Invest CRM",
@@ -469,8 +469,9 @@ export default function HireMePage() {
                     {/* ─── Contact & CTA Section ───────────────────── */}
                     <section className="relative rounded-3xl bg-gradient-to-br from-violet-600/20 via-[rgb(17,17,27)] to-cyan-600/20 border border-violet-500/30 p-8 sm:p-12 text-center overflow-hidden">
                         <div className="relative z-10 max-w-2xl mx-auto flex flex-col items-center gap-5">
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/15 border border-violet-500/30 text-violet-300 text-xs font-semibold">
-                                <Sparkles className="w-3.5 h-3.5" /> Let&apos;s Build Together
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-300 text-xs font-semibold">
+                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                                Available for new projects
                             </div>
 
                             <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
@@ -478,7 +479,11 @@ export default function HireMePage() {
                             </h2>
 
                             <p className="text-sm sm:text-base text-[rgb(148,148,186)] leading-relaxed">
-                                Whether you need a full SaaS built from scratch, an MVP delivered quickly, or dedicated full-stack development, let&apos;s discuss how to bring it to life.
+                                Whether you need a full SaaS built from scratch, an MVP delivered quickly, or dedicated full-stack development, I&apos;ll get back to you within 24 hours.
+                            </p>
+
+                            <p className="text-xs sm:text-sm text-[rgb(130,130,170)] leading-relaxed">
+                                Include your project type, main goals, and expected timeline so we can hit the ground running.
                             </p>
 
                             {/* Main Email CTA Button */}
@@ -487,7 +492,7 @@ export default function HireMePage() {
                                 className="btn-primary inline-flex items-center gap-2.5 text-base sm:text-lg px-8 py-3.5 shadow-xl shadow-violet-500/30 my-2"
                             >
                                 <Mail className="w-5 h-5" />
-                                <span>mohamedboody730@gmail.com</span>
+                                <span>Email Me: mohamedboody730@gmail.com</span>
                             </a>
 
                             {/* Direct Freelance Platforms & Channels */}
