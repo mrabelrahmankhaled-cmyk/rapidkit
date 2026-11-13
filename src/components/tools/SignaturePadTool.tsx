@@ -166,26 +166,26 @@ export function SignaturePadTool() {
     };
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6 md:gap-8 items-start">
             {/* ─── Signature Canvas Zone ─── */}
             <div className="space-y-6">
-                <div className="p-4 rounded-[3.5rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] shadow-2xl relative overflow-hidden flex flex-col items-center">
+                <div className="p-2.5 sm:p-4 rounded-2xl md:rounded-[3.5rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] shadow-2xl relative overflow-hidden flex flex-col items-center">
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.03),transparent)] pointer-events-none" />
 
-                    <div className="w-full flex items-center justify-between px-8 py-4 mb-2">
-                        <div className="flex items-center gap-3">
-                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                            <span className="text-[10px] font-bold text-[rgb(100,100,140)] uppercase tracking-widest">Active Canvas</span>
+                    <div className="w-full flex flex-wrap items-center justify-between gap-2 px-2 sm:px-4 md:px-8 py-2.5 md:py-4 mb-2">
+                        <div className="flex items-center gap-2.5 md:gap-3 shrink-0">
+                            <div className="w-2 h-2 shrink-0 rounded-full bg-emerald-500 animate-pulse" />
+                            <span className="text-[10px] font-bold text-[rgb(100,100,140)] uppercase tracking-wider md:tracking-widest whitespace-nowrap">Active Canvas</span>
                         </div>
                         <button
                             onClick={clear}
-                            className="p-2.5 rounded-2xl bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white transition-all border border-rose-500/10 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest px-4"
+                            className="py-2 px-3 md:p-2.5 md:px-4 rounded-xl md:rounded-2xl bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white transition-all border border-rose-500/10 flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider md:tracking-widest whitespace-nowrap shrink-0"
                         >
-                            <Trash2 className="w-3.5 h-3.5" /> Clear
+                            <Trash2 className="w-3.5 h-3.5 shrink-0" /> Clear
                         </button>
                     </div>
 
-                    <div className="w-full aspect-[2/1] bg-white rounded-[2.5rem] relative overflow-hidden cursor-crosshair group">
+                    <div className="w-full aspect-[4/3] min-h-[260px] md:min-h-0 md:aspect-[2/1] bg-white rounded-xl md:rounded-[2.5rem] relative overflow-hidden cursor-crosshair group">
                         <SignatureCanvas
                             ref={sigCanvas}
                             clearOnResize={false}
@@ -205,46 +205,46 @@ export function SignaturePadTool() {
                         />
                         {isEmpty && !isDrawing && (
                             <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center text-gray-300">
-                                <MousePointer2 className="w-12 h-12 mb-4 opacity-20" />
+                                <MousePointer2 className="w-10 h-10 md:w-12 md:h-12 mb-3 md:mb-4 opacity-20" />
                                 <p className="text-sm font-medium opacity-40">Start signing here...</p>
                             </div>
                         )}
                     </div>
 
-                    <div className="w-full grid grid-cols-2 gap-4 mt-6 px-4">
+                    <div className="w-full flex flex-col md:grid md:grid-cols-2 gap-3 md:gap-4 mt-4 md:mt-6 md:px-4">
                         <button
                             onClick={copyToClipboard}
                             disabled={isEmpty}
                             className={cn(
-                                "py-4 rounded-3xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-3 transition-all",
+                                "w-full py-3.5 md:py-4 px-4 rounded-2xl md:rounded-3xl font-bold text-sm md:text-xs uppercase tracking-normal md:tracking-widest whitespace-nowrap flex items-center justify-center gap-2.5 md:gap-3 transition-all",
                                 isEmpty ? "opacity-50 grayscale cursor-not-allowed bg-[rgb(17,17,27)] border border-[rgb(35,35,55)]" : "bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] text-white hover:bg-[rgb(30,30,46)]"
                             )}
                         >
-                            {copyState === "copied" ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-indigo-400" />}
+                            {copyState === "copied" ? <Check className="w-4 h-4 shrink-0 text-emerald-400" /> : <Copy className="w-4 h-4 shrink-0 text-indigo-400" />}
                             {copyState === "copied" ? "Copied PNG!" : copyState === "error" ? "Copy Failed" : "Copy to Clip"}
                         </button>
                         <button
                             onClick={download}
                             disabled={isEmpty}
                             className={cn(
-                                "py-4 rounded-3xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-3 transition-all shadow-xl",
+                                "w-full py-3.5 md:py-4 px-4 rounded-2xl md:rounded-3xl font-bold text-sm md:text-xs uppercase tracking-normal md:tracking-widest whitespace-nowrap flex items-center justify-center gap-2.5 md:gap-3 transition-all shadow-xl",
                                 isEmpty ? "opacity-50 grayscale cursor-not-allowed bg-[rgb(25,25,35)]" : "bg-indigo-600 text-white hover:bg-indigo-500 shadow-indigo-600/20"
                             )}
                         >
-                            <Download className="w-4 h-4" />
+                            <Download className="w-4 h-4 shrink-0" />
                             Download .PNG
                         </button>
                     </div>
                 </div>
 
-                <div className="p-6 rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] flex items-center justify-between">
+                <div className="p-4 sm:p-6 rounded-2xl md:rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] flex items-center justify-between">
                     <div className="flex gap-4 items-center">
-                        <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 flex items-center justify-center">
+                        <div className="w-10 h-10 shrink-0 rounded-2xl bg-emerald-500/10 flex items-center justify-center">
                             <History className="w-6 h-6 text-emerald-400" />
                         </div>
                         <div>
-                            <p className="text-xs font-bold text-white mb-0.5">Vector Smoothness</p>
-                            <p className="text-[10px] text-[rgb(120,120,160)]">Advanced interpolation for clean, non-pixelated curves.</p>
+                            <p className="text-xs font-bold text-white mb-0.5">Smooth Strokes</p>
+                            <p className="text-[10px] text-[rgb(120,120,160)]">Bezier curve smoothing exported as a crisp high-DPI PNG.</p>
                         </div>
                     </div>
                 </div>
@@ -252,7 +252,7 @@ export function SignaturePadTool() {
 
             {/* ─── Controls Sidebar ─── */}
             <div className="space-y-6">
-                <div className="p-8 rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] space-y-8">
+                <div className="p-5 sm:p-8 rounded-2xl md:rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] space-y-6 md:space-y-8">
                     <div className="space-y-5">
                         <label className="text-[10px] font-bold text-[rgb(80,80,120)] uppercase tracking-widest flex items-center gap-2">
                             <Palette className="w-4 h-4" /> Pen Color
@@ -303,7 +303,7 @@ export function SignaturePadTool() {
                     </div>
                 </div>
 
-                <div className="p-8 rounded-[3rem] bg-gradient-to-br from-indigo-600 to-blue-700 text-white shadow-xl shadow-indigo-600/20 relative overflow-hidden">
+                <div className="p-5 sm:p-8 rounded-2xl md:rounded-[3rem] bg-gradient-to-br from-indigo-600 to-blue-700 text-white shadow-xl shadow-indigo-600/20 relative overflow-hidden">
                     <Info className="w-10 h-10 mb-4 opacity-50" />
                     <h4 className="text-sm font-bold uppercase tracking-wider mb-2 relative">Pro Usage</h4>
                     <p className="text-xs text-white/80 leading-relaxed relative">
