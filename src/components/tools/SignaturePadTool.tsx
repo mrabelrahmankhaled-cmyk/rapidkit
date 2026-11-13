@@ -37,7 +37,8 @@ export function SignaturePadTool() {
     const [penWidth, setPenWidth] = useState(3);
     const [isEmpty, setIsEmpty] = useState(true);
     const [isDrawing, setIsDrawing] = useState(false);
-    const [copyState, setCopyState] = useState<"idle" | "copied" | "error">("idle");
+    const [copyState, setCopyState] = useState<"idle" | "copied" | "fallback">("idle");
+    const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         penColorRef.current = penColor;
@@ -113,8 +114,16 @@ export function SignaturePadTool() {
         };
 
         window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
+        return () => {
+            window.removeEventListener("resize", handleResize);
+            if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+        };
     }, []);
+
+    const scheduleCopyReset = (ms: number) => {
+        if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+        copyTimerRef.current = setTimeout(() => setCopyState("idle"), ms);
+    };
 
     const clear = () => {
         sigCanvas.current?.clear();
@@ -130,14 +139,29 @@ export function SignaturePadTool() {
         return sigCanvas.current.getTrimmedCanvas().toDataURL("image/png");
     };
 
+    const downloadUrl = (href: string) => {
+        const link = document.createElement("a");
+        link.href = href;
+        link.download = `rapidkit-signature-${new Date().getTime()}.png`;
+        link.click();
+    };
+
     const download = () => {
         const dataURL = trim();
         if (!dataURL) return;
+        downloadUrl(dataURL);
+    };
 
-        const link = document.createElement("a");
-        link.href = dataURL;
-        link.download = `rapidkit-signature-${new Date().getTime()}.png`;
-        link.click();
+    const fallbackDownload = (blob: Blob | null) => {
+        if (blob) {
+            const url = URL.createObjectURL(blob);
+            downloadUrl(url);
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        } else {
+            download();
+        }
+        setCopyState("fallback");
+        scheduleCopyReset(3500);
     };
 
     const copyToClipboard = () => {
@@ -148,20 +172,20 @@ export function SignaturePadTool() {
 
         sigCanvas.current.getTrimmedCanvas().toBlob((blob) => {
             if (!blob || !navigator.clipboard?.write || typeof ClipboardItem === "undefined") {
-                setCopyState("error");
-                setTimeout(() => setCopyState("idle"), 2500);
+                fallbackDownload(blob);
                 return;
             }
-            navigator.clipboard
-                .write([new ClipboardItem({ "image/png": blob })])
-                .then(() => {
-                    setCopyState("copied");
-                    setTimeout(() => setCopyState("idle"), 2000);
-                })
-                .catch(() => {
-                    setCopyState("error");
-                    setTimeout(() => setCopyState("idle"), 2500);
-                });
+            try {
+                navigator.clipboard
+                    .write([new ClipboardItem({ "image/png": blob })])
+                    .then(() => {
+                        setCopyState("copied");
+                        scheduleCopyReset(2000);
+                    })
+                    .catch(() => fallbackDownload(blob));
+            } catch {
+                fallbackDownload(blob);
+            }
         }, "image/png");
     };
 
@@ -221,7 +245,7 @@ export function SignaturePadTool() {
                             )}
                         >
                             {copyState === "copied" ? <Check className="w-4 h-4 shrink-0 text-emerald-400" /> : <Copy className="w-4 h-4 shrink-0 text-indigo-400" />}
-                            {copyState === "copied" ? "Copied PNG!" : copyState === "error" ? "Copy Failed" : "Copy to Clip"}
+                            {copyState === "copied" ? "Copied PNG!" : "Copy to Clip"}
                         </button>
                         <button
                             onClick={download}
@@ -235,6 +259,11 @@ export function SignaturePadTool() {
                             Download .PNG
                         </button>
                     </div>
+                    {copyState === "fallback" && (
+                        <p role="status" aria-live="polite" className="mt-3 text-center text-xs text-amber-300/90">
+                            Clipboard unavailable, downloaded the PNG instead.
+                        </p>
+                    )}
                 </div>
 
                 <div className="p-4 sm:p-6 rounded-2xl md:rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] flex items-center justify-between">
