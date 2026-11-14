@@ -270,14 +270,14 @@ export default function HireMePage() {
 
                             {/* Direct Action Buttons */}
                             <div className="flex flex-wrap items-center gap-3 pt-2">
-                                <a
-                                    href="mailto:mohamedboody730@gmail.com"
+                                <Link
+                                    href="/contact"
                                     className="btn-primary inline-flex items-center gap-2 text-sm sm:text-base px-6 py-3 shadow-lg shadow-violet-500/25"
                                 >
                                     <Mail className="w-4 h-4" />
                                     <span>Get in Touch</span>
                                     <ArrowRight className="w-4 h-4 ml-1" />
-                                </a>
+                                </Link>
 
                                 <a
                                     href="#portfolio"
@@ -285,16 +285,6 @@ export default function HireMePage() {
                                 >
                                     <Briefcase className="w-4 h-4 text-violet-400" />
                                     <span>View Portfolio ({portfolioProjects.length})</span>
-                                </a>
-
-                                <a
-                                    href="https://mostaql.com/u/Abdulkhalek2"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-[rgb(20,20,32)] border border-[rgb(45,45,65)] hover:border-emerald-500/40 text-sm font-medium text-[rgb(148,148,186)] hover:text-white transition-all"
-                                >
-                                    <ExternalLink className="w-4 h-4 text-emerald-400" />
-                                    <span>Mostaql (مستقل)</span>
                                 </a>
 
                                 <a
@@ -656,28 +646,20 @@ export default function HireMePage() {
                                 Include your project type, main goals, and expected timeline so we can hit the ground running.
                             </p>
 
-                            {/* Main Email CTA Button */}
-                            <a
-                                href="mailto:mohamedboody730@gmail.com"
+                            {/* Main Contact CTA Button */}
+                            <Link
+                                href="/contact"
                                 className="btn-primary inline-flex items-center gap-2.5 text-base sm:text-lg px-8 py-3.5 shadow-xl shadow-violet-500/30 my-2"
                             >
                                 <Mail className="w-5 h-5" />
-                                <span>Email Me: mohamedboody730@gmail.com</span>
-                            </a>
+                                <span>Get in Touch</span>
+                                <ArrowRight className="w-5 h-5" />
+                            </Link>
 
-                            {/* Direct Freelance Platforms & Channels */}
+                            {/* Direct Channels */}
                             <div className="pt-5 border-t border-[rgb(45,45,65)]/60 w-full flex flex-col sm:flex-row items-center justify-center gap-4 text-xs text-[rgb(130,130,170)]">
                                 <span>Find me on:</span>
                                 <div className="flex flex-wrap items-center justify-center gap-3">
-                                    <a
-                                        href="https://mostaql.com/u/Abdulkhalek2"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="px-3.5 py-1.5 rounded-lg bg-[rgb(24,24,37)] border border-[rgb(45,45,65)] hover:border-emerald-500/50 text-white hover:text-emerald-300 font-semibold transition-all inline-flex items-center gap-1.5"
-                                    >
-                                        <span>Mostaql (مستقل)</span>
-                                        <ExternalLink className="w-3 h-3 text-emerald-400" />
-                                    </a>
                                     <a
                                         href="https://github.com/Abdelkhalek2"
                                         target="_blank"
