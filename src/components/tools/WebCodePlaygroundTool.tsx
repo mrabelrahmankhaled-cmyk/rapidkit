@@ -191,7 +191,7 @@ export function WebCodePlaygroundTool() {
     return (
         <div className="space-y-6">
             {/* ─── Top Control Toolbar ────────────────────────────── */}
-            <div className="flex flex-wrap items-center justify-between gap-3 p-3 sm:p-4 rounded-2xl bg-[rgb(14,14,22)] border border-[rgb(38,38,58)] shadow-xl">
+            <div className="flex flex-wrap items-center justify-between gap-2.5 p-2.5 sm:p-4 rounded-2xl bg-[rgb(14,14,22)] border border-[rgb(38,38,58)] shadow-xl">
                 {/* View Mode & Preset buttons */}
                 <div className="flex items-center gap-2">
                     <div className="flex p-0.5 bg-[rgb(20,20,32)] rounded-xl border border-[rgb(45,45,68)]">
@@ -199,7 +199,7 @@ export function WebCodePlaygroundTool() {
                             type="button"
                             onClick={() => setViewMode("grid")}
                             className={cn(
-                                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all",
+                                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0",
                                 viewMode === "grid"
                                     ? "bg-violet-600 text-white shadow-md shadow-violet-600/30"
                                     : "text-[rgb(140,140,175)] hover:text-white"
@@ -214,7 +214,7 @@ export function WebCodePlaygroundTool() {
                             type="button"
                             onClick={() => setViewMode("tabs")}
                             className={cn(
-                                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all",
+                                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0",
                                 viewMode === "tabs"
                                     ? "bg-violet-600 text-white shadow-md shadow-violet-600/30"
                                     : "text-[rgb(140,140,175)] hover:text-white"
@@ -229,7 +229,7 @@ export function WebCodePlaygroundTool() {
                     <button
                         type="button"
                         onClick={handleResetSample}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[rgb(20,20,32)] border border-[rgb(38,38,58)] text-xs font-medium text-[rgb(140,140,175)] hover:text-white hover:border-violet-500/40 transition-all"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[rgb(20,20,32)] border border-[rgb(38,38,58)] text-xs font-medium text-[rgb(140,140,175)] hover:text-white hover:border-violet-500/40 transition-all shrink-0 whitespace-nowrap"
                         title="Load interactive sample demo"
                     >
                         <Sparkles className="w-3.5 h-3.5 text-amber-400" />
@@ -238,11 +238,11 @@ export function WebCodePlaygroundTool() {
                 </div>
 
                 {/* Right Action buttons */}
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                     <button
                         type="button"
                         onClick={() => setRefreshKey((k) => k + 1)}
-                        className="p-2 rounded-xl bg-[rgb(20,20,32)] border border-[rgb(38,38,58)] text-[rgb(140,140,175)] hover:text-cyan-400 transition-all"
+                        className="p-2 rounded-xl bg-[rgb(20,20,32)] border border-[rgb(38,38,58)] text-[rgb(140,140,175)] hover:text-cyan-400 transition-all shrink-0"
                         title="Re-run / Refresh Preview"
                     >
                         <RefreshCw className="w-3.5 h-3.5" />
@@ -251,7 +251,7 @@ export function WebCodePlaygroundTool() {
                     <button
                         type="button"
                         onClick={handleClear}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[rgb(20,20,32)] border border-[rgb(38,38,58)] text-xs font-medium text-[rgb(140,140,175)] hover:text-rose-400 hover:border-rose-500/30 transition-all"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[rgb(20,20,32)] border border-[rgb(38,38,58)] text-xs font-medium text-[rgb(140,140,175)] hover:text-rose-400 hover:border-rose-500/30 transition-all shrink-0"
                         title="Clear all code editors"
                     >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -262,7 +262,7 @@ export function WebCodePlaygroundTool() {
                         type="button"
                         onClick={handleCopy}
                         className={cn(
-                            "flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all shadow-sm",
+                            "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all shadow-sm shrink-0 whitespace-nowrap",
                             copied
                                 ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-300"
                                 : "bg-[rgb(20,20,32)] border-[rgb(45,45,68)] text-white hover:bg-[rgb(28,28,44)] hover:border-violet-500/40"
@@ -276,7 +276,7 @@ export function WebCodePlaygroundTool() {
                     <button
                         type="button"
                         onClick={handleDownload}
-                        className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold transition-all shadow-md shadow-violet-600/25"
+                        className="flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold transition-all shadow-md shadow-violet-600/25 shrink-0 whitespace-nowrap"
                         title="Download standalone HTML file"
                     >
                         <Download className="w-3.5 h-3.5" />
@@ -321,13 +321,13 @@ export function WebCodePlaygroundTool() {
                             </div>
 
                             {/* Active Tab Textarea */}
-                            <div className="p-4">
+                            <div className="p-3 sm:p-4">
                                 {activeTab === "html" && (
                                     <textarea
                                         value={html}
                                         onChange={(e) => setHtml(e.target.value)}
                                         placeholder="Write HTML here..."
-                                        className="w-full h-[460px] p-4 rounded-2xl bg-[rgb(10,10,15)] border border-[rgb(35,35,50)] text-white font-mono text-xs focus:outline-none focus:border-violet-500/50 resize-none leading-relaxed shadow-inner custom-scrollbar"
+                                        className="w-full h-[320px] sm:h-[460px] p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[rgb(10,10,15)] border border-[rgb(35,35,50)] text-white font-mono text-xs focus:outline-none focus:border-violet-500/50 resize-none leading-relaxed shadow-inner custom-scrollbar"
                                         spellCheck={false}
                                     />
                                 )}
@@ -336,7 +336,7 @@ export function WebCodePlaygroundTool() {
                                         value={css}
                                         onChange={(e) => setCss(e.target.value)}
                                         placeholder="Write CSS here..."
-                                        className="w-full h-[460px] p-4 rounded-2xl bg-[rgb(10,10,15)] border border-[rgb(35,35,50)] text-cyan-200 font-mono text-xs focus:outline-none focus:border-cyan-500/50 resize-none leading-relaxed shadow-inner custom-scrollbar"
+                                        className="w-full h-[320px] sm:h-[460px] p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[rgb(10,10,15)] border border-[rgb(35,35,50)] text-cyan-200 font-mono text-xs focus:outline-none focus:border-cyan-500/50 resize-none leading-relaxed shadow-inner custom-scrollbar"
                                         spellCheck={false}
                                     />
                                 )}
@@ -345,7 +345,7 @@ export function WebCodePlaygroundTool() {
                                         value={js}
                                         onChange={(e) => setJs(e.target.value)}
                                         placeholder="Write JavaScript here..."
-                                        className="w-full h-[460px] p-4 rounded-2xl bg-[rgb(10,10,15)] border border-[rgb(35,35,50)] text-amber-200 font-mono text-xs focus:outline-none focus:border-amber-500/50 resize-none leading-relaxed shadow-inner custom-scrollbar"
+                                        className="w-full h-[320px] sm:h-[460px] p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[rgb(10,10,15)] border border-[rgb(35,35,50)] text-amber-200 font-mono text-xs focus:outline-none focus:border-amber-500/50 resize-none leading-relaxed shadow-inner custom-scrollbar"
                                         spellCheck={false}
                                     />
                                 )}
@@ -437,7 +437,7 @@ export function WebCodePlaygroundTool() {
                         </div>
 
                         {/* Sandboxed IFrame Preview Container */}
-                        <div className="relative w-full h-[500px] bg-white overflow-hidden">
+                        <div className="relative w-full h-[340px] sm:h-[420px] md:h-[500px] bg-white overflow-hidden">
                             <iframe
                                 key={refreshKey}
                                 srcDoc={combinedDoc}

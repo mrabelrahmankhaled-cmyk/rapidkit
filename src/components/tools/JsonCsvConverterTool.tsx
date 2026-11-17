@@ -96,36 +96,36 @@ export function JsonCsvConverterTool() {
     return (
         <div className="flex flex-col gap-6">
             {/* Toolbar */}
-            <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] shadow-xl">
-                <div className="flex p-1 rounded-xl bg-[rgb(10,10,15)] border border-[rgb(30,30,46)]">
+            <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] shadow-xl">
+                <div className="flex p-1 rounded-xl bg-[rgb(10,10,15)] border border-[rgb(30,30,46)] w-full sm:w-auto">
                     <button
                         onClick={() => { setMode("json-to-csv"); handleClear(); }}
                         className={cn(
-                            "flex items-center gap-2 px-6 py-2 rounded-lg text-xs font-bold transition-all",
+                            "flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3 sm:px-6 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap",
                             mode === "json-to-csv" ? "bg-violet-600 text-white shadow-lg shadow-violet-600/20" : "text-[rgb(80,80,120)] hover:text-white"
                         )}
                     >
-                        <FileJson className="w-4 h-4" />
+                        <FileJson className="w-4 h-4 shrink-0" />
                         JSON to CSV
                     </button>
                     <button
                         onClick={() => { setMode("csv-to-json"); handleClear(); }}
                         className={cn(
-                            "flex items-center gap-2 px-6 py-2 rounded-lg text-xs font-bold transition-all",
+                            "flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3 sm:px-6 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap",
                             mode === "csv-to-json" ? "bg-violet-600 text-white shadow-lg shadow-violet-600/20" : "text-[rgb(80,80,120)] hover:text-white"
                         )}
                     >
-                        <FileSpreadsheet className="w-4 h-4" />
+                        <FileSpreadsheet className="w-4 h-4 shrink-0" />
                         CSV to JSON
                     </button>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-end">
                     <button
                         onClick={handleConvert}
-                        className="px-6 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all flex items-center gap-2 group shadow-lg shadow-emerald-500/10"
+                        className="flex-1 sm:flex-initial justify-center px-5 sm:px-6 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all flex items-center gap-2 group shadow-lg shadow-emerald-500/10 whitespace-nowrap"
                     >
-                        <RefreshCw className="w-4 h-4 group-active:rotate-180 transition-transform duration-500" />
+                        <RefreshCw className="w-4 h-4 group-active:rotate-180 transition-transform duration-500 shrink-0" />
                         Convert Now
                     </button>
                     <button

@@ -292,7 +292,7 @@ export function CodeToImageTool() {
             </div>
 
             {/* ─── Aesthetics Toolbar (Padding, Glow & Shadows) ─────── */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-2xl bg-[rgb(14,14,22)] border border-[rgb(38,38,58)] text-xs text-[rgb(140,140,175)]">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[rgb(14,14,22)] border border-[rgb(38,38,58)] text-xs text-[rgb(140,140,175)]">
                 {/* Padding slider */}
                 <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
@@ -359,12 +359,12 @@ export function CodeToImageTool() {
             {/* ─── Visual Canvas + Editor Workspace ─────────────────── */}
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 items-start">
                 {/* Visual Editor (Canvas to be captured) */}
-                <div className="space-y-3 min-w-0">
-                    <div className="max-w-full overflow-x-auto rounded-3xl border border-[rgb(38,38,58)] bg-black/40 p-2 custom-scrollbar">
+                <div className="space-y-3 min-w-0 max-w-full">
+                    <div className="w-full max-w-full overflow-x-auto rounded-2xl sm:rounded-3xl border border-[rgb(38,38,58)] bg-black/40 p-1.5 sm:p-3 custom-scrollbar">
                         <div
                             ref={snippetRef}
                             className={cn(
-                                "w-full min-w-[320px] transition-all duration-300 rounded-2xl select-none",
+                                "w-full min-w-[280px] sm:min-w-[320px] transition-all duration-300 rounded-xl sm:rounded-2xl select-none",
                                 currentBg.class
                             )}
                             style={{ padding: `${padding}px` }}

@@ -805,7 +805,7 @@ export function PomodoroTimerTool() {
                                 value={newTaskText}
                                 onChange={(e) => setNewTaskText(e.target.value)}
                                 placeholder="What task are you focusing on?"
-                                className="flex-grow px-4 py-2.5 rounded-xl bg-[rgb(18,18,28)] border border-[rgb(45,45,65)] text-sm text-white placeholder-[rgb(90,90,130)] focus:outline-none focus:border-rose-500/50 transition-all"
+                                className="flex-grow min-w-0 px-4 py-2.5 rounded-xl bg-[rgb(18,18,28)] border border-[rgb(45,45,65)] text-sm text-white placeholder-[rgb(90,90,130)] focus:outline-none focus:border-rose-500/50 transition-all"
                             />
 
                             <div className="flex items-center gap-1 bg-[rgb(18,18,28)] border border-[rgb(45,45,65)] rounded-xl px-2">

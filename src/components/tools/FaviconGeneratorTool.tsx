@@ -199,7 +199,7 @@ export function FaviconGeneratorTool() {
                         }}
                         onClick={() => fileInputRef.current?.click()}
                         className={cn(
-                            "group aspect-[16/9] rounded-[3rem] border-2 border-dashed flex flex-col items-center justify-center gap-6 transition-all duration-500 cursor-pointer overflow-hidden relative",
+                            "group min-h-[220px] sm:aspect-[16/9] py-6 sm:py-10 px-4 rounded-2xl sm:rounded-[3rem] border-2 border-dashed flex flex-col items-center justify-center gap-4 sm:gap-6 transition-all duration-500 cursor-pointer overflow-hidden relative",
                             dragActive
                                 ? "border-emerald-500 bg-emerald-500/10 scale-[0.99]"
                                 : "border-[rgb(45,45,65)] bg-[rgb(17,17,27)] hover:border-emerald-500/50 hover:bg-emerald-500/5 shadow-2xl"
@@ -207,13 +207,13 @@ export function FaviconGeneratorTool() {
                     >
                         <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/5 to-transparent pointer-events-none" />
 
-                        <div className="w-20 h-20 rounded-[2rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-2xl relative">
-                            <Upload className="w-8 h-8 text-emerald-400 group-hover:animate-bounce" />
+                        <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl sm:rounded-[2rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-2xl relative">
+                            <Upload className="w-6 h-6 sm:w-8 sm:h-8 text-emerald-400 group-hover:animate-bounce" />
                         </div>
 
-                        <div className="text-center space-y-2">
-                            <h3 className="text-xl font-bold text-white uppercase tracking-tight">Generate Favicon Kit</h3>
-                            <p className="text-sm text-[rgb(80,80,120)]">Upload square logo (PNG/JPG) for best results</p>
+                        <div className="text-center space-y-1 sm:space-y-2">
+                            <h3 className="text-lg sm:text-xl font-bold text-white uppercase tracking-tight">Generate Favicon Kit</h3>
+                            <p className="text-xs sm:text-sm text-[rgb(80,80,120)]">Upload square logo (PNG/JPG) for best results</p>
                         </div>
 
                         <input

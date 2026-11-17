@@ -119,7 +119,7 @@ export function ImageMetadataRemoverTool() {
                         onDrop={onDrop}
                         onClick={() => fileInputRef.current?.click()}
                         className={cn(
-                            "group cursor-pointer aspect-video rounded-[2.5rem] border-2 border-dashed flex flex-col items-center justify-center gap-4 transition-all duration-500 overflow-hidden relative",
+                            "group cursor-pointer min-h-[220px] sm:aspect-video py-6 sm:py-10 px-4 rounded-2xl sm:rounded-[2.5rem] border-2 border-dashed flex flex-col items-center justify-center gap-4 transition-all duration-500 overflow-hidden relative",
                             dragActive
                                 ? "border-violet-500 bg-violet-500/10 scale-[0.99]"
                                 : "border-[rgb(45,45,65)] bg-[rgb(17,17,27)] hover:border-violet-500/50 hover:bg-violet-500/5"
@@ -127,16 +127,16 @@ export function ImageMetadataRemoverTool() {
                     >
                         <div className="absolute inset-0 bg-gradient-to-br from-violet-600/5 to-transparent pointer-events-none" />
 
-                        <div className="w-20 h-20 rounded-3xl bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-2xl">
-                            <Upload className="w-8 h-8 text-violet-400 group-hover:animate-bounce" />
+                        <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-2xl">
+                            <Upload className="w-6 h-6 sm:w-8 sm:h-8 text-violet-400 group-hover:animate-bounce" />
                         </div>
 
-                        <div className="text-center space-y-2 relative">
-                            <h3 className="text-xl font-bold text-white">Drag & Drop Image</h3>
-                            <p className="text-sm text-[rgb(80,80,120)]">or click to browse from device</p>
+                        <div className="text-center space-y-1 sm:space-y-2 relative">
+                            <h3 className="text-lg sm:text-xl font-bold text-white">Drag &amp; Drop Image</h3>
+                            <p className="text-xs sm:text-sm text-[rgb(80,80,120)]">or click to browse from device</p>
                         </div>
 
-                        <div className="flex gap-4 mt-4 relative">
+                        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mt-2 sm:mt-4 relative">
                             <span className="text-[10px] font-bold uppercase tracking-widest text-[rgb(60,60,90)] px-3 py-1 rounded-full border border-[rgb(30,30,46)]">JPG</span>
                             <span className="text-[10px] font-bold uppercase tracking-widest text-[rgb(60,60,90)] px-3 py-1 rounded-full border border-[rgb(30,30,46)]">PNG</span>
                             <span className="text-[10px] font-bold uppercase tracking-widest text-[rgb(60,60,90)] px-3 py-1 rounded-full border border-[rgb(30,30,46)]">WEBP</span>

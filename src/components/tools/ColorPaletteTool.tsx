@@ -428,7 +428,7 @@ export function ColorPaletteTool() {
                             onDrop={onDrop}
                             onClick={() => fileInputRef.current?.click()}
                             className={cn(
-                                "group aspect-video rounded-[3rem] border-2 border-dashed flex flex-col items-center justify-center gap-6 transition-all duration-500 cursor-pointer overflow-hidden relative",
+                                "group min-h-[220px] sm:aspect-video py-6 sm:py-10 px-4 rounded-2xl sm:rounded-[3rem] border-2 border-dashed flex flex-col items-center justify-center gap-4 sm:gap-6 transition-all duration-500 cursor-pointer overflow-hidden relative",
                                 dragActive
                                     ? "border-rose-500 bg-rose-500/10 scale-[0.99]"
                                     : "border-[rgb(45,45,65)] bg-[rgb(17,17,27)] hover:border-rose-500/50 hover:bg-rose-500/5 shadow-2xl"
@@ -436,16 +436,16 @@ export function ColorPaletteTool() {
                         >
                             <div className="absolute inset-0 bg-gradient-to-br from-rose-600/5 to-transparent pointer-events-none" />
 
-                            <div className="w-20 h-20 rounded-[2rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-2xl relative">
-                                <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-rose-500 flex items-center justify-center animate-pulse shadow-lg shadow-rose-500/50">
-                                    <Sparkles className="w-3 h-3 text-white" />
+                            <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl sm:rounded-[2rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-2xl relative">
+                                <div className="absolute -top-2 -right-2 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-rose-500 flex items-center justify-center animate-pulse shadow-lg shadow-rose-500/50">
+                                    <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" />
                                 </div>
-                                <Upload className="w-8 h-8 text-rose-400 group-hover:animate-bounce" />
+                                <Upload className="w-6 h-6 sm:w-8 sm:h-8 text-rose-400 group-hover:animate-bounce" />
                             </div>
 
-                            <div className="text-center space-y-2 px-4">
-                                <h3 className="text-xl font-bold text-white uppercase tracking-tight">Extract Palette from Image</h3>
-                                <p className="text-sm text-[rgb(130,130,170)]">
+                            <div className="text-center space-y-1 sm:space-y-2 px-4">
+                                <h3 className="text-lg sm:text-xl font-bold text-white uppercase tracking-tight">Extract Palette from Image</h3>
+                                <p className="text-xs sm:text-sm text-[rgb(130,130,170)]">
                                     Drag and drop any photo here, tap to select, or press <kbd className="px-1.5 py-0.5 rounded bg-[rgb(24,24,37)] border border-[rgb(45,45,65)] text-xs text-white">Ctrl+V</kbd> to paste
                                 </p>
                             </div>

@@ -201,7 +201,7 @@ function JsonTreeNode({ keyName, value, isLast, allExpanded }: TreeNodeProps) {
                 {keyName !== undefined && (
                     <span className="text-cyan-300 font-medium">&quot;{keyName}&quot;:</span>
                 )}
-                <span className={cn(colorClass, "break-all")}>{valueDisplay}</span>
+                <span className={cn(colorClass, "break-words")}>{valueDisplay}</span>
                 {!isLast && <span className="text-[rgb(80,80,120)]">,</span>}
             </div>
         );
@@ -332,16 +332,16 @@ export function JsonFormatterTool() {
     return (
         <div className="space-y-4">
             {/* ─── Top Control Toolbar ────────────────────────────── */}
-            <div className="flex flex-wrap items-center justify-between gap-3 p-2 rounded-2xl bg-[rgb(14,14,22)] border border-[rgb(38,38,58)]">
+            <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3 p-2 rounded-2xl bg-[rgb(14,14,22)] border border-[rgb(38,38,58)]">
                 {/* Format Modes */}
-                <div className="flex gap-1 bg-[rgb(20,20,32)] p-1 rounded-xl">
+                <div className="flex gap-1 bg-[rgb(20,20,32)] p-1 rounded-xl max-w-full overflow-x-auto">
                     {(["format", "minify", "validate"] as Mode[]).map((m) => (
                         <button
                             key={m}
                             type="button"
                             onClick={() => setMode(m)}
                             className={cn(
-                                "px-3.5 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all",
+                                "px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all whitespace-nowrap shrink-0",
                                 mode === m
                                     ? "bg-violet-600 text-white shadow-md shadow-violet-600/30"
                                     : "text-[rgb(140,140,175)] hover:text-white"
@@ -360,7 +360,7 @@ export function JsonFormatterTool() {
                     <button
                         type="button"
                         onClick={() => setInput(SAMPLE_JSON)}
-                        className="px-3 py-1.5 rounded-xl bg-[rgb(20,20,32)] border border-[rgb(38,38,58)] text-xs text-[rgb(140,140,175)] hover:text-white hover:border-violet-500/40 transition-all flex items-center gap-1.5"
+                        className="px-3 py-1.5 rounded-xl bg-[rgb(20,20,32)] border border-[rgb(38,38,58)] text-xs text-[rgb(140,140,175)] hover:text-white hover:border-violet-500/40 transition-all flex items-center gap-1.5 whitespace-nowrap"
                     >
                         <Sparkles className="w-3 h-3 text-amber-400" />
                         <span>Sample</span>
@@ -368,7 +368,7 @@ export function JsonFormatterTool() {
                     <button
                         type="button"
                         onClick={() => setInput("")}
-                        className="px-3 py-1.5 rounded-xl bg-[rgb(20,20,32)] border border-[rgb(38,38,58)] text-xs text-[rgb(140,140,175)] hover:text-rose-400 hover:border-rose-500/30 transition-all flex items-center gap-1.5"
+                        className="px-3 py-1.5 rounded-xl bg-[rgb(20,20,32)] border border-[rgb(38,38,58)] text-xs text-[rgb(140,140,175)] hover:text-rose-400 hover:border-rose-500/30 transition-all flex items-center gap-1.5 whitespace-nowrap"
                     >
                         <Trash2 className="w-3 h-3" />
                         <span>Clear</span>
@@ -379,7 +379,7 @@ export function JsonFormatterTool() {
             {/* ─── Editor & Output Split ──────────────────────────── */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* Input Column */}
-                <div className="space-y-2">
+                <div className="space-y-2 min-w-0">
                     <div className="flex justify-between items-center px-1">
                         <label className="text-[11px] font-bold text-[rgb(120,120,160)] uppercase tracking-wider">
                             Input JSON
@@ -393,27 +393,27 @@ export function JsonFormatterTool() {
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         placeholder={'{\n  "name": "RapidKit",\n  "type": "awesome"\n}'}
-                        className="w-full h-[450px] p-4 rounded-2xl bg-[rgb(12,12,18)] border border-[rgb(38,38,58)] text-white placeholder:text-[rgb(60,60,85)] focus:outline-none focus:border-violet-500/50 text-xs font-mono resize-none leading-relaxed shadow-inner"
+                        className="w-full h-[360px] sm:h-[450px] p-3 sm:p-6 rounded-2xl bg-[rgb(12,12,18)] border border-[rgb(38,38,58)] text-white placeholder:text-[rgb(60,60,85)] focus:outline-none focus:border-violet-500/50 text-xs font-mono resize-none leading-relaxed shadow-inner"
                         spellCheck={false}
                     />
                 </div>
 
                 {/* Output Column */}
-                <div className="space-y-2">
+                <div className="space-y-2 min-w-0">
                     {/* Output Tabs & Copy */}
-                    <div className="flex justify-between items-center px-1">
-                        <div className="flex items-center gap-1 bg-[rgb(20,20,32)] p-0.5 rounded-xl border border-[rgb(38,38,58)]">
+                    <div className="flex flex-wrap justify-between items-center gap-2 px-1">
+                        <div className="flex items-center gap-1 bg-[rgb(20,20,32)] p-0.5 rounded-xl border border-[rgb(38,38,58)] max-w-full overflow-x-auto">
                             <button
                                 type="button"
                                 onClick={() => setOutputTab("raw")}
                                 className={cn(
-                                    "px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5",
+                                    "px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0",
                                     outputTab === "raw"
                                         ? "bg-violet-600 text-white shadow"
                                         : "text-[rgb(140,140,175)] hover:text-white"
                                 )}
                             >
-                                <Maximize2 className="w-3 h-3" />
+                                <Maximize2 className="w-3 h-3 shrink-0" />
                                 <span>JSON</span>
                             </button>
 
@@ -422,13 +422,13 @@ export function JsonFormatterTool() {
                                 onClick={() => setOutputTab("tree")}
                                 disabled={Boolean(error) || !parsed}
                                 className={cn(
-                                    "px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5",
+                                    "px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0",
                                     outputTab === "tree"
                                         ? "bg-violet-600 text-white shadow"
                                         : "text-[rgb(140,140,175)] hover:text-white disabled:opacity-40 disabled:cursor-not-allowed"
                                 )}
                             >
-                                <ListTree className="w-3 h-3 text-cyan-400" />
+                                <ListTree className="w-3 h-3 text-cyan-400 shrink-0" />
                                 <span>Tree View</span>
                             </button>
 
@@ -437,27 +437,27 @@ export function JsonFormatterTool() {
                                 onClick={() => setOutputTab("typescript")}
                                 disabled={Boolean(error) || !parsed}
                                 className={cn(
-                                    "px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5",
+                                    "px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0",
                                     outputTab === "typescript"
                                         ? "bg-violet-600 text-white shadow"
                                         : "text-[rgb(140,140,175)] hover:text-white disabled:opacity-40 disabled:cursor-not-allowed"
                                 )}
                             >
-                                <FileCode className="w-3 h-3 text-indigo-400" />
+                                <FileCode className="w-3 h-3 text-indigo-400 shrink-0" />
                                 <span>TypeScript</span>
                             </button>
                         </div>
 
                         {/* Top Right: Tree Toggle or Copy */}
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 shrink-0">
                             {outputTab === "tree" && Boolean(parsed) && (
                                 <button
                                     type="button"
                                     onClick={() => setTreeExpanded(!treeExpanded)}
-                                    className="text-xs text-[rgb(140,140,175)] hover:text-white px-2 py-1 rounded-lg bg-[rgb(20,20,32)] border border-[rgb(38,38,58)] flex items-center gap-1"
+                                    className="text-xs text-[rgb(140,140,175)] hover:text-white px-2.5 py-1 rounded-lg bg-[rgb(20,20,32)] border border-[rgb(38,38,58)] flex items-center gap-1 whitespace-nowrap"
                                     title={treeExpanded ? "Collapse All" : "Expand All"}
                                 >
-                                    {treeExpanded ? <FolderMinus className="w-3 h-3" /> : <FolderPlus className="w-3 h-3" />}
+                                    {treeExpanded ? <FolderMinus className="w-3 h-3 shrink-0" /> : <FolderPlus className="w-3 h-3 shrink-0" />}
                                     <span>{treeExpanded ? "Collapse" : "Expand"}</span>
                                 </button>
                             )}
@@ -467,13 +467,13 @@ export function JsonFormatterTool() {
                                     type="button"
                                     onClick={handleCopy}
                                     className={cn(
-                                        "px-3 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all border",
+                                        "px-2.5 sm:px-3 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all border whitespace-nowrap",
                                         copied
                                             ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-300"
                                             : "bg-[rgb(20,20,32)] border-[rgb(38,38,58)] text-[rgb(140,140,175)] hover:text-white hover:border-violet-500/40"
                                     )}
                                 >
-                                    {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                                    {copied ? <Check className="w-3 h-3 shrink-0" /> : <Copy className="w-3 h-3 shrink-0" />}
                                     <span>{copied ? "Copied!" : outputTab === "typescript" ? "Copy TS" : "Copy JSON"}</span>
                                 </button>
                             )}
@@ -483,7 +483,7 @@ export function JsonFormatterTool() {
                     {/* Output Content Card */}
                     <div
                         className={cn(
-                            "w-full h-[450px] p-4 rounded-2xl border text-xs font-mono overflow-auto relative shadow-inner custom-scrollbar",
+                            "w-full h-[360px] sm:h-[450px] p-3 sm:p-6 rounded-2xl border text-xs font-mono overflow-auto relative shadow-inner custom-scrollbar",
                             error
                                 ? "bg-red-500/5 border-red-500/30"
                                 : "bg-[rgb(12,12,18)] border-[rgb(38,38,58)]"
@@ -498,7 +498,7 @@ export function JsonFormatterTool() {
                                 </div>
                             </div>
                         ) : outputTab === "tree" && parsed ? (
-                            <div className="p-1">
+                            <div className="p-1 overflow-x-auto">
                                 <JsonTreeNode
                                     value={parsed}
                                     isLast={true}
@@ -507,12 +507,15 @@ export function JsonFormatterTool() {
                             </div>
                         ) : outputTab === "typescript" && typeScriptCode ? (
                             <pre
-                                className="text-white leading-relaxed whitespace-pre-wrap break-all font-mono"
+                                className="text-white leading-relaxed overflow-x-auto whitespace-pre font-mono"
                                 dangerouslySetInnerHTML={{ __html: getSyntaxHighlight(typeScriptCode, true) }}
                             />
                         ) : result ? (
                             <pre
-                                className="text-white leading-relaxed whitespace-pre-wrap break-all font-mono"
+                                className={cn(
+                                    "text-white leading-relaxed font-mono",
+                                    mode === "minify" ? "whitespace-pre-wrap break-words" : "overflow-x-auto whitespace-pre"
+                                )}
                                 dangerouslySetInnerHTML={{ __html: getSyntaxHighlight(result) }}
                             />
                         ) : (

@@ -82,7 +82,7 @@ export function YoutubeThumbnailTool() {
                 <label className="block text-sm font-medium text-[rgb(148,148,186)]">
                     YouTube Video URL
                 </label>
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row gap-3">
                     <div className="flex-1 relative">
                         <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[rgb(80,80,120)]" />
                         <input
@@ -96,7 +96,7 @@ export function YoutubeThumbnailTool() {
                     </div>
                     <button
                         onClick={handleFetch}
-                        className="btn-primary flex items-center gap-2 px-6 whitespace-nowrap"
+                        className="btn-primary flex items-center justify-center gap-2 px-6 whitespace-nowrap"
                     >
                         Get Thumbnails
                     </button>
@@ -157,33 +157,33 @@ export function YoutubeThumbnailTool() {
                             </div>
 
                             {/* Actions */}
-                            <div className="flex gap-3">
+                            <div className="flex flex-wrap gap-3">
                                 <button
                                     onClick={handleDownload}
-                                    className="btn-primary flex-1 flex items-center justify-center gap-2"
+                                    className="btn-primary flex-1 min-w-[180px] flex items-center justify-center gap-2 whitespace-nowrap"
                                 >
-                                    <Download className="w-4 h-4" />
+                                    <Download className="w-4 h-4 shrink-0" />
                                     Download ({current.res})
                                 </button>
                                 <button
                                     onClick={handleCopyUrl}
                                     className={cn(
-                                        "flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-all",
+                                        "flex items-center justify-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-all whitespace-nowrap",
                                         copied
                                             ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-400"
                                             : "border-[rgb(45,45,65)] bg-[rgb(17,17,27)] text-[rgb(148,148,186)] hover:border-violet-500/40"
                                     )}
                                 >
-                                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                                    {copied ? <Check className="w-4 h-4 shrink-0" /> : <Copy className="w-4 h-4 shrink-0" />}
                                     {copied ? "Copied!" : "Copy URL"}
                                 </button>
                                 <a
                                     href={`https://youtube.com/watch?v=${videoId}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-2 px-4 py-2 rounded-xl border border-[rgb(45,45,65)] bg-[rgb(17,17,27)] text-sm text-[rgb(148,148,186)] hover:border-red-500/40 hover:text-red-400 transition-all"
+                                    className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-[rgb(45,45,65)] bg-[rgb(17,17,27)] text-sm text-[rgb(148,148,186)] hover:border-red-500/40 hover:text-red-400 transition-all whitespace-nowrap"
                                 >
-                                    <ExternalLink className="w-4 h-4" />
+                                    <ExternalLink className="w-4 h-4 shrink-0" />
                                     View Video
                                 </a>
                             </div>

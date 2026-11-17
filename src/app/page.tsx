@@ -90,12 +90,12 @@ function ToolCard({ tool, index }: { tool: ReturnType<typeof getFeaturedTools>[0
 function StatCard({ value, label, icon }: { value: string; label: string; icon: React.ElementType }) {
   const Icon = icon;
   return (
-    <div className="flex flex-col items-center gap-1 p-4">
-      <div className="w-10 h-10 rounded-full bg-violet-500/10 flex items-center justify-center mb-1">
-        <Icon className="w-5 h-5 text-violet-400" />
+    <div className="flex flex-col items-center gap-1 px-1.5 sm:px-4 py-3 sm:py-4">
+      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-violet-500/10 flex items-center justify-center mb-1">
+        <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-violet-400" />
       </div>
-      <span className="text-2xl font-bold gradient-text">{value}</span>
-      <span className="text-xs text-[rgb(80,80,120)] text-center">{label}</span>
+      <span className="text-base sm:text-2xl font-bold gradient-text text-center tracking-tight leading-tight">{value}</span>
+      <span className="text-[10px] sm:text-xs text-[rgb(80,80,120)] text-center leading-tight">{label}</span>
     </div>
   );
 }

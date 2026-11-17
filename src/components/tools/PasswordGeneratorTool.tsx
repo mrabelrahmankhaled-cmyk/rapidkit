@@ -77,28 +77,28 @@ export function PasswordGeneratorTool() {
             {/* ─── Main Configuration ────────────────────────── */}
             <div className="space-y-6">
                 {/* Result Display (The "Cyber" Screen) */}
-                <div className="relative group p-8 rounded-3xl bg-[rgb(10,10,15)] border-2 border-[rgb(45,45,65)] overflow-hidden">
+                <div className="relative group p-4 sm:p-8 rounded-2xl sm:rounded-3xl bg-[rgb(10,10,15)] border-2 border-[rgb(45,45,65)] overflow-hidden">
                     {/* Background Gradients */}
                     <div className="absolute top-0 right-0 w-64 h-64 bg-violet-600/10 blur-[80px] -mr-32 -mt-32" />
                     <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-600/10 blur-[80px] -ml-32 -mb-32" />
 
-                    <div className="relative flex flex-col items-center gap-6">
-                        <div className="w-full flex items-center justify-between px-2">
+                    <div className="relative flex flex-col items-center gap-4 sm:gap-6">
+                        <div className="w-full flex flex-wrap items-center justify-between gap-2 px-1 sm:px-2">
                             <div className="flex items-center gap-2">
-                                <Lock className="w-4 h-4 text-violet-400" />
+                                <Lock className="w-4 h-4 text-violet-400 shrink-0" />
                                 <span className="text-[10px] font-bold text-[rgb(80,80,120)] uppercase tracking-widest">Encrypted Output</span>
                             </div>
                             <div className="flex items-center gap-1.5 p-1 px-2 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-                                <ShieldCheck className="w-3 h-3 text-emerald-400" />
-                                <span className="text-[9px] font-bold text-emerald-400 uppercase">Local Generator</span>
+                                <ShieldCheck className="w-3 h-3 text-emerald-400 shrink-0" />
+                                <span className="text-[9px] font-bold text-emerald-400 uppercase whitespace-nowrap">Local Generator</span>
                             </div>
                         </div>
 
-                        <div className="w-full bg-[rgb(17,17,27)] p-6 rounded-2xl border border-[rgb(45,45,65)] flex items-center gap-4 group">
-                            <span className="flex-1 font-mono text-xl sm:text-2xl text-white break-all tracking-wider font-medium">
+                        <div className="w-full bg-[rgb(17,17,27)] p-4 sm:p-6 rounded-2xl border border-[rgb(45,45,65)] flex items-center gap-3 sm:gap-4 group">
+                            <span className="flex-1 min-w-0 font-mono text-lg sm:text-2xl text-white break-all tracking-wider font-medium">
                                 {password}
                             </span>
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 shrink-0">
                                 <button
                                     onClick={generatePassword}
                                     className="p-3 rounded-xl bg-[rgb(30,30,46)] border border-[rgb(45,45,65)] text-[rgb(120,120,160)] hover:text-white hover:bg-[rgb(40,40,65)] transition-all"

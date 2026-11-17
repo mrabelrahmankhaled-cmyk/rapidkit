@@ -80,7 +80,7 @@ export function YoutubeTagExtractorTool() {
     return (
         <div className="space-y-5">
             {/* ─── Input ──────────────────────────────────── */}
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[rgb(80,80,120)]" />
                     <input
@@ -95,7 +95,7 @@ export function YoutubeTagExtractorTool() {
                 <button
                     onClick={handleExtract}
                     disabled={loading || !url.trim()}
-                    className="px-5 py-3 rounded-xl bg-red-600 hover:bg-red-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium text-sm flex items-center gap-2 transition-all shadow-lg shadow-red-500/20"
+                    className="px-5 py-3 rounded-xl bg-red-600 hover:bg-red-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-red-500/20 whitespace-nowrap"
                 >
                     {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Tags className="w-4 h-4" />}
                     {loading ? "Fetching..." : "Extract Tags"}

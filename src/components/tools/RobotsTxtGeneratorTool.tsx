@@ -171,7 +171,7 @@ export function RobotsTxtGeneratorTool() {
             {/* ─── Generator Settings & Rules ─── */}
             <div className="space-y-6">
                 {/* 1. Default Access Policy */}
-                <div className="p-6 sm:p-7 rounded-3xl bg-[rgb(12,12,18)] border border-[rgb(38,38,58)] shadow-xl space-y-5">
+                <div className="p-4 sm:p-7 rounded-2xl sm:rounded-3xl bg-[rgb(12,12,18)] border border-[rgb(38,38,58)] shadow-xl space-y-5">
                     <div className="flex items-center justify-between">
                         <span className="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-2">
                             <Shield className="w-4 h-4" /> 1. Default Crawler Policy
@@ -223,10 +223,10 @@ export function RobotsTxtGeneratorTool() {
 
                     {/* AI Crawler blocker toggle */}
                     <div className="pt-2 border-t border-[rgb(35,35,50)]">
-                        <label className="flex items-center justify-between p-3 rounded-2xl bg-[rgb(18,18,28)] border border-[rgb(45,45,65)] cursor-pointer hover:border-violet-500/40 transition-all">
-                            <div className="flex items-center gap-3">
+                        <label className="flex items-center justify-between gap-3 p-3 rounded-2xl bg-[rgb(18,18,28)] border border-[rgb(45,45,65)] cursor-pointer hover:border-violet-500/40 transition-all">
+                            <div className="flex items-center gap-3 min-w-0">
                                 <Bot className="w-4 h-4 text-violet-400 shrink-0" />
-                                <div>
+                                <div className="min-w-0">
                                     <span className="text-xs font-semibold text-white block">Block AI Training Bots</span>
                                     <span className="text-[11px] text-[rgb(110,110,150)]">
                                         Disallow GPTBot, ClaudeBot, CCBot &amp; PerplexityBot from scraping your content
@@ -237,14 +237,14 @@ export function RobotsTxtGeneratorTool() {
                                 type="checkbox"
                                 checked={blockAiCrawlers}
                                 onChange={(e) => setBlockAiCrawlers(e.target.checked)}
-                                className="w-4 h-4 accent-violet-500 rounded"
+                                className="w-4 h-4 accent-violet-500 rounded shrink-0"
                             />
                         </label>
                     </div>
                 </div>
 
                 {/* 2. Disallow / Allow Path Rules */}
-                <div className="p-6 sm:p-7 rounded-3xl bg-[rgb(12,12,18)] border border-[rgb(38,38,58)] shadow-xl space-y-6">
+                <div className="p-4 sm:p-7 rounded-2xl sm:rounded-3xl bg-[rgb(12,12,18)] border border-[rgb(38,38,58)] shadow-xl space-y-6">
                     <span className="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-2">
                         <FileCode className="w-4 h-4" /> 2. Disallow &amp; Allow Path Rules
                     </span>
@@ -262,11 +262,11 @@ export function RobotsTxtGeneratorTool() {
                                 value={newDisallowPath}
                                 onChange={(e) => setNewDisallowPath(e.target.value)}
                                 placeholder="e.g. /admin/, /checkout/, /temp/"
-                                className="flex-grow px-4 py-2.5 rounded-xl bg-[rgb(18,18,28)] border border-[rgb(45,45,65)] text-sm text-white placeholder-[rgb(90,90,130)] focus:outline-none focus:border-rose-500/50 font-mono"
+                                className="flex-1 min-w-0 px-3 sm:px-4 py-2.5 rounded-xl bg-[rgb(18,18,28)] border border-[rgb(45,45,65)] text-xs sm:text-sm text-white placeholder-[rgb(90,90,130)] focus:outline-none focus:border-rose-500/50 font-mono"
                             />
                             <button
                                 type="submit"
-                                className="px-4 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold transition-all flex items-center gap-1 shrink-0"
+                                className="px-3.5 sm:px-4 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold transition-all flex items-center justify-center gap-1 shrink-0 whitespace-nowrap"
                             >
                                 <Plus className="w-4 h-4" /> Add
                             </button>
@@ -276,7 +276,7 @@ export function RobotsTxtGeneratorTool() {
                             {disallowRules.map((rule) => (
                                 <span
                                     key={rule.id}
-                                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-rose-500/10 border border-rose-500/30 text-xs font-mono text-rose-300"
+                                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-rose-500/10 border border-rose-500/30 text-xs font-mono text-rose-300 break-all"
                                 >
                                     <span>{rule.path}</span>
                                     <button
@@ -305,11 +305,11 @@ export function RobotsTxtGeneratorTool() {
                                 value={newAllowPath}
                                 onChange={(e) => setNewAllowPath(e.target.value)}
                                 placeholder="e.g. /public/, /api/webhook"
-                                className="flex-grow px-4 py-2.5 rounded-xl bg-[rgb(18,18,28)] border border-[rgb(45,45,65)] text-sm text-white placeholder-[rgb(90,90,130)] focus:outline-none focus:border-emerald-500/50 font-mono"
+                                className="flex-1 min-w-0 px-3 sm:px-4 py-2.5 rounded-xl bg-[rgb(18,18,28)] border border-[rgb(45,45,65)] text-xs sm:text-sm text-white placeholder-[rgb(90,90,130)] focus:outline-none focus:border-emerald-500/50 font-mono"
                             />
                             <button
                                 type="submit"
-                                className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all flex items-center gap-1 shrink-0"
+                                className="px-3.5 sm:px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all flex items-center justify-center gap-1 shrink-0 whitespace-nowrap"
                             >
                                 <Plus className="w-4 h-4" /> Add
                             </button>
@@ -319,7 +319,7 @@ export function RobotsTxtGeneratorTool() {
                             {allowRules.map((rule) => (
                                 <span
                                     key={rule.id}
-                                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-xs font-mono text-emerald-300"
+                                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-xs font-mono text-emerald-300 break-all"
                                 >
                                     <span>{rule.path}</span>
                                     <button
@@ -337,7 +337,7 @@ export function RobotsTxtGeneratorTool() {
                 </div>
 
                 {/* 3. Sitemap & Crawl Delay */}
-                <div className="p-6 sm:p-7 rounded-3xl bg-[rgb(12,12,18)] border border-[rgb(38,38,58)] shadow-xl space-y-4">
+                <div className="p-4 sm:p-7 rounded-2xl sm:rounded-3xl bg-[rgb(12,12,18)] border border-[rgb(38,38,58)] shadow-xl space-y-4">
                     <span className="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-2">
                         <Globe className="w-4 h-4" /> 3. Sitemap &amp; Server Load
                     </span>
@@ -372,7 +372,7 @@ export function RobotsTxtGeneratorTool() {
 
             {/* ─── Output Preview Pane ─── */}
             <div className="space-y-6">
-                <div className="p-6 sm:p-7 rounded-3xl bg-[rgb(12,12,18)] border border-[rgb(38,38,58)] shadow-2xl space-y-4">
+                <div className="p-4 sm:p-7 rounded-2xl sm:rounded-3xl bg-[rgb(12,12,18)] border border-[rgb(38,38,58)] shadow-2xl space-y-4">
                     <div className="flex items-center justify-between">
                         <span className="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
                             <FileCode className="w-4 h-4" /> robots.txt Output
@@ -387,16 +387,16 @@ export function RobotsTxtGeneratorTool() {
                     </div>
 
                     {/* Code block */}
-                    <pre className="p-5 rounded-2xl bg-[rgb(8,8,14)] border border-[rgb(35,35,50)] font-mono text-xs text-emerald-300 leading-relaxed overflow-x-auto min-h-[320px] max-h-[460px] custom-scrollbar selection:bg-emerald-500/30 selection:text-white">
+                    <pre className="p-4 sm:p-5 rounded-2xl bg-[rgb(8,8,14)] border border-[rgb(35,35,50)] font-mono text-xs text-emerald-300 leading-relaxed overflow-x-auto min-h-[320px] max-h-[460px] custom-scrollbar selection:bg-emerald-500/30 selection:text-white">
                         {generatedRobotsTxt}
                     </pre>
 
                     {/* Actions */}
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                         <button
                             type="button"
                             onClick={handleCopy}
-                            className="btn-primary flex-1 inline-flex items-center justify-center gap-2 py-3 text-xs font-bold"
+                            className="btn-primary flex-1 inline-flex items-center justify-center gap-2 py-3 text-xs font-bold whitespace-nowrap"
                         >
                             {copied ? <Check className="w-4 h-4 text-emerald-300" /> : <Copy className="w-4 h-4" />}
                             <span>{copied ? "Copied robots.txt!" : "Copy to Clipboard"}</span>
@@ -405,7 +405,7 @@ export function RobotsTxtGeneratorTool() {
                         <button
                             type="button"
                             onClick={handleDownload}
-                            className="inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl bg-[rgb(20,20,32)] border border-[rgb(45,45,65)] text-xs font-bold text-white hover:border-cyan-500/50 hover:bg-[rgb(26,26,42)] transition-all"
+                            className="inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl bg-[rgb(20,20,32)] border border-[rgb(45,45,65)] text-xs font-bold text-white hover:border-cyan-500/50 hover:bg-[rgb(26,26,42)] transition-all whitespace-nowrap"
                             title="Download robots.txt file"
                         >
                             <Download className="w-4 h-4 text-cyan-400" />
@@ -415,7 +415,7 @@ export function RobotsTxtGeneratorTool() {
                 </div>
 
                 {/* Information Card */}
-                <div className="p-6 rounded-3xl bg-[rgb(12,12,18)] border border-[rgb(38,38,58)] space-y-3">
+                <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-[rgb(12,12,18)] border border-[rgb(38,38,58)] space-y-3">
                     <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
                         <Info className="w-4 h-4 text-cyan-400" /> Where do I place robots.txt?
                     </h4>
@@ -423,7 +423,7 @@ export function RobotsTxtGeneratorTool() {
                         Upload this file directly to the root directory of your website host (e.g. <code>public_html/robots.txt</code> or <code>public/robots.txt</code> in Next.js).
                     </p>
                     <p className="text-xs text-[rgb(130,130,170)] leading-relaxed">
-                        It must be accessible at: <code className="text-cyan-300 font-mono">https://yourdomain.com/robots.txt</code>
+                        It must be accessible at: <code className="text-cyan-300 font-mono break-all">https://yourdomain.com/robots.txt</code>
                     </p>
                 </div>
             </div>

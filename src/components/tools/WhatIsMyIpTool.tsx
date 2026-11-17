@@ -86,7 +86,7 @@ export function WhatIsMyIpTool() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6 md:gap-8 items-start">
             {/* ─── IP Display Zone ─── */}
             <div className="space-y-6">
-                <div className="p-6 sm:p-10 md:p-12 rounded-3xl md:rounded-[4rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] shadow-2xl relative overflow-hidden flex flex-col items-center justify-center text-center">
+                <div className="p-4 sm:p-10 md:p-12 rounded-2xl sm:rounded-3xl md:rounded-[4rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] shadow-2xl relative overflow-hidden flex flex-col items-center justify-center text-center">
                     <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/10 via-transparent to-transparent pointer-events-none" />
 
                     {loading ? (
@@ -102,11 +102,11 @@ export function WhatIsMyIpTool() {
                         </div>
                     ) : (
                         <>
-                            <div className="space-y-4 mb-8 md:mb-10 w-full">
+                            <div className="space-y-4 mb-8 md:mb-10 w-full min-w-0">
                                 <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.2em] sm:tracking-[0.3em] flex items-center justify-center gap-2">
                                     <Globe className="w-3.5 h-3.5 shrink-0" /> Public IPv4 Address
                                 </span>
-                                <h2 className="text-3xl sm:text-5xl md:text-7xl font-mono font-bold text-white tracking-tighter break-all">
+                                <h2 className="text-2xl sm:text-5xl md:text-7xl font-mono font-bold text-white tracking-tight break-all">
                                     {data?.ip}
                                 </h2>
                             </div>

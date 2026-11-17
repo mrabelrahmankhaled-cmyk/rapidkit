@@ -78,28 +78,28 @@ export function UnixTimestampConverterTool() {
             {/* ─── Main Content ─── */}
             <div className="space-y-6">
                 {/* Live Epoch Banner */}
-                <div className="p-5 sm:p-8 rounded-3xl md:rounded-[3rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] shadow-2xl relative overflow-hidden group">
+                <div className="p-4 sm:p-8 rounded-2xl sm:rounded-3xl md:rounded-[3rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] shadow-2xl relative overflow-hidden group">
                     <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/5 to-transparent pointer-events-none" />
                     <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
-                        <div className="space-y-2">
+                        <div className="space-y-2 min-w-0">
                             <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
                                 <span className="text-[10px] font-bold text-[rgb(100,100,140)] uppercase tracking-widest pl-1">Current Unix Epoch</span>
                             </div>
-                            <h2 className="text-3xl sm:text-4xl md:text-5xl font-mono font-bold text-white tracking-tight break-all">{currentTime}</h2>
+                            <h2 className="text-2xl sm:text-4xl md:text-5xl font-mono font-bold text-white tracking-tight tabular-nums break-all">{currentTime}</h2>
                         </div>
                         <button
                             onClick={useCurrent}
-                            className="bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-2xl px-6 py-3.5 sm:py-4 text-xs font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-3 shrink-0"
+                            className="w-full sm:w-auto whitespace-nowrap bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-2xl px-5 sm:px-6 py-3.5 sm:py-4 text-xs font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 sm:gap-3 shrink-0"
                         >
-                            <RefreshCw className="w-4 h-4" /> Use Current Time
+                            <RefreshCw className="w-4 h-4 shrink-0" /> Use Current Time
                         </button>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* TS to Date */}
-                    <div className="p-5 sm:p-8 rounded-3xl md:rounded-[3rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] space-y-6">
+                    <div className="p-4 sm:p-8 rounded-2xl sm:rounded-3xl md:rounded-[3rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] space-y-6">
                         <div className="flex items-center gap-3 text-indigo-400 mb-2">
                             <Terminal className="w-4 h-4" />
                             <label className="text-[10px] font-bold uppercase tracking-widest">Timestamp to Date</label>
@@ -149,7 +149,7 @@ export function UnixTimestampConverterTool() {
                     </div>
 
                     {/* Date to TS */}
-                    <div className="p-5 sm:p-8 rounded-3xl md:rounded-[3rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] space-y-6">
+                    <div className="p-4 sm:p-8 rounded-2xl sm:rounded-3xl md:rounded-[3rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] space-y-6">
                         <div className="flex items-center gap-3 text-emerald-400 mb-2">
                             <Calendar className="w-4 h-4" />
                             <label className="text-[10px] font-bold uppercase tracking-widest">Date to Timestamp</label>
@@ -167,7 +167,7 @@ export function UnixTimestampConverterTool() {
                                 <div className="p-4 sm:p-5 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 flex items-center justify-between gap-2 group">
                                     <div className="space-y-1 min-w-0">
                                         <p className="text-[9px] font-bold text-[rgb(80,80,120)] uppercase tracking-widest">Resulting Unix Epoch</p>
-                                        <p className="text-xl sm:text-2xl font-mono font-bold text-white break-all">{resultTimestamp ?? "---"}</p>
+                                        <p className="text-lg sm:text-2xl font-mono font-bold text-white tabular-nums break-all">{resultTimestamp ?? "---"}</p>
                                     </div>
                                     <button
                                         onClick={() => resultTimestamp && handleCopy(resultTimestamp.toString(), 'res-ts')}

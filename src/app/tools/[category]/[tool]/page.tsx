@@ -110,16 +110,16 @@ export default async function ToolPage({ params }: Props) {
                 />
             )}
 
-            <div className="pt-20 pb-16 px-4">
+            <div className="pt-20 pb-16 px-2 sm:px-4 overflow-x-hidden">
                 <div className="container-wide max-w-5xl">
 
                     {/* ─── Breadcrumb ─────────────────────────── */}
-                    <nav aria-label="breadcrumb" className="flex flex-wrap items-center gap-1 text-xs text-[rgb(80,80,120)] mb-6">
-                        <Link href="/" className="hover:text-white transition-colors">Home</Link>
+                    <nav aria-label="breadcrumb" className="flex flex-wrap items-center gap-1.5 text-xs sm:text-sm text-[rgb(80,80,120)] mb-6">
+                        <Link href="/" className="hover:text-white transition-colors whitespace-nowrap">Home</Link>
                         <ChevronRight className="w-3 h-3 shrink-0" />
-                        <Link href="/tools" className="hover:text-white transition-colors">Tools</Link>
+                        <Link href="/tools" className="hover:text-white transition-colors whitespace-nowrap">Tools</Link>
                         <ChevronRight className="w-3 h-3 shrink-0" />
-                        <Link href={`/tools/${category.slug}`} className="hover:text-white transition-colors">{category.name}</Link>
+                        <Link href={`/tools/${category.slug}`} className="hover:text-white transition-colors whitespace-nowrap">{category.name}</Link>
                         <ChevronRight className="w-3 h-3 shrink-0" />
                         <span className="text-[rgb(148,148,186)] break-words">{tool.name}</span>
                     </nav>
@@ -137,8 +137,8 @@ export default async function ToolPage({ params }: Props) {
                             {tool.isPopular && <span className="pill pill-hot">🔥 Popular</span>}
                         </div>
 
-                        <h1 className="text-3xl sm:text-4xl font-black text-white mb-3">{tool.name}</h1>
-                        <p className="text-[rgb(148,148,186)] max-w-2xl leading-relaxed">{tool.longDescription}</p>
+                        <h1 className="text-2xl sm:text-4xl font-black text-white mb-3 tracking-tight break-words">{tool.name}</h1>
+                        <p className="text-sm sm:text-base text-[rgb(148,148,186)] max-w-2xl leading-relaxed">{tool.longDescription}</p>
 
                         <div className="flex flex-wrap gap-2 mt-4">
                             {tool.tags.map((tag) => (
@@ -150,7 +150,7 @@ export default async function ToolPage({ params }: Props) {
                     </div>
 
                     {/* ─── Tool Card ──────────────────────────── */}
-                    <div className="glass-card p-4 sm:p-6 md:p-8 mb-6 overflow-hidden">
+                    <div className="glass-card p-3 sm:p-6 md:p-8 mb-6 overflow-x-hidden">
                         <ToolPageClient toolSlug={tool.slug} categoryId={tool.categoryId} />
                     </div>
 

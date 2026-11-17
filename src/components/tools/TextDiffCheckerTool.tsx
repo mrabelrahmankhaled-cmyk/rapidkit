@@ -54,27 +54,27 @@ export function TextDiffCheckerTool() {
     return (
         <div className="flex flex-col gap-6">
             {/* Toolbar */}
-            <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-[rgb(17,17,27)] border border-[rgb(45,45,65)]">
-                <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-4 p-3 sm:p-4 rounded-2xl bg-[rgb(17,17,27)] border border-[rgb(45,45,65)]">
+                <div className="flex flex-wrap items-center gap-2 max-w-full">
                     <div className="flex p-1 rounded-xl bg-[rgb(10,10,15)] border border-[rgb(30,30,46)]">
                         <button
                             onClick={() => setMode("split")}
                             className={cn(
-                                "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all",
+                                "flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap",
                                 mode === "split" ? "bg-violet-600 text-white shadow-lg shadow-violet-600/20" : "text-[rgb(80,80,120)] hover:text-white"
                             )}
                         >
-                            <Columns className="w-3.5 h-3.5" />
+                            <Columns className="w-3.5 h-3.5 shrink-0" />
                             Side by Side
                         </button>
                         <button
                             onClick={() => setMode("unified")}
                             className={cn(
-                                "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all",
+                                "flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap",
                                 mode === "unified" ? "bg-violet-600 text-white shadow-lg shadow-violet-600/20" : "text-[rgb(80,80,120)] hover:text-white"
                             )}
                         >
-                            <Rows className="w-3.5 h-3.5" />
+                            <Rows className="w-3.5 h-3.5 shrink-0" />
                             Unified
                         </button>
                     </div>
@@ -85,7 +85,7 @@ export function TextDiffCheckerTool() {
                         <button
                             onClick={() => setType("lines")}
                             className={cn(
-                                "px-4 py-2 rounded-lg text-xs font-bold transition-all",
+                                "px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap",
                                 type === "lines" ? "bg-[rgb(30,30,46)] text-white" : "text-[rgb(80,80,120)] hover:text-white"
                             )}
                         >
@@ -94,7 +94,7 @@ export function TextDiffCheckerTool() {
                         <button
                             onClick={() => setType("chars")}
                             className={cn(
-                                "px-4 py-2 rounded-lg text-xs font-bold transition-all",
+                                "px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap",
                                 type === "chars" ? "bg-[rgb(30,30,46)] text-white" : "text-[rgb(80,80,120)] hover:text-white"
                             )}
                         >
@@ -103,7 +103,7 @@ export function TextDiffCheckerTool() {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 sm:gap-3">
                     <div className="flex items-center gap-3 px-3 py-1.5 rounded-xl bg-emerald-500/5 border border-emerald-500/10">
                         <div className="flex items-center gap-1.5">
                             <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />

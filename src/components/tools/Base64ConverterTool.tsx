@@ -81,25 +81,25 @@ export function Base64ConverterTool() {
     return (
         <div className="flex flex-col gap-6">
             {/* Tab Switcher */}
-            <div className="flex p-1.5 rounded-2xl bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] w-fit">
+            <div className="flex p-1.5 rounded-2xl bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] w-full sm:w-fit">
                 <button
                     onClick={() => setMode("image-to-base64")}
                     className={cn(
-                        "flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold transition-all",
+                        "flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3 sm:px-6 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap",
                         mode === "image-to-base64" ? "bg-violet-600 text-white shadow-lg shadow-violet-600/20" : "text-[rgb(80,80,120)] hover:text-white"
                     )}
                 >
-                    <ImageIcon className="w-4 h-4" />
+                    <ImageIcon className="w-4 h-4 shrink-0" />
                     Image to Base64
                 </button>
                 <button
                     onClick={() => setMode("text-base64")}
                     className={cn(
-                        "flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold transition-all",
+                        "flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3 sm:px-6 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap",
                         mode === "text-base64" ? "bg-violet-600 text-white shadow-lg shadow-violet-600/20" : "text-[rgb(80,80,120)] hover:text-white"
                     )}
                 >
-                    <Type className="w-4 h-4" />
+                    <Type className="w-4 h-4 shrink-0" />
                     Text ↔ Base64
                 </button>
             </div>
@@ -115,11 +115,11 @@ export function Base64ConverterTool() {
                                 onDrop={onDrop}
                                 onClick={() => fileInputRef.current?.click()}
                                 className={cn(
-                                    "aspect-video rounded-[2.5rem] border-2 border-dashed flex flex-col items-center justify-center gap-4 transition-all duration-500 cursor-pointer",
+                                    "min-h-[200px] sm:aspect-video py-6 sm:py-10 px-4 rounded-2xl sm:rounded-[2.5rem] border-2 border-dashed flex flex-col items-center justify-center gap-4 transition-all duration-500 cursor-pointer",
                                     dragActive ? "border-violet-500 bg-violet-500/10 scale-[0.99]" : "border-[rgb(45,45,65)] bg-[rgb(17,17,27)] hover:border-violet-500/50"
                                 )}
                             >
-                                <div className="w-16 h-16 rounded-2xl bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] flex items-center justify-center shadow-xl">
+                                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] flex items-center justify-center shadow-xl">
                                     <Upload className="w-6 h-6 text-violet-400" />
                                 </div>
                                 <div className="text-center">

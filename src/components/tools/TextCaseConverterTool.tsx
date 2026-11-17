@@ -89,25 +89,25 @@ export function TextCaseConverterTool() {
             {/* ─── Mode Grid ──────────────────────────────── */}
             <div>
                 <label className="block text-xs font-medium text-[rgb(80,80,120)] mb-3 uppercase tracking-wider">Select Case Style</label>
-                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
                     {MODES.map((mode) => (
                         <button
                             key={mode.id}
                             onClick={() => setActive(mode.id)}
                             className={cn(
-                                "p-3 rounded-xl border text-center transition-all group",
+                                "p-3 sm:p-4 rounded-xl border text-center transition-all group min-w-0",
                                 active === mode.id
                                     ? "border-violet-500/50 bg-violet-500/10"
                                     : "border-[rgb(45,45,65)] bg-[rgb(17,17,27)] hover:border-[rgb(80,80,120)]"
                             )}
                         >
                             <div className={cn(
-                                "text-xs font-bold mb-0.5 bg-gradient-to-r bg-clip-text text-transparent",
+                                "text-xs font-bold mb-0.5 bg-gradient-to-r bg-clip-text text-transparent truncate",
                                 active === mode.id ? mode.color : "from-gray-400 to-gray-500"
                             )}>
                                 {mode.preview}
                             </div>
-                            <div className="text-[10px] text-[rgb(80,80,120)]">{mode.label}</div>
+                            <div className="text-[10px] text-[rgb(80,80,120)] truncate">{mode.label}</div>
                         </button>
                     ))}
                 </div>

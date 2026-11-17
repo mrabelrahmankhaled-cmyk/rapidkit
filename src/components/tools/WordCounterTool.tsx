@@ -94,28 +94,28 @@ export function WordCounterTool() {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6 md:gap-8 items-start">
             {/* ─── Editor Zone ─── */}
-            <div className="space-y-6">
-                <div className="flex flex-col h-[380px] sm:h-[550px] rounded-3xl md:rounded-[3.5rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] shadow-2xl relative overflow-hidden group">
+            <div className="space-y-6 min-w-0">
+                <div className="flex flex-col h-[380px] sm:h-[550px] rounded-2xl sm:rounded-3xl md:rounded-[3.5rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] shadow-2xl relative overflow-hidden group">
                     <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/5 to-transparent pointer-events-none" />
 
-                    <div className="flex flex-wrap items-center justify-between gap-2 px-4 sm:px-10 py-4 sm:py-6 border-b border-white/5 bg-white/5">
-                        <div className="flex items-center gap-2.5 sm:gap-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2 p-3 sm:px-8 sm:py-5 border-b border-white/5 bg-white/5">
+                        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                             <AlignLeft className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-400 shrink-0" />
-                            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider sm:tracking-widest text-[rgb(120,120,160)]">Analysis Surface</span>
+                            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider sm:tracking-widest text-[rgb(120,120,160)] truncate">Analysis Surface</span>
                         </div>
-                        <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="flex items-center gap-2 shrink-0">
                             <button
                                 onClick={handleCopy}
                                 disabled={!text}
-                                className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-2.5 rounded-2xl bg-white/5 border border-white/5 text-[10px] font-bold uppercase tracking-widest text-[rgb(120,120,160)] hover:text-white hover:bg-white/10 disabled:opacity-20 transition-all"
+                                className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-white/5 border border-white/5 text-[10px] font-bold uppercase tracking-widest text-[rgb(120,120,160)] hover:text-white hover:bg-white/10 disabled:opacity-20 transition-all whitespace-nowrap shrink-0"
                             >
-                                {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                                {copied ? <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> : <Copy className="w-3.5 h-3.5 shrink-0" />}
                                 Copy
                             </button>
                             <button
                                 onClick={() => setText("")}
                                 disabled={!text}
-                                className="p-2 sm:p-2.5 rounded-2xl bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white transition-all border border-rose-500/10 flex items-center justify-center"
+                                className="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white transition-all border border-rose-500/10 flex items-center justify-center shrink-0"
                                 title="Clear Text"
                             >
                                 <Trash2 className="w-4 h-4" />
@@ -127,14 +127,14 @@ export function WordCounterTool() {
                         value={text}
                         onChange={(e) => setText(e.target.value)}
                         placeholder="Paste or type your text here. We'll handle the math while you handle the writing..."
-                        className="flex-grow p-5 sm:p-10 bg-transparent border-none text-white font-medium text-base sm:text-lg leading-relaxed focus:ring-0 resize-none custom-scrollbar placeholder:text-[rgb(45,45,65)]"
+                        className="flex-grow p-3 sm:p-6 md:p-10 bg-transparent border-none text-white font-medium text-base sm:text-lg leading-relaxed focus:ring-0 resize-none custom-scrollbar placeholder:text-[rgb(45,45,65)]"
                     />
                 </div>
 
                 {/* Counter Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4">
                     {MAIN_STATS.map((stat) => (
-                        <div key={stat.label} className="p-4 sm:p-6 rounded-2xl md:rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] flex flex-col items-center text-center space-y-2.5 sm:space-y-3 group hover:border-indigo-500/30 transition-all">
+                        <div key={stat.label} className="p-3 sm:p-6 rounded-2xl md:rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] flex flex-col items-center text-center space-y-2 sm:space-y-3 group hover:border-indigo-500/30 transition-all">
                             <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center transition-all", stat.bg)}>
                                 <stat.icon className={cn("w-5 h-5", stat.color)} />
                             </div>
@@ -148,9 +148,9 @@ export function WordCounterTool() {
             </div>
 
             {/* ─── Sidebar Analysis ─── */}
-            <div className="space-y-6">
+            <div className="space-y-6 min-w-0">
                 {/* Time Metrics */}
-                <div className="p-5 sm:p-8 rounded-2xl md:rounded-[3rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] space-y-6 md:space-y-8">
+                <div className="p-3 sm:p-6 md:p-8 rounded-2xl md:rounded-[3rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] space-y-6 md:space-y-8">
                     <div className="grid grid-cols-2 gap-4 sm:gap-6">
                         <div className="space-y-3">
                             <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
@@ -186,7 +186,7 @@ export function WordCounterTool() {
                 </div>
 
                 {/* Keyword Density */}
-                <div className="p-5 sm:p-8 rounded-2xl md:rounded-[3rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] space-y-6">
+                <div className="p-3 sm:p-6 md:p-8 rounded-2xl md:rounded-[3rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] space-y-6">
                     <div className="flex items-center justify-between">
                         <h4 className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest flex items-center gap-2">
                             <Sparkles className="w-4 h-4" /> Keyword Analysis
@@ -221,7 +221,7 @@ export function WordCounterTool() {
                 </div>
 
                 {/* Pro Tip */}
-                <div className="p-6 rounded-[2.5rem] bg-gradient-to-br from-indigo-600 to-blue-700 text-white shadow-xl shadow-indigo-600/20 relative overflow-hidden group">
+                <div className="p-4 sm:p-6 rounded-2xl md:rounded-[2.5rem] bg-gradient-to-br from-indigo-600 to-blue-700 text-white shadow-xl shadow-indigo-600/20 relative overflow-hidden group">
                     <History className="w-10 h-10 mb-4 opacity-30 group-hover:scale-110 transition-transform" />
                     <p className="text-[11px] font-medium leading-relaxed relative z-10">
                         For high-impact SEO, try to keep your most important keywords between 1-2% of the total word count.

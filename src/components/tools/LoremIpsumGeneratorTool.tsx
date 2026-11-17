@@ -131,20 +131,20 @@ export function LoremIpsumGeneratorTool() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6 md:gap-8 items-start">
             {/* ─── Controls & Output ─── */}
             <div className="space-y-6">
-                <div className="p-5 sm:p-8 rounded-3xl md:rounded-[3rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] shadow-2xl relative overflow-hidden">
+                <div className="p-3.5 sm:p-8 rounded-2xl sm:rounded-3xl md:rounded-[3rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] shadow-2xl relative overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/5 to-transparent pointer-events-none" />
 
-                    <div className="relative space-y-8">
+                    <div className="relative space-y-6 sm:space-y-8">
                         {/* Theme Switcher */}
                         <div className="space-y-4">
                             <h4 className="text-[10px] font-bold text-[rgb(80,80,120)] uppercase tracking-widest pl-2">Select Corpus Spirit</h4>
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
                                 {(Object.entries(THEMES) as [Theme, any][]).map(([key, data]) => (
                                     <button
                                         key={key}
                                         onClick={() => setTheme(key)}
                                         className={cn(
-                                            "flex flex-col items-center gap-3 p-4 rounded-3xl border transition-all duration-300",
+                                            "flex flex-col items-center gap-2.5 sm:gap-3 p-3.5 sm:p-4 rounded-2xl sm:rounded-3xl border transition-all duration-300",
                                             theme === key
                                                 ? "bg-emerald-500/10 border-emerald-500 shadow-lg shadow-emerald-500/10"
                                                 : "bg-[rgb(17,17,27)] border-[rgb(45,45,65)] hover:border-emerald-500/30"
@@ -160,7 +160,7 @@ export function LoremIpsumGeneratorTool() {
                         </div>
 
                         {/* Config */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                             <div className="space-y-3">
                                 <label className="text-[10px] font-bold text-[rgb(80,80,120)] uppercase tracking-widest pl-2">Quantity</label>
                                 <div className="flex items-center gap-3 p-2 rounded-2xl bg-[rgb(17,17,27)] border border-[rgb(45,45,65)]">
@@ -174,15 +174,15 @@ export function LoremIpsumGeneratorTool() {
                                     />
                                 </div>
                             </div>
-                            <div className="space-y-3">
+                            <div className="space-y-3 min-w-0">
                                 <label className="text-[10px] font-bold text-[rgb(80,80,120)] uppercase tracking-widest pl-2">Unit</label>
-                                <div className="grid grid-cols-3 gap-2 p-1.5 rounded-2xl bg-[rgb(17,17,27)] border border-[rgb(45,45,65)]">
+                                <div className="grid grid-cols-3 gap-1 p-1 rounded-2xl bg-[rgb(17,17,27)] border border-[rgb(45,45,65)]">
                                     {(["paragraphs", "sentences", "words"] as const).map((u) => (
                                         <button
                                             key={u}
                                             onClick={() => setType(u)}
                                             className={cn(
-                                                "py-2 rounded-xl text-[10px] font-bold capitalize transition-all",
+                                                "flex-1 text-xs sm:text-sm px-2 sm:px-3 py-2 rounded-xl font-bold capitalize text-center truncate whitespace-nowrap transition-all",
                                                 type === u ? "bg-emerald-500 text-black" : "text-[rgb(100,100,140)] hover:text-white"
                                             )}
                                         >
