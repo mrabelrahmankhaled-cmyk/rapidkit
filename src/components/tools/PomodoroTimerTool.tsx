@@ -614,7 +614,7 @@ export function PomodoroTimerTool() {
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 items-start w-full">
                 {/* ─── Main Focus Chamber ───────────────────────────── */}
                 <div className="space-y-6">
-                    <div className="p-8 sm:p-12 rounded-[3.5rem] bg-[rgb(12,12,18)] border border-[rgb(38,38,58)] shadow-2xl relative overflow-hidden flex flex-col items-center justify-center min-h-[520px]">
+                    <div className="p-5 sm:p-12 rounded-3xl md:rounded-[3.5rem] bg-[rgb(12,12,18)] border border-[rgb(38,38,58)] shadow-2xl relative overflow-hidden flex flex-col items-center justify-center min-h-[460px] sm:min-h-[520px]">
                         {/* Ambient glow matching active mode */}
                         <div
                             className={cn(
@@ -625,15 +625,15 @@ export function PomodoroTimerTool() {
                             )}
                         />
 
-                        <div className="relative z-10 w-full flex flex-col items-center gap-8">
+                        <div className="relative z-10 w-full flex flex-col items-center gap-6 sm:gap-8">
                             {/* Mode Navigation Pills */}
-                            <div className="flex p-1.5 bg-[rgb(17,17,27)] rounded-2xl border border-[rgb(45,45,65)] shadow-inner">
+                            <div className="flex flex-wrap justify-center p-1.5 bg-[rgb(17,17,27)] rounded-2xl border border-[rgb(45,45,65)] shadow-inner">
                                 {(["work", "short", "long"] as Mode[]).map((m) => (
                                     <button
                                         key={m}
                                         onClick={() => switchMode(m)}
                                         className={cn(
-                                            "px-5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all",
+                                            "px-3.5 sm:px-5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap",
                                             mode === m
                                                 ? cn(MODE_CONFIG[m].bg, "text-white shadow-lg", MODE_CONFIG[m].glow)
                                                 : "text-[rgb(148,148,186)] hover:text-white"
@@ -645,7 +645,7 @@ export function PomodoroTimerTool() {
                             </div>
 
                             {/* Circular Timer Display */}
-                            <div className="relative w-72 sm:w-80 h-72 sm:h-80 flex items-center justify-center">
+                            <div className="relative w-56 sm:w-80 h-56 sm:h-80 flex items-center justify-center">
                                 <svg className="w-full h-full -rotate-90">
                                     {/* Background track */}
                                     <circle
@@ -670,7 +670,7 @@ export function PomodoroTimerTool() {
                                 </svg>
 
                                 <div className="absolute inset-0 flex flex-col items-center justify-center select-none">
-                                    <span className="text-6xl sm:text-7xl font-mono font-black text-white tracking-tight">
+                                    <span className="text-5xl sm:text-7xl font-mono font-black text-white tracking-tight">
                                         {formatTime(timeLeft)}
                                     </span>
                                     <div

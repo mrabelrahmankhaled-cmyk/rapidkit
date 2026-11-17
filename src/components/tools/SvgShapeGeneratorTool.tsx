@@ -109,10 +109,10 @@ export function SvgShapeGeneratorTool() {
     };
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6 md:gap-8 items-start">
             {/* ─── Preview Zone ─── */}
             <div className="space-y-6">
-                <div className="aspect-video rounded-[3rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] shadow-2xl overflow-hidden relative group flex items-center justify-center p-12">
+                <div className="aspect-[4/3] sm:aspect-video rounded-3xl md:rounded-[3rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] shadow-2xl overflow-hidden relative group flex items-center justify-center p-6 sm:p-12">
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(244,63,94,0.05),transparent)] pointer-events-none" />
 
                     {/* The SVG Canvas */}
@@ -121,7 +121,7 @@ export function SvgShapeGeneratorTool() {
                         dangerouslySetInnerHTML={{ __html: svgCode }}
                     />
 
-                    <div className="absolute bottom-8 right-8 flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="absolute bottom-4 right-4 sm:bottom-8 sm:right-8 flex gap-3 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
                         <button
                             onClick={() => setSeed(Math.random())}
                             className="p-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10 text-white hover:bg-white/20 transition-all"
@@ -132,17 +132,17 @@ export function SvgShapeGeneratorTool() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <button
                         onClick={handleCopy}
-                        className="py-4 rounded-2xl bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] text-white font-bold text-sm flex items-center justify-center gap-3 hover:bg-[rgb(30,30,46)] transition-all"
+                        className="py-3.5 sm:py-4 rounded-2xl bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] text-white font-bold text-sm flex items-center justify-center gap-3 hover:bg-[rgb(30,30,46)] transition-all"
                     >
                         {copied ? <Check className="w-5 h-5 text-emerald-400" /> : <Copy className="w-5 h-5 text-rose-400" />}
                         {copied ? "Copied SVG!" : "Copy Code"}
                     </button>
                     <button
                         onClick={handleDownload}
-                        className="py-4 rounded-2xl bg-rose-500 text-white font-bold text-sm flex items-center justify-center gap-3 hover:bg-rose-400 transition-all shadow-xl shadow-rose-500/20"
+                        className="py-3.5 sm:py-4 rounded-2xl bg-rose-500 text-white font-bold text-sm flex items-center justify-center gap-3 hover:bg-rose-400 transition-all shadow-xl shadow-rose-500/20"
                     >
                         <Download className="w-5 h-5" />
                         Download .svg
@@ -152,7 +152,7 @@ export function SvgShapeGeneratorTool() {
 
             {/* ─── Controls Sidebar ─── */}
             <div className="space-y-6">
-                <div className="p-7 rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] space-y-8">
+                <div className="p-5 sm:p-7 rounded-2xl md:rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] space-y-6 md:space-y-8">
                     {/* Shape Toggle */}
                     <div className="space-y-4">
                         <label className="text-[10px] font-bold text-[rgb(80,80,120)] uppercase tracking-widest pl-2">Shape Style</label>

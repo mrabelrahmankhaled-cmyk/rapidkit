@@ -67,18 +67,18 @@ export function UuidGeneratorTool() {
     };
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6 md:gap-8 items-start">
             {/* ─── Results Area ─── */}
             <div className="space-y-6">
-                <div className="p-8 rounded-[3rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] shadow-2xl relative overflow-hidden flex flex-col min-h-[500px]">
+                <div className="p-5 sm:p-8 rounded-3xl md:rounded-[3rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] shadow-2xl relative overflow-hidden flex flex-col min-h-[420px] sm:min-h-[500px]">
                     <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/5 to-transparent pointer-events-none" />
 
-                    <div className="relative flex-grow flex flex-col space-y-6">
-                        <div className="flex items-center justify-between px-2">
+                    <div className="relative flex-grow flex flex-col space-y-5 sm:space-y-6">
+                        <div className="flex flex-wrap items-center justify-between gap-2 px-1 sm:px-2">
                             <h4 className="text-[10px] font-bold text-[rgb(120,120,160)] uppercase tracking-widest flex items-center gap-2">
                                 <List className="w-3.5 h-3.5" /> Generated Registry
                             </h4>
-                            <div className="flex gap-4">
+                            <div className="flex gap-3 sm:gap-4">
                                 <button
                                     onClick={handleCopy}
                                     className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-2 hover:text-emerald-300 transition-colors"
@@ -95,16 +95,16 @@ export function UuidGeneratorTool() {
                             </div>
                         </div>
 
-                        <div className="flex-grow bg-[rgb(17,17,27)] rounded-[2rem] border border-[rgb(45,45,65)] p-6 font-mono text-sm overflow-y-auto max-h-[400px] custom-scrollbar">
+                        <div className="flex-grow bg-[rgb(17,17,27)] rounded-2xl sm:rounded-[2rem] border border-[rgb(45,45,65)] p-4 sm:p-6 font-mono text-xs sm:text-sm overflow-y-auto max-h-[360px] sm:max-h-[400px] custom-scrollbar">
                             {uuids.map((id, i) => (
-                                <div key={i} className="flex gap-4 py-2 border-b border-white/5 last:border-0 group">
-                                    <span className="text-[rgb(80,80,120)] select-none">{(i + 1).toString().padStart(2, '0')}</span>
-                                    <span className="text-indigo-300 selection:bg-indigo-500 selection:text-white flex-grow">{id}</span>
+                                <div key={i} className="flex items-center gap-2 sm:gap-4 py-2 border-b border-white/5 last:border-0 group">
+                                    <span className="text-[rgb(80,80,120)] select-none shrink-0">{(i + 1).toString().padStart(2, '0')}</span>
+                                    <span className="text-indigo-300 selection:bg-indigo-500 selection:text-white flex-grow break-all">{id}</span>
                                     <button
                                         onClick={() => {
                                             navigator.clipboard.writeText(id);
                                         }}
-                                        className="opacity-0 group-hover:opacity-100 p-1 rounded-lg hover:bg-white/5 text-[rgb(100,100,140)] transition-all"
+                                        className="sm:opacity-0 sm:group-hover:opacity-100 p-1.5 rounded-lg hover:bg-white/5 text-[rgb(100,100,140)] transition-all shrink-0"
                                         title="Copy Single ID"
                                     >
                                         <Copy className="w-3.5 h-3.5" />
@@ -115,7 +115,7 @@ export function UuidGeneratorTool() {
 
                         <button
                             onClick={generateUuid}
-                            className="w-full py-4 rounded-3xl bg-indigo-600 text-white font-bold flex items-center justify-center gap-3 hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-600/20"
+                            className="w-full py-4 rounded-2xl sm:rounded-3xl bg-indigo-600 text-white font-bold flex items-center justify-center gap-3 hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-600/20"
                         >
                             <RefreshCw className="w-5 h-5" />
                             Generate New Batch
@@ -123,9 +123,9 @@ export function UuidGeneratorTool() {
                     </div>
                 </div>
 
-                <div className="p-6 rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] flex items-center justify-between">
-                    <div className="flex gap-4 items-center">
-                        <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 flex items-center justify-center">
+                <div className="p-5 sm:p-6 rounded-2xl md:rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] flex items-center justify-between gap-3">
+                    <div className="flex gap-3 sm:gap-4 items-center">
+                        <div className="w-10 h-10 shrink-0 rounded-2xl bg-emerald-500/10 flex items-center justify-center">
                             <ShieldCheck className="w-6 h-6 text-emerald-400" />
                         </div>
                         <div>
@@ -133,7 +133,7 @@ export function UuidGeneratorTool() {
                             <p className="text-[10px] text-[rgb(120,120,160)]">Cryptographically strong random identifiers.</p>
                         </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right shrink-0">
                         <p className="text-[10px] font-bold text-[rgb(80,80,120)] uppercase tracking-widest mb-1">Total Bits</p>
                         <p className="text-xs font-mono text-white">128-bit</p>
                     </div>
@@ -142,7 +142,7 @@ export function UuidGeneratorTool() {
 
             {/* ─── Controls Sidebar ─── */}
             <div className="space-y-6">
-                <div className="p-7 rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] space-y-8">
+                <div className="p-5 sm:p-7 rounded-2xl md:rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] space-y-6 md:space-y-8">
                     <div className="flex items-center gap-2 text-indigo-400 mb-2">
                         <Settings2 className="w-4 h-4" />
                         <label className="text-xs font-bold uppercase tracking-widest pl-2">Generator Settings</label>

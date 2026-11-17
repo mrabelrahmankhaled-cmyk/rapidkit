@@ -265,7 +265,7 @@ export const metadata: Metadata = {
             {/* ─── Right Live Preview Column ─────────────────────────── */}
             <div className="space-y-6">
                 {/* Preview Platform Tabs */}
-                <div className="flex bg-[rgb(14,14,22)] p-1.5 rounded-2xl border border-[rgb(38,38,58)] shadow-lg">
+                <div className="flex flex-wrap sm:flex-nowrap gap-1 bg-[rgb(14,14,22)] p-1.5 rounded-2xl border border-[rgb(38,38,58)] shadow-lg">
                     {[
                         { id: "google", icon: Search, label: "Google Search" },
                         { id: "facebook", icon: Facebook, label: "Facebook / OG" },
@@ -276,20 +276,20 @@ export const metadata: Metadata = {
                             type="button"
                             onClick={() => setPreviewMode(item.id as PreviewMode)}
                             className={cn(
-                                "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all",
+                                "flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-2 py-2.5 rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap",
                                 previewMode === item.id
                                     ? "bg-violet-600 text-white shadow-lg shadow-violet-600/25"
                                     : "text-[rgb(120,120,160)] hover:text-white"
                             )}
                         >
-                            <item.icon className="w-3.5 h-3.5" />
+                            <item.icon className="w-3.5 h-3.5 shrink-0" />
                             <span>{item.label}</span>
                         </button>
                     ))}
                 </div>
 
                 {/* Live Preview Display Box */}
-                <div className="relative p-6 sm:p-10 rounded-[2.5rem] bg-[rgb(12,12,18)] border border-[rgb(38,38,58)] flex flex-col items-center justify-center min-h-[380px] overflow-hidden shadow-2xl">
+                <div className="relative p-4 sm:p-10 rounded-3xl sm:rounded-[2.5rem] bg-[rgb(12,12,18)] border border-[rgb(38,38,58)] flex flex-col items-center justify-center min-h-[320px] sm:min-h-[380px] overflow-hidden shadow-2xl">
                     <div className="absolute top-0 right-0 w-72 h-72 bg-violet-600/10 blur-[110px] pointer-events-none" />
 
                     {/* Google SERP Preview */}

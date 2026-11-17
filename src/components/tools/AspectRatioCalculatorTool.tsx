@@ -90,27 +90,27 @@ export function AspectRatioCalculatorTool() {
     const previewScale = lockRatio ? parseFloat(ratioW) / parseFloat(ratioH) : parseFloat(width) / parseFloat(height);
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6 md:gap-8 items-start">
             {/* ─── Main Calculator ─── */}
             <div className="space-y-6">
-                <div className="p-10 rounded-[3.5rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] shadow-2xl relative overflow-hidden">
+                <div className="p-5 sm:p-8 md:p-10 rounded-3xl md:rounded-[3.5rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] shadow-2xl relative overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/5 to-transparent pointer-events-none" />
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10 relative z-10">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 relative z-10">
                         {/* Dimension Inputs */}
                         <div className="space-y-6">
                             <div className="flex items-center gap-3 text-indigo-400 mb-2">
                                 <Settings2 className="w-4 h-4" />
                                 <span className="text-xs font-bold uppercase tracking-widest pl-1">Dimensions (px)</span>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-3 sm:gap-4">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-bold text-[rgb(80,80,120)] uppercase tracking-widest pl-1">Width</label>
                                     <input
                                         type="number"
                                         value={width}
                                         onChange={(e) => handleWidthChange(e.target.value)}
-                                        className="w-full h-14 bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] rounded-2xl px-6 text-white font-mono font-bold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 outline-none transition-all"
+                                        className="w-full h-13 sm:h-14 bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] rounded-2xl px-4 sm:px-6 text-white font-mono font-bold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 outline-none transition-all"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -119,19 +119,19 @@ export function AspectRatioCalculatorTool() {
                                         type="number"
                                         value={height}
                                         onChange={(e) => handleHeightChange(e.target.value)}
-                                        className="w-full h-14 bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] rounded-2xl px-6 text-white font-mono font-bold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 outline-none transition-all"
+                                        className="w-full h-13 sm:h-14 bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] rounded-2xl px-4 sm:px-6 text-white font-mono font-bold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 outline-none transition-all"
                                     />
                                 </div>
                             </div>
 
                             {/* Ratio Controls */}
                             <div className="pt-6 border-t border-white/5 space-y-4">
-                                <div className="flex items-center justify-between px-1">
+                                <div className="flex flex-wrap items-center justify-between gap-2 px-1">
                                     <span className="text-[10px] font-bold text-[rgb(80,80,120)] uppercase tracking-widest">Target Ratio</span>
                                     <button
                                         onClick={() => setLockRatio(!lockRatio)}
                                         className={cn(
-                                            "flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all border",
+                                            "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all border",
                                             lockRatio ? "bg-indigo-600 border-indigo-500 text-white" : "bg-white/5 border-white/5 text-[rgb(80,80,120)]"
                                         )}
                                     >
@@ -139,8 +139,8 @@ export function AspectRatioCalculatorTool() {
                                         {lockRatio ? "Ratio Locked" : "Free Form"}
                                     </button>
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="flex items-center bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] rounded-2xl px-6 h-14 text-white font-mono font-bold">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                    <div className="flex items-center bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] rounded-2xl px-4 sm:px-6 h-14 text-white font-mono font-bold">
                                         <input
                                             type="number"
                                             value={ratioW}
@@ -167,7 +167,7 @@ export function AspectRatioCalculatorTool() {
 
                         {/* Visual Preview */}
                         <div className="flex flex-col items-center justify-center space-y-6">
-                            <div className="aspect-square w-full max-w-[280px] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] rounded-[3rem] flex items-center justify-center p-8 relative">
+                            <div className="aspect-square w-full max-w-[240px] sm:max-w-[280px] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] rounded-3xl md:rounded-[3rem] flex items-center justify-center p-6 sm:p-8 relative">
                                 <div
                                     className="bg-indigo-600/20 border-2 border-indigo-500 shadow-2xl shadow-indigo-500/20 transition-all duration-500 ease-out flex items-center justify-center relative overflow-hidden rounded-2xl"
                                     style={{
@@ -184,7 +184,7 @@ export function AspectRatioCalculatorTool() {
                             <button
                                 onClick={handleCopy}
                                 className={cn(
-                                    "w-full max-w-[280px] py-4 rounded-[2rem] font-bold text-xs uppercase tracking-widest transition-all shadow-xl flex items-center justify-center gap-2",
+                                    "w-full max-w-[280px] py-4 rounded-2xl sm:rounded-[2rem] font-bold text-xs uppercase tracking-widest transition-all shadow-xl flex items-center justify-center gap-2",
                                     copied ? "bg-emerald-500 text-black px-6" : "bg-white text-black hover:scale-105"
                                 )}
                             >
@@ -196,12 +196,12 @@ export function AspectRatioCalculatorTool() {
                 </div>
 
                 {/* Presets Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
                     {PRESETS.map((preset) => (
                         <button
                             key={preset.name}
                             onClick={() => applyPreset(preset.ratio)}
-                            className="p-5 rounded-[2rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] hover:border-indigo-500/50 hover:bg-[rgb(22,22,35)] transition-all flex flex-col items-center text-center space-y-3 group"
+                            className="p-4 sm:p-5 rounded-2xl sm:rounded-[2rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] hover:border-indigo-500/50 hover:bg-[rgb(22,22,35)] transition-all flex flex-col items-center text-center space-y-3 group"
                         >
                             <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-indigo-500/10 transition-colors">
                                 <preset.icon className="w-5 h-5 text-[rgb(100,100,140)] group-hover:text-indigo-400 transition-colors" />
@@ -217,7 +217,7 @@ export function AspectRatioCalculatorTool() {
 
             {/* ─── Sidebar Intelligence ─── */}
             <div className="space-y-6">
-                <div className="p-8 rounded-[3rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] space-y-6">
+                <div className="p-5 sm:p-8 rounded-2xl md:rounded-[3rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] space-y-6">
                     <div className="flex items-center gap-3 text-indigo-400">
                         <Info className="w-4 h-4" />
                         <span className="text-xs font-bold uppercase tracking-widest">Dimension Logic</span>

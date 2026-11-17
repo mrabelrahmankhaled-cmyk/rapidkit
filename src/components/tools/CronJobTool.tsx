@@ -124,13 +124,13 @@ export function CronJobTool() {
     );
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6 md:gap-8 items-start">
             {/* ─── Main Content ─── */}
             <div className="space-y-6">
-                <div className="p-8 rounded-[3rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] shadow-2xl relative overflow-hidden">
+                <div className="p-5 sm:p-8 rounded-3xl md:rounded-[3rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] shadow-2xl relative overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/5 to-transparent pointer-events-none" />
 
-                    <div className="relative space-y-8">
+                    <div className="relative space-y-6 sm:space-y-8">
                         {/* Output Display */}
                         <div className="space-y-4">
                             <div className="flex items-center justify-between px-2">
@@ -145,25 +145,25 @@ export function CronJobTool() {
                                 </button>
                             </div>
 
-                            <div className="flex items-center gap-4 bg-[rgb(17,17,27)] border-2 border-emerald-500/20 rounded-3xl p-6 group transition-all hover:border-emerald-500/40 shadow-inner">
-                                <span className="text-3xl md:text-4xl font-mono font-bold text-white tracking-wider flex-grow break-all selection:bg-emerald-500 selection:text-black">
+                            <div className="flex items-center gap-3 sm:gap-4 bg-[rgb(17,17,27)] border-2 border-emerald-500/20 rounded-2xl sm:rounded-3xl p-4 sm:p-6 group transition-all hover:border-emerald-500/40 shadow-inner">
+                                <span className="text-2xl sm:text-3xl md:text-4xl font-mono font-bold text-white tracking-wider flex-grow break-all selection:bg-emerald-500 selection:text-black">
                                     {cronExpression}
                                 </span>
                                 <button
                                     onClick={handleCopy}
                                     className={cn(
-                                        "p-4 rounded-2xl transition-all shrink-0",
+                                        "p-3 sm:p-4 rounded-2xl transition-all shrink-0",
                                         copied ? "bg-emerald-500 text-black" : "bg-white/5 text-white hover:bg-white/10"
                                     )}
                                 >
-                                    {copied ? <Check className="w-6 h-6" /> : <Copy className="w-6 h-6" />}
+                                    {copied ? <Check className="w-5 h-5 sm:w-6 sm:h-6" /> : <Copy className="w-5 h-5 sm:w-6 sm:h-6" />}
                                 </button>
                             </div>
 
-                            <div className="p-6 rounded-3xl bg-emerald-500/5 border border-emerald-500/10 flex gap-4">
+                            <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-emerald-500/5 border border-emerald-500/10 flex gap-3 sm:gap-4">
                                 <MessageCircle className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                                 <div>
-                                    <p className="text-sm text-emerald-100 leading-relaxed font-medium">
+                                    <p className="text-xs sm:text-sm text-emerald-100 leading-relaxed font-medium">
                                         "{humanReadable}"
                                     </p>
                                     <p className="text-[10px] text-[rgb(100,100,140)] uppercase tracking-widest mt-1">Human Translation</p>
@@ -184,7 +184,7 @@ export function CronJobTool() {
 
                 {/* Info Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="p-6 rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)]">
+                    <div className="p-5 sm:p-6 rounded-2xl md:rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)]">
                         <h5 className="text-xs font-bold text-white mb-4 flex items-center gap-2">
                             <Zap className="w-4 h-4 text-amber-500" /> Quick Presets
                         </h5>
@@ -200,7 +200,7 @@ export function CronJobTool() {
                             ))}
                         </div>
                     </div>
-                    <div className="p-6 rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] flex flex-col justify-center">
+                    <div className="p-5 sm:p-6 rounded-2xl md:rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] flex flex-col justify-center">
                         <div className="flex gap-4">
                             <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center shrink-0">
                                 <Calendar className="w-5 h-5 text-indigo-400" />
@@ -218,7 +218,7 @@ export function CronJobTool() {
 
             {/* ─── Sidebar ─── */}
             <div className="space-y-6">
-                <div className="p-8 rounded-[2.5rem] bg-gradient-to-br from-[rgb(30,30,46)] to-[rgb(17,17,27)] border border-[rgb(45,45,65)] text-white shadow-xl relative overflow-hidden">
+                <div className="p-5 sm:p-8 rounded-2xl md:rounded-[2.5rem] bg-gradient-to-br from-[rgb(30,30,46)] to-[rgb(17,17,27)] border border-[rgb(45,45,65)] text-white shadow-xl relative overflow-hidden">
                     <Clock className="w-10 h-10 mb-4 text-emerald-400 opacity-80" />
                     <h4 className="text-sm font-bold uppercase tracking-wider mb-2">Automate Anything</h4>
                     <p className="text-xs text-[rgb(150,150,180)] leading-relaxed">

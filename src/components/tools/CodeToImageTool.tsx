@@ -359,12 +359,12 @@ export function CodeToImageTool() {
             {/* ─── Visual Canvas + Editor Workspace ─────────────────── */}
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 items-start">
                 {/* Visual Editor (Canvas to be captured) */}
-                <div className="space-y-3">
-                    <div className="overflow-x-auto rounded-3xl border border-[rgb(38,38,58)] bg-black/40 p-2">
+                <div className="space-y-3 min-w-0">
+                    <div className="max-w-full overflow-x-auto rounded-3xl border border-[rgb(38,38,58)] bg-black/40 p-2 custom-scrollbar">
                         <div
                             ref={snippetRef}
                             className={cn(
-                                "w-full transition-all duration-300 rounded-2xl select-none",
+                                "w-full min-w-[320px] transition-all duration-300 rounded-2xl select-none",
                                 currentBg.class
                             )}
                             style={{ padding: `${padding}px` }}
@@ -451,7 +451,7 @@ export function CodeToImageTool() {
                     </div>
 
                     {/* Canvas Footer Settings */}
-                    <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[rgb(14,14,22)] border border-[rgb(38,38,58)] text-xs">
+                    <div className="flex flex-wrap items-center justify-between gap-2 p-3.5 rounded-2xl bg-[rgb(14,14,22)] border border-[rgb(38,38,58)] text-xs">
                         <label className="flex items-center gap-2.5 cursor-pointer text-[rgb(150,150,185)] hover:text-white transition-colors">
                             <input
                                 type="checkbox"
@@ -462,7 +462,7 @@ export function CodeToImageTool() {
                             <span>Show Line Numbers</span>
                         </label>
 
-                        <div className="flex items-center gap-3 text-[11px] text-[rgb(110,110,145)]">
+                        <div className="flex items-center gap-2 sm:gap-3 text-[11px] text-[rgb(110,110,145)]">
                             <span>Retina 2x Resolution</span>
                             <span>•</span>
                             <span>Direct Clipboard PNG</span>
@@ -471,7 +471,7 @@ export function CodeToImageTool() {
                 </div>
 
                 {/* Right Code Input Area */}
-                <div className="space-y-3">
+                <div className="space-y-3 min-w-0">
                     <div className="flex items-center justify-between px-1">
                         <h3 className="text-xs font-bold text-[rgb(120,120,160)] uppercase tracking-wider">
                             Source Code
@@ -502,7 +502,7 @@ export function CodeToImageTool() {
                         value={code}
                         onChange={(e) => setCode(e.target.value)}
                         placeholder="Paste or write your code here..."
-                        className="w-full h-[400px] lg:h-[480px] p-4 rounded-2xl bg-[rgb(12,12,18)] border border-[rgb(38,38,58)] text-white font-mono text-xs focus:outline-none focus:border-violet-500/50 resize-none leading-relaxed shadow-inner custom-scrollbar"
+                        className="w-full h-[280px] sm:h-[400px] lg:h-[480px] p-4 rounded-2xl bg-[rgb(12,12,18)] border border-[rgb(38,38,58)] text-white font-mono text-base sm:text-xs focus:outline-none focus:border-violet-500/50 resize-none leading-relaxed shadow-inner custom-scrollbar"
                         spellCheck={false}
                     />
 

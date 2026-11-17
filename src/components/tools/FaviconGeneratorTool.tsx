@@ -224,8 +224,8 @@ export function FaviconGeneratorTool() {
                 ) : (
                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-700">
                         {/* Preview Zone */}
-                        <div className="p-8 rounded-[3rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 p-6 flex gap-2">
+                        <div className="p-5 sm:p-8 rounded-3xl md:rounded-[3rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 p-4 sm:p-6 flex gap-2">
                                 <button
                                     onClick={handleClear}
                                     className="p-3 rounded-2xl bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 transition-all border border-rose-500/20"
@@ -234,7 +234,7 @@ export function FaviconGeneratorTool() {
                                 </button>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12 items-center">
                                 {/* Tab Preview Simulator */}
                                 <div className="space-y-4">
                                     <h4 className="text-[10px] font-bold text-[rgb(80,80,120)] uppercase tracking-widest pl-2">Browser Tab Preview</h4>

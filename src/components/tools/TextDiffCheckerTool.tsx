@@ -137,7 +137,7 @@ export function TextDiffCheckerTool() {
                         value={original}
                         onChange={(e) => setOriginal(e.target.value)}
                         placeholder="Paste original version here..."
-                        className="w-full h-48 lg:h-64 p-5 rounded-2xl bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] text-white text-sm focus:outline-none focus:border-violet-500/30 transition-all resize-none shadow-inner leading-relaxed"
+                        className="w-full h-44 sm:h-48 lg:h-64 p-4 sm:p-5 rounded-2xl bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] text-white text-base sm:text-sm focus:outline-none focus:border-violet-500/30 transition-all resize-none shadow-inner leading-relaxed"
                     />
                 </div>
                 <div className="space-y-3">
@@ -150,25 +150,25 @@ export function TextDiffCheckerTool() {
                         value={modified}
                         onChange={(e) => setModified(e.target.value)}
                         placeholder="Paste modified version here..."
-                        className="w-full h-48 lg:h-64 p-5 rounded-2xl bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] text-white text-sm focus:outline-none focus:border-violet-500/30 transition-all resize-none shadow-inner leading-relaxed"
+                        className="w-full h-44 sm:h-48 lg:h-64 p-4 sm:p-5 rounded-2xl bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] text-white text-base sm:text-sm focus:outline-none focus:border-violet-500/30 transition-all resize-none shadow-inner leading-relaxed"
                     />
                 </div>
             </div>
 
             {/* Diff Result Display */}
             {(original || modified) && (
-                <div className="p-1 rounded-[2rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] overflow-hidden shadow-2xl">
-                    <div className="bg-black/20 p-4 border-b border-[rgb(45,45,65)] flex items-center justify-between">
+                <div className="p-1 rounded-2xl sm:rounded-[2rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] overflow-hidden shadow-2xl">
+                    <div className="bg-black/20 p-3.5 sm:p-4 border-b border-[rgb(45,45,65)] flex flex-wrap items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
-                            <FileSearch className="w-4 h-4 text-violet-400" />
+                            <FileSearch className="w-4 h-4 text-violet-400 shrink-0" />
                             <span className="text-xs font-bold text-white uppercase tracking-widest">Comparison Summary</span>
                         </div>
                         <p className="text-[10px] text-[rgb(80,80,120)]">Highlighting {type === 'lines' ? 'Line' : 'Character'} Changes</p>
                     </div>
 
                     <div className={cn(
-                        "p-6 font-mono text-sm overflow-x-auto",
-                        mode === "split" ? "grid grid-cols-2 gap-px bg-[rgb(45,45,65)] bg-opacity-30" : "flex flex-col"
+                        "p-3 sm:p-6 font-mono text-xs sm:text-sm overflow-x-auto",
+                        mode === "split" ? "grid grid-cols-1 md:grid-cols-2 gap-px bg-[rgb(45,45,65)] bg-opacity-30" : "flex flex-col"
                     )}>
                         {mode === "unified" ? (
                             <div className="space-y-0.5 min-w-full">

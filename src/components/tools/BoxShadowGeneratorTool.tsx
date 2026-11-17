@@ -59,38 +59,38 @@ export function BoxShadowGeneratorTool() {
     );
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6 md:gap-8 items-start">
             {/* ─── Preview Zone ─── */}
             <div className="space-y-6">
-                <div className="aspect-video rounded-[3rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] shadow-2xl overflow-hidden relative flex items-center justify-center p-12">
+                <div className="min-h-[260px] sm:aspect-video rounded-3xl md:rounded-[3rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] shadow-2xl overflow-hidden relative flex items-center justify-center p-6 sm:p-12">
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(244,63,94,0.05),transparent)] pointer-events-none" />
 
                     {/* The Target Object */}
                     <div
-                        className="w-48 h-48 rounded-[2rem] bg-white transition-all duration-300 transform"
+                        className="w-32 h-32 sm:w-48 sm:h-48 rounded-2xl sm:rounded-[2rem] bg-white transition-all duration-300 transform"
                         style={{ boxShadow: shadowCode }}
                     />
 
-                    <div className="absolute bottom-8 left-8 flex items-center gap-2">
+                    <div className="absolute bottom-4 left-5 sm:bottom-8 sm:left-8 flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
                         <span className="text-[10px] font-bold text-[rgb(100,100,140)] uppercase tracking-widest">Real-time Rendering</span>
                     </div>
                 </div>
 
-                <div className="p-8 rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] space-y-4">
+                <div className="p-5 sm:p-8 rounded-2xl md:rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] space-y-4">
                     <div className="flex items-center justify-between px-2">
                         <h4 className="text-[10px] font-bold text-[rgb(120,120,160)] uppercase tracking-widest flex items-center gap-2">
                             <Layers className="w-3.5 h-3.5" /> Generated CSS
                         </h4>
                     </div>
-                    <div className="flex items-center gap-4 bg-[rgb(10,10,15)] rounded-2xl p-5 border border-white/5">
-                        <code className="text-sm font-mono text-emerald-400 flex-grow break-all pr-4">
+                    <div className="flex items-center gap-3 sm:gap-4 bg-[rgb(10,10,15)] rounded-2xl p-4 sm:p-5 border border-white/5">
+                        <code className="text-xs sm:text-sm font-mono text-emerald-400 flex-grow break-all pr-2 sm:pr-4">
                             {fullCssCode}
                         </code>
                         <button
                             onClick={handleCopy}
                             className={cn(
-                                "p-3 rounded-xl transition-all",
+                                "p-3 rounded-xl transition-all shrink-0",
                                 copied ? "bg-emerald-500 text-black" : "bg-white/5 text-white hover:bg-white/10"
                             )}
                         >
@@ -102,7 +102,7 @@ export function BoxShadowGeneratorTool() {
 
             {/* ─── Controls Sidebar ─── */}
             <div className="space-y-6">
-                <div className="p-7 rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] space-y-8">
+                <div className="p-5 sm:p-7 rounded-2xl md:rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] space-y-6 md:space-y-8">
                     <div className="flex items-center gap-2 text-rose-500 mb-2">
                         <Settings2 className="w-4 h-4" />
                         <label className="text-xs font-bold uppercase tracking-widest pl-2">Shadow Physics</label>

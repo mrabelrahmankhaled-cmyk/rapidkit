@@ -128,10 +128,10 @@ export function LoremIpsumGeneratorTool() {
     };
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6 md:gap-8 items-start">
             {/* ─── Controls & Output ─── */}
             <div className="space-y-6">
-                <div className="p-8 rounded-[3rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] shadow-2xl relative overflow-hidden">
+                <div className="p-5 sm:p-8 rounded-3xl md:rounded-[3rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] shadow-2xl relative overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/5 to-transparent pointer-events-none" />
 
                     <div className="relative space-y-8">
@@ -218,7 +218,7 @@ export function LoremIpsumGeneratorTool() {
                         </button>
                     </div>
 
-                    <div className="p-8 rounded-[3rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] text-lg leading-relaxed text-white/80 whitespace-pre-wrap font-serif min-h-[300px]">
+                    <div className="p-5 sm:p-8 rounded-3xl md:rounded-[3rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] text-base sm:text-lg leading-relaxed text-white/80 whitespace-pre-wrap font-serif min-h-[240px] sm:min-h-[300px]">
                         {result}
                     </div>
                 </div>

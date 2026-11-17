@@ -83,10 +83,10 @@ export function WhatIsMyIpTool() {
     };
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6 md:gap-8 items-start">
             {/* ─── IP Display Zone ─── */}
             <div className="space-y-6">
-                <div className="p-12 rounded-[4rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] shadow-2xl relative overflow-hidden flex flex-col items-center justify-center text-center">
+                <div className="p-6 sm:p-10 md:p-12 rounded-3xl md:rounded-[4rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] shadow-2xl relative overflow-hidden flex flex-col items-center justify-center text-center">
                     <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/10 via-transparent to-transparent pointer-events-none" />
 
                     {loading ? (
@@ -102,32 +102,32 @@ export function WhatIsMyIpTool() {
                         </div>
                     ) : (
                         <>
-                            <div className="space-y-4 mb-10">
-                                <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.3em] flex items-center justify-center gap-2">
-                                    <Globe className="w-3.5 h-3.5" /> Public IPv4 Address
+                            <div className="space-y-4 mb-8 md:mb-10 w-full">
+                                <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.2em] sm:tracking-[0.3em] flex items-center justify-center gap-2">
+                                    <Globe className="w-3.5 h-3.5 shrink-0" /> Public IPv4 Address
                                 </span>
-                                <h2 className="text-5xl md:text-7xl font-mono font-bold text-white tracking-tighter break-all">
+                                <h2 className="text-3xl sm:text-5xl md:text-7xl font-mono font-bold text-white tracking-tighter break-all">
                                     {data?.ip}
                                 </h2>
                             </div>
 
-                            <div className="flex flex-wrap items-center justify-center gap-4">
+                            <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto">
                                 <button
                                     onClick={handleCopy}
                                     className={cn(
-                                        "flex items-center gap-3 px-8 py-4 rounded-[2rem] font-bold text-xs uppercase tracking-widest transition-all shadow-xl",
+                                        "w-full sm:w-auto flex items-center justify-center gap-3 px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl sm:rounded-[2rem] font-bold text-xs uppercase tracking-wider sm:tracking-widest transition-all shadow-xl whitespace-nowrap",
                                         copied ? "bg-emerald-500 text-black scale-95" : "bg-white text-black hover:scale-105"
                                     )}
                                 >
-                                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                                    {copied ? <Check className="w-4 h-4 shrink-0" /> : <Copy className="w-4 h-4 shrink-0" />}
                                     {copied ? "IP Copied" : "Copy IP Address"}
                                 </button>
                                 <a
                                     href={`https://www.google.com/maps?q=${data?.latitude},${data?.longitude}`}
                                     target="_blank"
-                                    className="flex items-center gap-3 px-8 py-4 rounded-[2rem] bg-[rgb(25,25,35)] border border-[rgb(45,45,65)] text-white font-bold text-xs uppercase tracking-widest hover:bg-[rgb(35,35,45)] transition-all shadow-xl"
+                                    className="w-full sm:w-auto flex items-center justify-center gap-3 px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl sm:rounded-[2rem] bg-[rgb(25,25,35)] border border-[rgb(45,45,65)] text-white font-bold text-xs uppercase tracking-wider sm:tracking-widest hover:bg-[rgb(35,35,45)] transition-all shadow-xl whitespace-nowrap"
                                 >
-                                    <MapPin className="w-4 h-4 text-rose-500" />
+                                    <MapPin className="w-4 h-4 text-rose-500 shrink-0" />
                                     Show on Map
                                 </a>
                             </div>
@@ -137,21 +137,21 @@ export function WhatIsMyIpTool() {
 
                 {/* Geolocation Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="p-7 rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] flex flex-col items-center text-center space-y-3 group hover:border-indigo-500/30 transition-all">
+                    <div className="p-5 sm:p-7 rounded-2xl md:rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] flex flex-col items-center text-center space-y-3 group hover:border-indigo-500/30 transition-all">
                         <MapPin className="w-6 h-6 text-rose-500" />
                         <div>
                             <p className="text-[9px] font-bold text-[rgb(80,80,120)] uppercase tracking-widest mb-1">Location</p>
                             <p className="text-sm font-bold text-white">{data?.city}, {data?.country_name}</p>
                         </div>
                     </div>
-                    <div className="p-7 rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] flex flex-col items-center text-center space-y-3 group hover:border-indigo-500/30 transition-all">
+                    <div className="p-5 sm:p-7 rounded-2xl md:rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] flex flex-col items-center text-center space-y-3 group hover:border-indigo-500/30 transition-all">
                         <Zap className="w-6 h-6 text-amber-500" />
                         <div>
                             <p className="text-[9px] font-bold text-[rgb(80,80,120)] uppercase tracking-widest mb-1">ISP / Provider</p>
-                            <p className="text-sm font-bold text-white max-w-[150px] truncate">{data?.org || "Unknown"}</p>
+                            <p className="text-sm font-bold text-white max-w-[220px] md:max-w-[150px] truncate">{data?.org || "Unknown"}</p>
                         </div>
                     </div>
-                    <div className="p-7 rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] flex flex-col items-center text-center space-y-3 group hover:border-indigo-500/30 transition-all">
+                    <div className="p-5 sm:p-7 rounded-2xl md:rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] flex flex-col items-center text-center space-y-3 group hover:border-indigo-500/30 transition-all">
                         <Globe className="w-6 h-6 text-indigo-500" />
                         <div>
                             <p className="text-[9px] font-bold text-[rgb(80,80,120)] uppercase tracking-widest mb-1">Region</p>
@@ -163,7 +163,7 @@ export function WhatIsMyIpTool() {
 
             {/* ─── Sidebar ─── */}
             <div className="space-y-6">
-                <div className="p-8 rounded-[3rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] space-y-8">
+                <div className="p-5 sm:p-8 rounded-2xl md:rounded-[3rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] space-y-6 md:space-y-8">
                     <div className="space-y-6">
                         <label className="text-[10px] font-bold text-[rgb(80,80,120)] uppercase tracking-widest flex items-center gap-2">
                             <Monitor className="w-4 h-4" /> System Details

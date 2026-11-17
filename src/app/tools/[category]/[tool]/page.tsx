@@ -114,14 +114,14 @@ export default async function ToolPage({ params }: Props) {
                 <div className="container-wide max-w-5xl">
 
                     {/* ─── Breadcrumb ─────────────────────────── */}
-                    <nav aria-label="breadcrumb" className="flex items-center gap-1 text-xs text-[rgb(80,80,120)] mb-6">
+                    <nav aria-label="breadcrumb" className="flex flex-wrap items-center gap-1 text-xs text-[rgb(80,80,120)] mb-6">
                         <Link href="/" className="hover:text-white transition-colors">Home</Link>
-                        <ChevronRight className="w-3 h-3" />
+                        <ChevronRight className="w-3 h-3 shrink-0" />
                         <Link href="/tools" className="hover:text-white transition-colors">Tools</Link>
-                        <ChevronRight className="w-3 h-3" />
+                        <ChevronRight className="w-3 h-3 shrink-0" />
                         <Link href={`/tools/${category.slug}`} className="hover:text-white transition-colors">{category.name}</Link>
-                        <ChevronRight className="w-3 h-3" />
-                        <span className="text-[rgb(148,148,186)]">{tool.name}</span>
+                        <ChevronRight className="w-3 h-3 shrink-0" />
+                        <span className="text-[rgb(148,148,186)] break-words">{tool.name}</span>
                     </nav>
 
                     {/* ─── Tool Header ────────────────────────── */}
@@ -150,7 +150,7 @@ export default async function ToolPage({ params }: Props) {
                     </div>
 
                     {/* ─── Tool Card ──────────────────────────── */}
-                    <div className="glass-card p-6 sm:p-8 mb-6">
+                    <div className="glass-card p-4 sm:p-6 md:p-8 mb-6 overflow-hidden">
                         <ToolPageClient toolSlug={tool.slug} categoryId={tool.categoryId} />
                     </div>
 

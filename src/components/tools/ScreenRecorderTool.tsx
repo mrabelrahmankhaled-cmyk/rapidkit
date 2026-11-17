@@ -56,6 +56,10 @@ export function ScreenRecorderTool() {
     // ─── Recording Controls ───
     const startRecording = async () => {
         setPermissionError(null);
+        if (typeof navigator === "undefined" || typeof navigator.mediaDevices?.getDisplayMedia !== "function") {
+            setPermissionError("Screen capture is only supported on desktop browsers. Mobile iOS and Android browsers do not allow web screen recording.");
+            return;
+        }
         try {
             // Get screen stream
             const screenStream = await navigator.mediaDevices.getDisplayMedia({
@@ -148,21 +152,21 @@ export function ScreenRecorderTool() {
     };
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-6 md:gap-8 items-start">
             {/* ─── Main Recording Surface ─── */}
             <div className="space-y-6">
                 <div className={cn(
-                    "relative aspect-video rounded-[3rem] border-2 overflow-hidden transition-all duration-500 shadow-2xl bg-black flex flex-col items-center justify-center",
+                    "relative min-h-[280px] sm:aspect-video rounded-3xl md:rounded-[3rem] border-2 overflow-hidden transition-all duration-500 shadow-2xl bg-black flex flex-col items-center justify-center py-6 sm:py-0",
                     recording ? "border-rose-500 ring-4 ring-rose-500/10" : "border-[rgb(45,45,65)]"
                 )}>
                     {/* Recording Overlays */}
                     {recording && (
-                        <div className="absolute top-6 left-6 z-20 flex items-center gap-3">
-                            <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10">
+                        <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 flex items-center gap-3">
+                            <div className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10">
                                 <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse" />
                                 <span className="text-xs font-bold text-white tracking-widest uppercase">REC</span>
                             </div>
-                            <div className="px-4 py-2 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10 font-mono text-sm text-white">
+                            <div className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10 font-mono text-sm text-white">
                                 {formatTime(duration)}
                             </div>
                         </div>
@@ -170,12 +174,12 @@ export function ScreenRecorderTool() {
 
                     {/* Pre-recording State */}
                     {!recording && !recordedUrl && (
-                        <div className="text-center space-y-6 max-w-md px-6 relative z-10">
-                            <div className="w-20 h-20 rounded-[2rem] bg-rose-500/10 border border-rose-500/20 flex items-center justify-center mx-auto mb-4">
-                                <Monitor className="w-10 h-10 text-rose-500" />
+                        <div className="text-center space-y-5 sm:space-y-6 max-w-md px-4 sm:px-6 relative z-10 flex flex-col items-center">
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-[2rem] bg-rose-500/10 border border-rose-500/20 flex items-center justify-center mx-auto mb-1 sm:mb-4">
+                                <Monitor className="w-8 h-8 sm:w-10 sm:h-10 text-rose-500" />
                             </div>
-                            <h3 className="text-2xl font-bold text-white tracking-tight">Ready to Capture?</h3>
-                            <p className="text-sm text-[rgb(120,120,160)] leading-relaxed">
+                            <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">Ready to Capture?</h3>
+                            <p className="text-xs sm:text-sm text-[rgb(120,120,160)] leading-relaxed">
                                 Record your screen, selective windows, or single tabs. Perfect for demos, bug reports, and tutorials.
                             </p>
 
@@ -187,7 +191,7 @@ export function ScreenRecorderTool() {
 
                             <button
                                 onClick={startRecording}
-                                className="px-8 py-4 rounded-2xl bg-rose-500 text-white font-bold flex items-center justify-center gap-3 hover:bg-rose-400 transition-all shadow-xl shadow-rose-500/20 group"
+                                className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl bg-rose-500 text-white font-bold flex items-center justify-center gap-3 hover:bg-rose-400 transition-all shadow-xl shadow-rose-500/20 group"
                             >
                                 <Circle className="w-5 h-5 fill-current group-hover:scale-110 transition-transform" />
                                 Start Recording
@@ -219,13 +223,13 @@ export function ScreenRecorderTool() {
                 </div>
 
                 {/* Control Bar */}
-                <div className="flex flex-wrap items-center justify-between gap-6 p-6 rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] shadow-xl">
+                <div className="flex flex-wrap items-center justify-between gap-4 sm:gap-6 p-4 sm:p-6 rounded-2xl md:rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] shadow-xl">
                     <div className="flex items-center gap-4">
                         <button
                             onClick={() => setAudioEnabled(!audioEnabled)}
                             disabled={recording}
                             className={cn(
-                                "p-4 rounded-2xl border transition-all flex items-center gap-3",
+                                "p-3.5 sm:p-4 rounded-2xl border transition-all flex items-center gap-3",
                                 audioEnabled
                                     ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
                                     : "bg-white/5 border-white/5 text-white/40"
@@ -242,7 +246,7 @@ export function ScreenRecorderTool() {
                         {recording ? (
                             <button
                                 onClick={stopRecording}
-                                className="px-10 py-4 rounded-2xl bg-white text-black font-bold flex items-center gap-3 hover:scale-105 transition-all shadow-xl"
+                                className="px-6 sm:px-10 py-3.5 sm:py-4 rounded-2xl bg-white text-black font-bold flex items-center gap-3 hover:scale-105 transition-all shadow-xl text-sm"
                             >
                                 <Square className="w-4 h-4 fill-black" />
                                 Stop Capture
@@ -251,16 +255,16 @@ export function ScreenRecorderTool() {
                             <div className="flex gap-3">
                                 <button
                                     onClick={handleClear}
-                                    className="p-4 rounded-2xl bg-white/5 text-white/60 border border-white/5 hover:bg-white/10 transition-all"
+                                    className="p-3.5 sm:p-4 rounded-2xl bg-white/5 text-white/60 border border-white/5 hover:bg-white/10 transition-all"
                                     title="Discard Recording"
                                 >
                                     <Trash2 className="w-5 h-5" />
                                 </button>
                                 <button
                                     onClick={handleDownload}
-                                    className="px-8 py-4 rounded-2xl bg-emerald-500 text-black font-bold flex items-center gap-3 hover:bg-emerald-400 transition-all shadow-xl shadow-emerald-500/20"
+                                    className="px-5 sm:px-8 py-3.5 sm:py-4 rounded-2xl bg-emerald-500 text-black font-bold flex items-center gap-2.5 sm:gap-3 hover:bg-emerald-400 transition-all shadow-xl shadow-emerald-500/20 text-sm whitespace-nowrap"
                                 >
-                                    <Download className="w-5 h-5" />
+                                    <Download className="w-5 h-5 shrink-0" />
                                     Download WebM
                                 </button>
                             </div>
@@ -276,7 +280,7 @@ export function ScreenRecorderTool() {
 
             {/* ─── Designer Sidebar ─── */}
             <div className="space-y-6">
-                <div className="p-8 rounded-[2.5rem] bg-gradient-to-br from-rose-600 to-pink-700 text-white shadow-xl shadow-rose-600/20 relative overflow-hidden">
+                <div className="p-5 sm:p-8 rounded-2xl md:rounded-[2.5rem] bg-gradient-to-br from-rose-600 to-pink-700 text-white shadow-xl shadow-rose-600/20 relative overflow-hidden">
                     <Video className="w-10 h-10 mb-4 opacity-50" />
                     <h4 className="text-sm font-bold uppercase tracking-wider mb-2 relative">No Limits, Just Capture</h4>
                     <p className="text-xs text-white/80 leading-relaxed relative">

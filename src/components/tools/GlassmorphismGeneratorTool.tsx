@@ -66,10 +66,10 @@ border-radius: 2rem;`;
     );
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6 md:gap-8 items-start">
             {/* ─── Preview Zone ─── */}
             <div className="space-y-6">
-                <div className="aspect-video rounded-[3.5rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] shadow-2xl relative overflow-hidden flex items-center justify-center p-12">
+                <div className="min-h-[280px] sm:aspect-video rounded-3xl md:rounded-[3.5rem] bg-[rgb(10,10,15)] border border-[rgb(45,45,65)] shadow-2xl relative overflow-hidden flex items-center justify-center p-5 sm:p-12">
                     {/* Dynamic Background Shapes */}
                     <div className="absolute inset-0 overflow-hidden pointer-events-none">
                         <div className="absolute top-1/4 left-1/4 w-48 h-48 bg-purple-600/30 rounded-full blur-3xl animate-pulse" />
@@ -79,36 +79,36 @@ border-radius: 2rem;`;
 
                     {/* The Glass Object */}
                     <div
-                        className="w-full max-w-md aspect-[16/9] flex flex-col items-center justify-center text-center p-12 relative z-10 transition-all duration-300"
+                        className="w-full max-w-md sm:aspect-[16/9] flex flex-col items-center justify-center text-center p-6 sm:p-12 relative z-10 transition-all duration-300"
                         style={glassStyle}
                     >
-                        <Layers className="w-12 h-12 text-white mb-6 opacity-80" />
-                        <h3 className="text-2xl font-bold text-white mb-2 tracking-tight">Glassmorphism</h3>
-                        <p className="text-sm text-white/60 leading-relaxed font-medium">
+                        <Layers className="w-10 h-10 sm:w-12 sm:h-12 text-white mb-4 sm:mb-6 opacity-80" />
+                        <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 tracking-tight">Glassmorphism</h3>
+                        <p className="text-xs sm:text-sm text-white/60 leading-relaxed font-medium">
                             Premium UI trend for modern and sleek web experiences.
                         </p>
                     </div>
 
-                    <div className="absolute bottom-8 left-8 flex items-center gap-2">
+                    <div className="absolute bottom-4 left-5 sm:bottom-8 sm:left-8 flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
                         <span className="text-[10px] font-bold text-[rgb(100,100,140)] uppercase tracking-widest">Real-time Visualization</span>
                     </div>
                 </div>
 
-                <div className="p-8 rounded-[3rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] space-y-4">
+                <div className="p-5 sm:p-8 rounded-2xl md:rounded-[3rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] space-y-4">
                     <div className="flex items-center justify-between px-2">
                         <h4 className="text-[10px] font-bold text-[rgb(120,120,160)] uppercase tracking-widest flex items-center gap-2">
                             <Box className="w-3.5 h-3.5" /> CSS Declarations
                         </h4>
                     </div>
-                    <div className="flex items-center gap-4 bg-[rgb(10,10,15)] rounded-3xl p-6 border border-white/5 relative group">
-                        <pre className="text-xs font-mono text-indigo-300 flex-grow break-all pr-4 whitespace-pre-wrap leading-relaxed">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 bg-[rgb(10,10,15)] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-white/5 relative group">
+                        <pre className="text-xs font-mono text-indigo-300 flex-grow break-all sm:pr-4 whitespace-pre-wrap leading-relaxed">
                             {cssCode}
                         </pre>
                         <button
                             onClick={handleCopy}
                             className={cn(
-                                "flex items-center gap-2 px-6 py-3 rounded-2xl transition-all shadow-xl font-bold text-[10px] uppercase tracking-widest",
+                                "w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-2xl transition-all shadow-xl font-bold text-[10px] uppercase tracking-widest shrink-0",
                                 copied ? "bg-emerald-500 text-black" : "bg-indigo-600 text-white hover:bg-indigo-500"
                             )}
                         >
@@ -121,7 +121,7 @@ border-radius: 2rem;`;
 
             {/* ─── Controls Sidebar ─── */}
             <div className="space-y-6">
-                <div className="p-7 rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] space-y-8">
+                <div className="p-5 sm:p-7 rounded-2xl md:rounded-[2.5rem] bg-[rgb(17,17,27)] border border-[rgb(45,45,65)] space-y-6 md:space-y-8">
                     <div className="flex items-center gap-2 text-indigo-400 mb-2">
                         <Settings2 className="w-4 h-4" />
                         <label className="text-xs font-bold uppercase tracking-widest pl-2">Glass Physics</label>
