@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { toPng, toBlob } from "html-to-image";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import * as Themes from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -29,6 +29,7 @@ const LANGUAGES = [
     { id: "javascript", label: "JavaScript" },
     { id: "typescript", label: "TypeScript" },
     { id: "python", label: "Python" },
+    { id: "bash", label: "Bash" },
     { id: "html", label: "HTML" },
     { id: "css", label: "CSS" },
     { id: "json", label: "JSON" },
@@ -70,6 +71,7 @@ const SHADOW_PRESETS = [
 ];
 
 type WindowStyle = "mac" | "windows" | "none";
+type CopyState = "idle" | "copying" | "copied" | "error";
 
 const DEFAULT_CODE = `function createServer() {
   const app = express();
@@ -98,11 +100,19 @@ export function CodeToImageTool() {
     const [shadowColor, setShadowColor] = useState("rgba(0, 0, 0, 0.7)");
 
     const [exporting, setExporting] = useState(false);
-    const [copyingImage, setCopyingImage] = useState(false);
-    const [copiedImage, setCopiedImage] = useState(false);
+    const [copyState, setCopyState] = useState<CopyState>("idle");
     const [copiedCode, setCopiedCode] = useState(false);
 
     const snippetRef = useRef<HTMLDivElement>(null);
+    const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    useEffect(() => {
+        return () => {
+            if (copyTimerRef.current) {
+                clearTimeout(copyTimerRef.current);
+            }
+        };
+    }, []);
 
     const currentTheme = THEMES.find((t) => t.id === themeId) || THEMES[0];
     const currentBg = BACKGROUNDS.find((b) => b.id === backgroundId) || BACKGROUNDS[0];
@@ -112,6 +122,9 @@ export function CodeToImageTool() {
         if (!snippetRef.current) return;
         setExporting(true);
         try {
+            if (typeof document !== "undefined" && "fonts" in document) {
+                await document.fonts.ready;
+            }
             const dataUrl = await toPng(snippetRef.current, {
                 quality: 1,
                 pixelRatio: 2, // Retina 2x
@@ -130,27 +143,43 @@ export function CodeToImageTool() {
 
     // ─── Copy Image to Clipboard ─────────────────────────────────────
     const handleCopyImage = useCallback(async () => {
-        if (!snippetRef.current) return;
-        setCopyingImage(true);
+        const target = snippetRef.current;
+        if (!target) return;
+
+        if (!navigator.clipboard?.write || typeof ClipboardItem === "undefined") {
+            setCopyState("error");
+            if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+            copyTimerRef.current = setTimeout(() => setCopyState("idle"), 2500);
+            return;
+        }
+
+        setCopyState("copying");
         try {
-            const blob = await toBlob(snippetRef.current, {
-                pixelRatio: 2,
-                cacheBust: true,
-            });
-            if (!blob) throw new Error("Image blob creation failed");
+            const blobPromise = (async () => {
+                if (typeof document !== "undefined" && "fonts" in document) {
+                    await document.fonts.ready;
+                }
+                const blob = await toBlob(target, {
+                    pixelRatio: 2,
+                    cacheBust: true,
+                });
+                if (!blob) throw new Error("Image blob creation failed");
+                return blob;
+            })();
 
             await navigator.clipboard.write([
                 new ClipboardItem({
-                    [blob.type]: blob,
+                    "image/png": blobPromise,
                 }),
             ]);
-            setCopiedImage(true);
-            setTimeout(() => setCopiedImage(false), 2200);
+            setCopyState("copied");
+            if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+            copyTimerRef.current = setTimeout(() => setCopyState("idle"), 2200);
         } catch (error) {
             console.error("Failed to copy image to clipboard", error);
-            // Fallback notify or alert
-        } finally {
-            setCopyingImage(false);
+            setCopyState("error");
+            if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+            copyTimerRef.current = setTimeout(() => setCopyState("idle"), 2500);
         }
     }, []);
 
@@ -257,30 +286,42 @@ export function CodeToImageTool() {
                     <button
                         type="button"
                         onClick={handleCopyImage}
-                        disabled={copyingImage || exporting}
+                        disabled={copyState === "copying" || exporting}
                         className={cn(
                             "flex-1 h-9 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 border shadow-md",
-                            copiedImage
+                            copyState === "copied"
                                 ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-300"
+                                : copyState === "error"
+                                ? "bg-rose-500/15 border-rose-500/40 text-rose-300"
                                 : "bg-[rgb(20,20,32)] border-[rgb(45,45,68)] text-white hover:bg-[rgb(30,30,48)] hover:border-violet-500/40"
                         )}
                         title="Copy rendered image directly to clipboard"
                     >
-                        {copyingImage ? (
+                        {copyState === "copying" ? (
                             <span className="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                        ) : copiedImage ? (
+                        ) : copyState === "copied" ? (
                             <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        ) : copyState === "error" ? (
+                            <X className="w-3.5 h-3.5 text-rose-400" />
                         ) : (
                             <ImageIcon className="w-3.5 h-3.5 text-cyan-400" />
                         )}
-                        <span className="truncate">{copiedImage ? "Copied!" : "Copy Image"}</span>
+                        <span className="truncate">
+                            {copyState === "copying"
+                                ? "Copying..."
+                                : copyState === "copied"
+                                ? "Copied!"
+                                : copyState === "error"
+                                ? "Copy Failed"
+                                : "Copy Image"}
+                        </span>
                     </button>
 
                     {/* Download PNG Button */}
                     <button
                         type="button"
                         onClick={handleDownload}
-                        disabled={exporting || copyingImage}
+                        disabled={exporting || copyState === "copying"}
                         className="flex-1 h-9 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold transition-all flex items-center justify-center gap-1.5 shadow-md shadow-violet-600/25"
                     >
                         {exporting ? (
@@ -444,10 +485,11 @@ export function CodeToImageTool() {
                                             background: "transparent",
                                             fontSize: "inherit",
                                             lineHeight: "inherit",
+                                            fontFamily: 'var(--font-geist-mono), Consolas, Monaco, "Courier New", monospace',
                                         }}
                                         codeTagProps={{
                                             style: {
-                                                fontFamily: '"JetBrains Mono", Consolas, Monaco, "Courier New", monospace',
+                                                fontFamily: 'var(--font-geist-mono), Consolas, Monaco, "Courier New", monospace',
                                             },
                                         }}
                                         lineNumberStyle={{
