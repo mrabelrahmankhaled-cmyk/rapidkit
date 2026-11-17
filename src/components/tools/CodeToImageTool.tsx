@@ -20,7 +20,8 @@ import {
     Minus,
     Square,
     X,
-    ImageIcon
+    ImageIcon,
+    ArrowLeftRight
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -91,6 +92,7 @@ export function CodeToImageTool() {
     const [windowStyle, setWindowStyle] = useState<WindowStyle>("mac");
     const [filename, setFilename] = useState("server.ts");
     const [showLineNumbers, setShowLineNumbers] = useState(true);
+    const [wrapLines, setWrapLines] = useState(false);
     const [padding, setPadding] = useState(48);
     const [shadowBlur, setShadowBlur] = useState(36);
     const [shadowColor, setShadowColor] = useState("rgba(0, 0, 0, 0.7)");
@@ -359,19 +361,31 @@ export function CodeToImageTool() {
             {/* ─── Visual Canvas + Editor Workspace ─────────────────── */}
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 items-start">
                 {/* Visual Editor (Canvas to be captured) */}
-                <div className="space-y-3 min-w-0 max-w-full">
-                    <div className="w-full max-w-full overflow-x-auto rounded-2xl sm:rounded-3xl border border-[rgb(38,38,58)] bg-black/40 p-1.5 sm:p-3 custom-scrollbar">
+                <div className="space-y-2 min-w-0 max-w-full">
+                    {/* Mobile swipe hint */}
+                    <div className="flex items-center justify-between text-[11px] text-[rgb(120,120,160)] px-1 sm:hidden">
+                        <span className="flex items-center gap-1.5 font-medium">
+                            <ArrowLeftRight className="w-3.5 h-3.5 text-violet-400" />
+                            <span>Swipe preview horizontally</span>
+                        </span>
+                        <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-[rgb(20,20,32)] text-cyan-300 border border-cyan-500/20">
+                            Full Width Card
+                        </span>
+                    </div>
+
+                    {/* Canvas Scroll Container */}
+                    <div className="w-full max-w-full overflow-x-auto rounded-2xl sm:rounded-3xl border border-[rgb(38,38,58)] bg-black/40 p-2 sm:p-4 custom-scrollbar">
                         <div
                             ref={snippetRef}
                             className={cn(
-                                "w-full min-w-[280px] sm:min-w-[320px] transition-all duration-300 rounded-xl sm:rounded-2xl select-none",
+                                "w-max min-w-[480px] sm:min-w-[540px] transition-all duration-300 rounded-2xl select-none mx-auto",
                                 currentBg.class
                             )}
                             style={{ padding: `${padding}px` }}
                         >
                             {/* Inner Code Window */}
                             <div
-                                className="rounded-2xl overflow-hidden bg-[rgb(12,12,18)]/90 border border-white/10 backdrop-blur-md transition-shadow duration-300"
+                                className="w-full min-w-[380px] sm:min-w-[440px] rounded-2xl overflow-hidden bg-[rgb(12,12,18)]/90 border border-white/10 backdrop-blur-md transition-shadow duration-300"
                                 style={{
                                     boxShadow: `0 20px ${shadowBlur}px ${shadowColor}`,
                                 }}
@@ -423,6 +437,7 @@ export function CodeToImageTool() {
                                         language={language}
                                         style={currentTheme.style}
                                         showLineNumbers={showLineNumbers}
+                                        wrapLongLines={wrapLines}
                                         customStyle={{
                                             margin: 0,
                                             padding: "24px 20px",
@@ -451,16 +466,28 @@ export function CodeToImageTool() {
                     </div>
 
                     {/* Canvas Footer Settings */}
-                    <div className="flex flex-wrap items-center justify-between gap-2 p-3.5 rounded-2xl bg-[rgb(14,14,22)] border border-[rgb(38,38,58)] text-xs">
-                        <label className="flex items-center gap-2.5 cursor-pointer text-[rgb(150,150,185)] hover:text-white transition-colors">
-                            <input
-                                type="checkbox"
-                                checked={showLineNumbers}
-                                onChange={(e) => setShowLineNumbers(e.target.checked)}
-                                className="w-4 h-4 rounded accent-violet-600 cursor-pointer"
-                            />
-                            <span>Show Line Numbers</span>
-                        </label>
+                    <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-[rgb(14,14,22)] border border-[rgb(38,38,58)] text-xs">
+                        <div className="flex items-center gap-4">
+                            <label className="flex items-center gap-2 cursor-pointer text-[rgb(150,150,185)] hover:text-white transition-colors">
+                                <input
+                                    type="checkbox"
+                                    checked={showLineNumbers}
+                                    onChange={(e) => setShowLineNumbers(e.target.checked)}
+                                    className="w-4 h-4 rounded accent-violet-600 cursor-pointer"
+                                />
+                                <span>Show Line Numbers</span>
+                            </label>
+
+                            <label className="flex items-center gap-2 cursor-pointer text-[rgb(150,150,185)] hover:text-white transition-colors">
+                                <input
+                                    type="checkbox"
+                                    checked={wrapLines}
+                                    onChange={(e) => setWrapLines(e.target.checked)}
+                                    className="w-4 h-4 rounded accent-violet-600 cursor-pointer"
+                                />
+                                <span>Wrap Lines</span>
+                            </label>
+                        </div>
 
                         <div className="flex items-center gap-2 sm:gap-3 text-[11px] text-[rgb(110,110,145)]">
                             <span>Retina 2x Resolution</span>
