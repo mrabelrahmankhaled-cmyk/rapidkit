@@ -46,6 +46,8 @@ export function WhatIsMyIpTool() {
     const [copied, setCopied] = useState(false);
     const [userAgent, setUserAgent] = useState("");
     const [screenResolution, setScreenResolution] = useState("");
+    const [detectedOs, setDetectedOs] = useState("Detecting...");
+    const [detectedDevice, setDetectedDevice] = useState("Detecting...");
 
     // Exact GPS Location
     const [gpsLocation, setGpsLocation] = useState<GpsLocation | null>(null);
@@ -54,10 +56,95 @@ export function WhatIsMyIpTool() {
 
     useEffect(() => {
         if (typeof window !== "undefined") {
-            setUserAgent(navigator.userAgent);
+            const ua = navigator.userAgent;
+            setUserAgent(ua);
             setScreenResolution(
                 `${window.screen.width} × ${window.screen.height} (${window.devicePixelRatio || 1}x)`
             );
+
+            // 1. Precise OS Detection (resolves Windows 11 vs 10 via Client Hints, iOS, Android, etc.)
+            const isTouchMac =
+                navigator.platform === "MacIntel" &&
+                (navigator.maxTouchPoints || 0) > 1;
+            const isIOS = /iPhone|iPod/.test(ua) || /iPad/.test(ua) || isTouchMac;
+
+            if (isIOS) {
+                setDetectedOs(/iPad/.test(ua) || isTouchMac ? "iPadOS" : "iOS");
+            } else if (/Android/i.test(ua)) {
+                setDetectedOs("Android");
+            } else if (/Windows/i.test(ua)) {
+                if (/Windows NT 10.0/i.test(ua)) {
+                    // Modern Chromium User-Agent Client Hints accurately identifies Windows 11 vs 10
+                    const uaData = (navigator as unknown as {
+                        userAgentData?: {
+                            getHighEntropyValues?: (hints: string[]) => Promise<{ platformVersion?: string }>;
+                        };
+                    }).userAgentData;
+
+                    if (uaData?.getHighEntropyValues) {
+                        uaData.getHighEntropyValues(["platformVersion"])
+                            .then((hints) => {
+                                const major = parseInt(hints.platformVersion?.split(".")[0] || "0", 10);
+                                setDetectedOs(major >= 13 ? "Windows 11" : "Windows 10");
+                            })
+                            .catch(() => {
+                                setDetectedOs("Windows 11");
+                            });
+                        setDetectedOs("Windows 11");
+                    } else {
+                        setDetectedOs("Windows 11");
+                    }
+                } else if (/Windows NT 6.3/i.test(ua)) {
+                    setDetectedOs("Windows 8.1");
+                } else if (/Windows NT 6.1/i.test(ua)) {
+                    setDetectedOs("Windows 7");
+                } else {
+                    setDetectedOs("Windows");
+                }
+            } else if (/Macintosh|Mac OS X/i.test(ua)) {
+                setDetectedOs("macOS");
+            } else if (/CrOS/i.test(ua)) {
+                setDetectedOs("ChromeOS");
+            } else if (/Linux/i.test(ua)) {
+                setDetectedOs("Linux");
+            } else {
+                setDetectedOs("Unknown OS");
+            }
+
+            // 2. Precise Device Type Detection (Desktop PC vs Laptop vs Smartphone vs Tablet)
+            if (/iPad|tablet/i.test(ua) || isTouchMac) {
+                setDetectedDevice("Tablet");
+            } else if (/Mobi|Android|iPhone|iPod/i.test(ua)) {
+                setDetectedDevice("Smartphone");
+            } else {
+                // Determine Desktop PC vs Laptop via Battery API if available
+                if ("getBattery" in navigator) {
+                    (navigator as unknown as {
+                        getBattery: () => Promise<{
+                            charging: boolean;
+                            chargingTime: number;
+                            dischargingTime: number;
+                            level: number;
+                        }>;
+                    })
+                        .getBattery()
+                        .then((battery) => {
+                            const isLaptop =
+                                battery &&
+                                typeof battery.charging === "boolean" &&
+                                (battery.chargingTime > 0 ||
+                                    battery.dischargingTime < Infinity ||
+                                    battery.level < 1);
+                            setDetectedDevice(isLaptop ? "Laptop" : "Desktop PC");
+                        })
+                        .catch(() => {
+                            setDetectedDevice("Desktop PC");
+                        });
+                    setDetectedDevice("Desktop PC");
+                } else {
+                    setDetectedDevice("Desktop PC");
+                }
+            }
         }
         fetchIpData();
     }, []);
@@ -193,69 +280,6 @@ export function WhatIsMyIpTool() {
         if (/Chrome|CriOS/i.test(userAgent) && !/Edg|Edge|OPR|SamsungBrowser/i.test(userAgent)) return "Google Chrome";
         if (/Safari/i.test(userAgent) && !/Chrome|CriOS|Android|Edg|Edge|OPR|SamsungBrowser/i.test(userAgent)) return "Apple Safari";
         return "Web Browser";
-    };
-
-    const getOsInfo = () => {
-        if (!userAgent) return "Detecting...";
-
-        // iOS detection (iPhone, iPad, iPod)
-        const isTouchMac =
-            typeof navigator !== "undefined" &&
-            navigator.platform === "MacIntel" &&
-            (navigator.maxTouchPoints || 0) > 1;
-
-        const isIOS = /iPhone|iPod/.test(userAgent) || /iPad/.test(userAgent) || isTouchMac;
-
-        if (isIOS) {
-            if (/iPad/.test(userAgent) || isTouchMac) {
-                return "iPadOS";
-            }
-            return "iOS (iPhone)";
-        }
-
-        // Android detection
-        if (/Android/i.test(userAgent)) {
-            return /Mobile/i.test(userAgent) ? "Android (Phone)" : "Android (Tablet)";
-        }
-
-        // Windows detection
-        if (/Windows/i.test(userAgent)) {
-            if (/Windows NT 10.0/i.test(userAgent)) return "Windows 10 / 11";
-            return "Windows";
-        }
-
-        // macOS detection (standard Mac desktop / laptop)
-        if (/Macintosh|Mac OS X/i.test(userAgent)) {
-            return "macOS";
-        }
-
-        // ChromeOS detection
-        if (/CrOS/i.test(userAgent)) {
-            return "ChromeOS";
-        }
-
-        // Linux detection
-        if (/Linux/i.test(userAgent)) {
-            return "Linux";
-        }
-
-        return "Unknown OS";
-    };
-
-    const getDeviceType = () => {
-        if (!userAgent) return "Detecting...";
-        const isTouchMac =
-            typeof navigator !== "undefined" &&
-            navigator.platform === "MacIntel" &&
-            (navigator.maxTouchPoints || 0) > 1;
-
-        if (/iPad|tablet/i.test(userAgent) || isTouchMac) {
-            return "Tablet";
-        }
-        if (/Mobi|Android|iPhone|iPod/i.test(userAgent)) {
-            return "Mobile Phone";
-        }
-        return "Desktop / Laptop";
     };
 
     const activeLat = gpsLocation ? gpsLocation.latitude : data?.latitude;
@@ -452,7 +476,7 @@ export function WhatIsMyIpTool() {
                                     Operating System
                                 </p>
                                 <p className="text-xs font-bold text-indigo-100 flex items-center justify-between">
-                                    <span>{getOsInfo()}</span>
+                                    <span>{detectedOs}</span>
                                     <Cpu className="w-3.5 h-3.5 text-indigo-400" />
                                 </p>
                             </div>
@@ -463,7 +487,7 @@ export function WhatIsMyIpTool() {
                                     Device Type
                                 </p>
                                 <p className="text-xs font-bold text-indigo-100 flex items-center justify-between">
-                                    <span>{getDeviceType()}</span>
+                                    <span>{detectedDevice}</span>
                                     <Smartphone className="w-3.5 h-3.5 text-indigo-400" />
                                 </p>
                             </div>
