@@ -528,10 +528,10 @@ export const TOOLS: Tool[] = [
         tags: ["developer", "cron", "backend", "sysadmin", "scheduler"],
         isNew: true,
         seo: {
-            title: "Cron Job Generator — Visual Crontab Expression Builder",
+            title: "Cron Job Generator & Editor — Visual Crontab Builder",
             description:
-                "Create Cron schedules visually. Generate cron expressions for Linux, AWS, and server tasks. Human-readable explanations included. Fast, free, and online.",
-            keywords: ["cron job generator", "crontab generator", "cron expression builder", "scheduler tool", "cron syntax"],
+                "Visual cron job generator and cron job editor for Linux, AWS, and CI/CD schedules. Build 5-field crontab expressions with instant plain-English explanations.",
+            keywords: ["cron job generator", "cron job editor", "jenkins cron generator", "crontab generator", "cron expression builder", "cron syntax"],
         },
         howToSteps: [
             "Start with a quick preset (such as 'Every 5 minutes' or 'Daily at midnight') or edit individual fields.",
@@ -551,6 +551,10 @@ export const TOOLS: Tool[] = [
             {
                 question: "Which timezone does a cron job use?",
                 answer: "By default, cron daemons execute jobs based on the system clock timezone of the server where crond is running (often UTC on cloud servers and GitHub Actions).",
+            },
+            {
+                question: "How does standard 5-field POSIX cron differ from Jenkins cron syntax?",
+                answer: "Standard POSIX crontab uses 5 numeric or wildcard fields (minute, hour, day-of-month, month, day-of-week) such as '*/15 * * * *'. Jenkins cron schedules use the same 5 fields but support the 'H' (hash) token—for example, 'H/15 * * * *' or 'H 2 * * *'—to distribute build start times across a project name hash and avoid server load spikes.",
             },
         ],
         relatedToolSlugs: ["unix-timestamp-converter", "uuid-generator", "json-formatter"],
@@ -610,10 +614,10 @@ export const TOOLS: Tool[] = [
         tags: ["developer", "uuid", "guid", "database", "security"],
         isNew: true,
         seo: {
-            title: "Online UUID / GUID Generator — Bulk V4 Unique IDs",
+            title: "UUID & GUID Generator — Generate GUIDs & UUID v4 Online",
             description:
-                "Generate unique UUID v4 identifiers online for free. Support for bulk generation, copy to clipboard, and text file export. Fast, secure, and developer-friendly.",
-            keywords: ["uuid generator", "guid generator", "v4 uuid", "generate unique ids", "bulk uuid maker"],
+                "Generate GUIDs and RFC 4122 UUID v4 identifiers online for free. Bulk UUID/GUID generator with uppercase, curly braces {}, clipboard copy, and .txt export.",
+            keywords: ["generate guid online", "generator guid", "guid generator", "uuid generator", "uuid v4 generator", "bulk guid maker"],
         },
         howToSteps: [
             "Choose how many UUIDs you want to generate (from 1 up to 100).",
@@ -623,16 +627,16 @@ export const TOOLS: Tool[] = [
         ],
         faqs: [
             {
-                question: "How are Version 4 UUIDs generated in this tool?",
-                answer: "When supported by your browser, this tool calls the native Web Crypto API method crypto.randomUUID() (with a standard v4 pattern fallback) locally in your browser.",
+                question: "How are UUID v4 and GUID values generated online in this tool?",
+                answer: "When supported by your browser, this UUID and GUID generator calls the native Web Crypto API method crypto.randomUUID() (with a cryptographic RFC 4122 v4 fallback) locally in your browser.",
             },
             {
-                question: "Is there any difference between a UUID and a GUID?",
-                answer: "They are 128-bit identifiers displayed as 32 hexadecimal digits in 8-4-4-4-12 format. 'UUID' is the IETF/RFC term, while 'GUID' (Globally Unique Identifier) is commonly used in Microsoft tools (which often wrap the value in curly braces {}).",
+                question: "Is there any difference between a UUID v4 and a GUID?",
+                answer: "Both are 128-bit identifiers formatted as 32 hexadecimal digits in 8-4-4-4-12 groups. 'UUID' (Universally Unique Identifier) is the IETF/RFC 4122 term, while 'GUID' (Globally Unique Identifier) is commonly used in Microsoft and .NET tools—enable the Curly Braces {} toggle when you need standard Microsoft GUID formatting.",
             },
             {
-                question: "How many UUIDs can I generate and export at once?",
-                answer: "You can generate between 1 and 100 UUIDs per batch and either copy them to your clipboard or download them as a newline-separated .txt file.",
+                question: "How many UUIDs or GUIDs can I generate and export at once?",
+                answer: "You can generate between 1 and 100 UUIDs/GUIDs per batch and either copy them to your clipboard or download them as a newline-separated .txt file.",
             },
         ],
         relatedToolSlugs: ["password-generator", "unix-timestamp-converter", "json-formatter"],
@@ -1222,10 +1226,10 @@ export const TOOLS: Tool[] = [
         tags: ["seo", "marketing", "meta tags", "open graph", "web development"],
         isFeatured: true,
         seo: {
-            title: "Meta Tag Generator — SEO & Social Media Preview Tool",
+            title: "Meta Tag Generator — Generate SEO & Open Graph Meta Tags",
             description:
-                "Create perfect meta tags for your website. Preview how your site appears on Google, Facebook, and Twitter. Generate SEO-optimized code instantly.",
-            keywords: ["meta tag generator", "social media preview", "og tag generator", "seo tags", "twitter card generator"],
+                "Generate meta tags for SEO, Open Graph (Facebook/LinkedIn), and X/Twitter Cards online. Preview how your page appears on Google and social feeds in real time.",
+            keywords: ["generate meta tags", "meta tag generator", "seo meta tags generator", "open graph tag generator", "twitter card generator", "html meta tags creator"],
         },
         howToSteps: [
             "Enter your page Title, Meta Description, Canonical URL, and Open Graph image URL.",
@@ -1301,7 +1305,7 @@ export const TOOLS: Tool[] = [
         id: "color-palette-generator",
         name: "Color Palette from Image",
         slug: "color-palette-generator",
-        description: "Extract beautiful color palettes and hex codes from any image or photo instantly.",
+        description: "Extract color palettes, swatches, and HEX/RGB codes from any image or photo instantly.",
         longDescription:
             "Upload any photograph, illustration, or screenshot to automatically extract its dominant colors and complementary swatches. Click any extracted swatch to copy its HEX, RGB, or HSL code for your UI design or brand kit.",
         categoryId: "design",
@@ -1310,10 +1314,10 @@ export const TOOLS: Tool[] = [
         isNew: true,
         isFeatured: true,
         seo: {
-            title: "Color Palette Generator from Image — Extract Hex Codes",
+            title: "Color Palette Generator from Image & Photo — HEX & RGB",
             description:
-                "Extract professional color palettes from your photos for free. Get dominant colors and hex codes instantly. 100% private and web-based tool.",
-            keywords: ["color palette generator", "extract colors from image", "image color picker", "hex code extractor", "palette from photo"],
+                "Extract color palettes and swatches from any image or photo online. Get dominant HEX, RGB, and HSL color codes instantly—free and private in your browser.",
+            keywords: ["color palette generator from image", "color palette generator from photo", "extract color palette from image", "extract colors from photo", "image color palette extractor", "hex and rgb from image"],
         },
         howToSteps: [
             "Upload or drag and drop any image file (JPG, PNG, or WebP) into the analyzer.",
@@ -1666,9 +1670,9 @@ export const TOOLS: Tool[] = [
         isNew: true,
         isFeatured: true,
         seo: {
-            title: "Free UTM Campaign Builder — Generate Google Analytics Tracking URLs | RapidKit",
-            description: "Easily generate UTM tracking URLs for Google Analytics, newsletters, and ad campaigns. Free, instant, and 100% client-side.",
-            keywords: ["utm builder", "campaign url builder", "google analytics utm generator", "utm tracking link builder", "utm parameters creator"],
+            title: "UTM Campaign & Tracking Code Generator — Google Analytics",
+            description: "Free online UTM campaign and tracking code generator for Google Analytics (GA4). Build clean UTM URLs with source, medium, and campaign tags in seconds.",
+            keywords: ["google analytics utm generator", "utm generator online", "utm tracking code generator", "utm campaign generator", "utm builder", "ga4 utm url builder"],
         },
         howToSteps: [
             "Enter your destination website landing page URL.",
@@ -1678,8 +1682,8 @@ export const TOOLS: Tool[] = [
         ],
         faqs: [
             {
-                question: "What are UTM parameters and why are they important?",
-                answer: "UTM (Urchin Tracking Module) parameters are five standard query parameters added to URLs. When a visitor clicks the link, web analytics tools like Google Analytics 4 (GA4) read these parameters to pinpoint exactly which campaign, channel, and creative delivered the visitor and conversion.",
+                question: "How does this UTM campaign and tracking code generator work with Google Analytics?",
+                answer: "UTM (Urchin Tracking Module) parameters are five standard query tags appended to your landing page URL. When a visitor clicks the generated link, Google Analytics 4 (GA4) and attribution tools read these tags to pinpoint exactly which campaign, channel, and creative delivered the visit and conversion.",
             },
             {
                 question: "Which UTM parameters are strictly required?",
@@ -1711,7 +1715,7 @@ export const TOOLS: Tool[] = [
         isNew: true,
         isPopular: true,
         seo: {
-            title: "Free Robots.txt Generator — Create SEO Crawler Directives | RapidKit",
+            title: "Free Robots.txt Generator — Create SEO Crawler Directives",
             description: "Generate clean, search-engine compliant robots.txt files in seconds. Customize allow/disallow rules, sitemap directives, and block AI bots.",
             keywords: ["robots txt generator", "create robots txt online", "seo robots file creator", "search engine crawler directives", "block ai bot robots txt"],
         },
@@ -1757,7 +1761,7 @@ export const TOOLS: Tool[] = [
         isNew: true,
         isFeatured: true,
         seo: {
-            title: "Online JWT Decoder — Decode JSON Web Tokens Client-Side | RapidKit",
+            title: "Online JWT Decoder — Decode JSON Web Tokens Client-Side",
             description: "Fast, secure client-side JWT decoder. Inspect header and payload claims, check expiration dates, and debug auth tokens safely in your browser.",
             keywords: ["jwt decoder", "decode jwt online", "json web token inspector", "jwt payload viewer", "client side jwt debugger"],
         },
@@ -1803,7 +1807,7 @@ export const TOOLS: Tool[] = [
         isFeatured: true,
         isPopular: true,
         seo: {
-            title: "Online Web Code Playground — HTML, CSS & JS Compiler | RapidKit",
+            title: "Online Web Code Playground — HTML, CSS & JS Compiler",
             description: "Run and test HTML, CSS, and JavaScript in real time with an instant sandboxed preview. 100% free, private, client-side frontend code compiler.",
             keywords: ["html compiler online", "javascript playground", "css playground", "web code editor online", "frontend compiler", "html css js runner"],
         },

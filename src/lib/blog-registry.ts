@@ -319,12 +319,12 @@ export const BLOG_POSTS: BlogPost[] = [
         relatedToolCategory: "developer",
         readingTime: 8,
         seo: {
-            title: "JSON Formatting & Validation Guide for Developers | RapidKit",
-            description: "Master JSON formatting and validation. Learn to fix common JSON errors, understand JSON syntax, and use online tools to debug API responses.",
-            keywords: ["json formatting guide", "validate json online", "json syntax errors", "format json data", "json beautifier guide"],
+            title: "JSON Formatting & Validation Guide — Valid JSON Format | RapidKit",
+            description: "Master valid JSON format, formatting, and validation. Learn to fix common JSON syntax errors and use online tools to debug API responses and export CSV.",
+            keywords: ["valid json format", "json formatting guide", "validate json online", "json syntax errors", "format json data", "json beautifier guide"],
         },
         content: `
-<h2>What Is JSON and Why Does Formatting Matter?</h2>
+<h2>What Is JSON and Why Does Valid JSON Format Matter?</h2>
 <p>JSON (JavaScript Object Notation) is the universal language of data exchange on the web. Every REST API, every configuration file, and most databases use JSON in some form. But raw, unformatted JSON is nearly impossible to read:</p>
 <pre><code>{"name":"John","age":30,"city":"Cairo","skills":["JavaScript","Python","SQL"]}</code></pre>
 <p>A formatted version of the same data is immediately understandable:</p>
@@ -339,8 +339,8 @@ export const BLOG_POSTS: BlogPost[] = [
   ]
 }</code></pre>
 
-<h2>JSON Syntax Rules You Must Know</h2>
-<p>JSON has strict syntax rules. Breaking any of them will cause a parse error:</p>
+<h2>JSON Syntax Rules You Must Know (Valid JSON Format Checklist)</h2>
+<p>A valid JSON format follows strict RFC 8259 syntax rules. Breaking any of them will cause a parse error:</p>
 <ul>
   <li><strong>Strings must use double quotes:</strong> <code>"name": "John"</code> ✅ — <code>'name': 'John'</code> ❌</li>
   <li><strong>No trailing commas:</strong> <code>{"a": 1, "b": 2,}</code> ❌</li>
@@ -351,7 +351,7 @@ export const BLOG_POSTS: BlogPost[] = [
 
 <h2>Common JSON Errors and How to Fix Them</h2>
 <h3>SyntaxError: Unexpected token</h3>
-<p>This is the most common JSON error. It usually means you have an extra or missing character somewhere. Use <a href="/tools/developer/json-formatter">RapidKit's JSON Validator</a> — it will highlight the exact line and position of the error.</p>
+<p>This is the most common JSON error. It usually means you have an extra or missing character somewhere. Use <a href="/tools/developer/json-formatter">RapidKit's JSON Formatter &amp; Validator</a> — it will highlight the exact line and position of the error.</p>
 <h3>Trailing Commas</h3>
 <p>This is valid JavaScript but <strong>invalid JSON</strong>. Remove the last comma in any object or array.</p>
 <h3>Single Quotes Instead of Double Quotes</h3>
@@ -366,8 +366,10 @@ export const BLOG_POSTS: BlogPost[] = [
 <p>You can also switch to <strong>Minify mode</strong> to compress JSON for production use, removing all whitespace to reduce payload size.</p>
 
 <h2>JSON Formatting in Different Contexts</h2>
-<h3>API Responses</h3>
-<p>When debugging REST APIs, copy the raw response body and paste it into the formatter. This makes it easy to navigate deeply nested objects and arrays.</p>
+<h3>API Responses &amp; cURL Debugging</h3>
+<p>When debugging REST APIs, copy the raw response body and paste it into <a href="/tools/developer/json-formatter">RapidKit's JSON Formatter</a> to navigate deeply nested objects and arrays. If you are testing endpoints from the terminal or browser DevTools, you can also convert your <code>curl</code> command into runnable JavaScript <code>fetch</code> or Python <code>requests</code> snippets using <a href="/tools/developer/curl-to-code">RapidKit's cURL to Code Converter</a>.</p>
+<h3>Spreadsheets &amp; CSV Data Exports</h3>
+<p>Once your API payload is in a valid JSON format (specifically an array of objects), you can convert it into a spreadsheet-ready table or convert CSV files back into JSON using <a href="/tools/data/json-csv-converter">RapidKit's JSON to CSV &amp; CSV to JSON Converter</a>.</p>
 <h3>Configuration Files</h3>
 <p>Files like <code>package.json</code>, <code>tsconfig.json</code>, and <code>appsettings.json</code> must be valid JSON. Always validate after editing manually.</p>
 <h3>Database Queries</h3>
@@ -377,7 +379,7 @@ export const BLOG_POSTS: BlogPost[] = [
 <p>When sending JSON over the network (API responses, configuration), minified JSON reduces payload size and improves performance:</p>
 <ul>
   <li>A formatted JSON file of 10KB can become 6KB when minified — a 40% reduction.</li>
-  <li>Use the <strong>Minify</strong> tab in the JSON Formatter to produce production-ready compact JSON.</li>
+  <li>Use the <strong>Minify</strong> tab in the <a href="/tools/developer/json-formatter">JSON Formatter</a> to produce production-ready compact JSON.</li>
 </ul>
         `,
     },
@@ -544,9 +546,9 @@ export const BLOG_POSTS: BlogPost[] = [
         relatedToolCategory: "text",
         readingTime: 5,
         seo: {
-            title: "camelCase vs snake_case vs PascalCase — Complete Guide | RapidKit",
-            description: "Learn the difference between camelCase, snake_case, PascalCase, kebab-case and more. When to use each naming convention in programming and writing.",
-            keywords: ["camelcase vs snake case", "text case conventions", "programming naming conventions", "pascal case guide", "kebab case explained"],
+            title: "camelCase vs PascalCase vs snake_case — Complete Guide | RapidKit",
+            description: "Compare camelCase vs PascalCase vs snake_case (including Python PEP 8 naming conventions) and convert between text cases instantly online.",
+            keywords: ["camelcase vs pascal case", "snake case vs camel case", "python pascal case", "camelcase vs snake case", "text case conventions", "programming naming conventions"],
         },
         content: `
 <h2>Why Text Cases Matter in Programming</h2>
@@ -561,12 +563,12 @@ export const BLOG_POSTS: BlogPost[] = [
 <h3>2. PascalCase (UpperCamelCase)</h3>
 <p>Every word capitalized. No spaces or separators.</p>
 <p><strong>Example:</strong> <code>UserProfile</code>, <code>HttpRequest</code></p>
-<p><strong>Used for:</strong> Class names in most languages, React components, C# types, TypeScript interfaces.</p>
+<p><strong>Used for:</strong> Class names in Python, JavaScript, C#, and Java, plus React components and TypeScript types/interfaces.</p>
 
 <h3>3. snake_case</h3>
 <p>All lowercase, words separated by underscores.</p>
 <p><strong>Example:</strong> <code>user_id</code>, <code>total_item_count</code></p>
-<p><strong>Used for:</strong> Python variables and functions, database column names, Ruby, file names in many systems.</p>
+<p><strong>Used for:</strong> Python variables, functions, and modules (PEP 8), database column names, Ruby, and Rust.</p>
 
 <h3>4. SCREAMING_SNAKE_CASE</h3>
 <p>All uppercase, words separated by underscores.</p>
@@ -592,10 +594,17 @@ export const BLOG_POSTS: BlogPost[] = [
 <p>Self-explanatory — all caps or all lowercase.</p>
 <p><strong>Used for:</strong> Abbreviations (uppercase), URL paths (lowercase).</p>
 
+<h2>camelCase vs PascalCase vs snake_case (Including Python Conventions)</h2>
+<ul>
+  <li><strong>camelCase vs PascalCase:</strong> Both remove spaces and capitalize word boundaries, but <code>camelCase</code> starts with a lowercase letter (<code>userAccount</code> — standard for JS/TS variables and methods) while <code>PascalCase</code> capitalizes the very first letter too (<code>UserAccount</code> — standard for classes, constructors, and React components).</li>
+  <li><strong>snake_case vs camelCase:</strong> <code>snake_case</code> separates lowercase words with underscores (<code>user_account</code>), making multi-word identifiers easy to scan in Python, SQL, and Rust, whereas <code>camelCase</code> relies on capital letters without underscores.</li>
+  <li><strong>Python PascalCase vs snake_case (PEP 8):</strong> Python's official PEP 8 style guide uses <strong>both</strong>: <code>snake_case</code> for functions, methods, variables, and module filenames (<code>def fetch_user_profile():</code>), and <code>PascalCase</code> (called <em>CapWords</em> in PEP 8) for classes and exceptions (<code>class UserProfileError(Exception):</code>).</li>
+</ul>
+
 <h2>How to Convert Text Cases Instantly</h2>
-<p>Use <a href="/tools/text/text-case-converter">RapidKit's Text Case Converter</a> to transform text between any of these formats with a single click:</p>
+<p>Use <a href="/tools/text/text-case-converter">RapidKit's Text Case Converter</a> to transform identifiers and copy between <code>camelCase</code>, <code>PascalCase</code>, <code>snake_case</code>, and <code>kebab-case</code> with a single click:</p>
 <ol>
-  <li>Paste your text into the input field.</li>
+  <li>Open the <a href="/tools/text/text-case-converter">Text Case Converter</a> and paste your text into the input field.</li>
   <li>Click the case format you want to convert to.</li>
   <li>Copy the result and use it immediately.</li>
 </ol>
@@ -701,13 +710,13 @@ export const BLOG_POSTS: BlogPost[] = [
         relatedToolCategory: "converter",
         readingTime: 7,
         seo: {
-            title: "HEX vs RGB vs HSL vs CMYK — Color Codes Guide for Designers | RapidKit",
-            description: "Learn the difference between HEX, RGB, HSL, and CMYK color codes. When to use each format and how to convert between them using a free online tool.",
-            keywords: ["hex vs rgb vs hsl", "color code formats", "cmyk vs rgb", "hsl color guide", "web color codes explained"],
+            title: "HEX vs RGB vs HSL vs CMYK — Color Codes Guide | RapidKit",
+            description: "Compare HEX vs RGB vs HSL vs CMYK color codes. Learn how CMYK, RGB, and HEX differ across print and web design and convert between them online.",
+            keywords: ["cmyk rgb hex", "hex vs rgb vs cmyk", "hex vs rgb vs hsl", "color code formats", "cmyk vs rgb", "web color codes explained"],
         },
         content: `
 <h2>Why Are There So Many Color Code Formats?</h2>
-<p>Different color systems were developed for different purposes. Print and screens use different color mixing models. Some formats are more human-readable. Some are more efficient for computers. Understanding each one helps you choose the right format for the job.</p>
+<p>Different color systems were developed for different purposes. Print and screens use different color mixing models. Some formats are more human-readable. Some are more efficient for computers. Understanding how <strong>HEX vs RGB vs HSL vs CMYK</strong> work helps you choose the right format for every design and development job.</p>
 
 <h2>HEX Color Codes</h2>
 <p>Hexadecimal (HEX) codes are the most common color format on the web.</p>
@@ -743,13 +752,20 @@ export const BLOG_POSTS: BlogPost[] = [
 <p><strong>Important:</strong> CMYK is a <strong>subtractive</strong> color model (ink on paper absorbs light). RGB is <strong>additive</strong> (screens emit light). The same color looks different in CMYK vs RGB — this is why print colors can look different on screen.</p>
 <p><strong>Use when:</strong> Preparing files for commercial printing, working with a print shop.</p>
 
-<h2>Quick Conversion Reference</h2>
-<p>Use <a href="/tools/converter/color-converter">RapidKit's Color Converter</a> to convert between any color format instantly:</p>
+<h2>HEX vs RGB vs HSL vs CMYK: Quick Comparison</h2>
+<ul>
+  <li><strong>HEX (<code>#FF5733</code>):</strong> Compact 6-digit hexadecimal representation of RGB channels; ideal for CSS variables, Figma handoffs, and brand kits.</li>
+  <li><strong>RGB (<code>rgb(255, 87, 51)</code>):</strong> Direct 0–255 red/green/blue light channels (additive); best for JavaScript/Canvas manipulation and alpha transparency (<code>rgba</code>).</li>
+  <li><strong>HSL (<code>hsl(11, 100%, 60%)</code>):</strong> Human-friendly hue wheel, saturation, and lightness; best for building dark mode themes and tint/shade scales.</li>
+  <li><strong>CMYK (<code>cmyk(0%, 66%, 80%, 0%)</code>):</strong> Four-plate ink percentages (subtractive); required for physical packaging, flyers, and offset/digital print.</li>
+</ul>
+
+<h2>Quick Conversion &amp; Palette Extraction Tools</h2>
+<p>Use <a href="/tools/converter/color-converter">RapidKit's Color Converter</a> to translate between CMYK, RGB, HEX, and HSL instantly, or use our <a href="/tools/design/color-palette-generator">Color Palette Generator from Image</a> to extract dominant HEX and RGB swatches directly from any photo or screenshot:</p>
 <ol>
-  <li>Enter a HEX code, or pick a color using the color picker.</li>
-  <li>All formats (RGB, HSL, CMYK) update instantly.</li>
-  <li>Use the RGB/HSL sliders to fine-tune the color.</li>
-  <li>Click any format to copy the value.</li>
+  <li>Extract a color swatch from a photo in the <a href="/tools/design/color-palette-generator">Color Palette Generator</a>, or paste any HEX code into the <a href="/tools/converter/color-converter">Color Converter</a>.</li>
+  <li>All formats (HEX, RGB, HSL, and CMYK) update in real time.</li>
+  <li>Use the RGB/HSL sliders to fine-tune the shade and click any format to copy.</li>
 </ol>
 
 <h2>Which Format Should You Use in CSS?</h2>
