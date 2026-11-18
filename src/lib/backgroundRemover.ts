@@ -1,6 +1,15 @@
 export type ProcessingMode = "balanced" | "high";
 
-export type BackgroundOptionType = "transparent" | "solid" | "gradient";
+export type ModelPrecision = "isnet_quint8" | "isnet_fp16";
+
+export type ComputeDevice = "cpu" | "gpu";
+
+export type BackgroundOptionType =
+    | "transparent"
+    | "solid"
+    | "gradient"
+    | "blur"
+    | "image";
 
 export type GradientStop = {
     offset: number;
@@ -24,7 +33,36 @@ export type SolidPreset = {
 export type BackgroundSelection =
     | { type: "transparent" }
     | { type: "solid"; color: string }
-    | { type: "gradient"; presetId: string };
+    | { type: "gradient"; presetId: string }
+    | { type: "blur"; blurPx: number }
+    | { type: "image" };
+
+export type OutlineThickness = 0 | 4 | 8 | 14;
+
+export type SubjectEffects = {
+    outlinePx: OutlineThickness;
+    outlineColor: string;
+    dropShadow: boolean;
+    autoTrim: boolean;
+};
+
+export const DEFAULT_SUBJECT_EFFECTS: SubjectEffects = {
+    outlinePx: 0,
+    outlineColor: "#FFFFFF",
+    dropShadow: false,
+    autoTrim: false,
+};
+
+export const OUTLINE_OPTIONS: readonly { value: OutlineThickness; label: string }[] = [
+    { value: 0, label: "None" },
+    { value: 4, label: "Thin 4px" },
+    { value: 8, label: "Medium 8px" },
+    { value: 14, label: "Thick 14px" },
+];
+
+export const DEFAULT_PORTRAIT_BLUR_PX = 12;
+export const MIN_PORTRAIT_BLUR_PX = 4;
+export const MAX_PORTRAIT_BLUR_PX = 24;
 
 export type PipelineStage =
     | "idle"
@@ -68,6 +106,32 @@ export const PROCESSING_MODE_CONFIG: Record<
         shortLabel: "High Res (2048px)",
         maxDimension: 2048,
         hint: "Preserves finer edge detail up to 2048px on desktop browsers with higher RAM headroom.",
+    },
+};
+
+export const MODEL_PRECISION_CONFIG: Record<
+    ModelPrecision,
+    {
+        id: ModelPrecision;
+        label: string;
+        shortLabel: string;
+        approxSizeLabel: string;
+        hint: string;
+    }
+> = {
+    isnet_quint8: {
+        id: "isnet_quint8",
+        label: "Fast / Lite (~40 MB)",
+        shortLabel: "Fast (~40 MB)",
+        approxSizeLabel: "~40 MB",
+        hint: "Quantized model for 2x faster first download and lower mobile memory usage.",
+    },
+    isnet_fp16: {
+        id: "isnet_fp16",
+        label: "High Precision (~80 MB)",
+        shortLabel: "Precision (~80 MB)",
+        approxSizeLabel: "~80 MB",
+        hint: "Half-precision ISNet weights for sharper hair strands, fur, and fine product edges.",
     },
 };
 
@@ -234,6 +298,25 @@ export function getDefaultProcessingMode(viewportWidth: number): ProcessingMode 
 }
 
 /**
+ * Selects Fast/Lite quantized weights (~40 MB) on mobile viewports (< 768px) and
+ * High Precision FP16 weights (~80 MB) on desktop viewports.
+ */
+export function getDefaultModelPrecision(viewportWidth: number): ModelPrecision {
+    if (!Number.isFinite(viewportWidth) || viewportWidth < MOBILE_BREAKPOINT_PX) {
+        return "isnet_quint8";
+    }
+    return "isnet_fp16";
+}
+
+/**
+ * Checks whether the current browser exposes a WebGPU navigator surface.
+ */
+export function detectWebGpuAvailable(): boolean {
+    if (typeof navigator === "undefined") return false;
+    return "gpu" in navigator && Boolean((navigator as unknown as { gpu?: unknown }).gpu);
+}
+
+/**
  * Maps CSS linear-gradient degree angle to exact HTML5 Canvas 2D linear gradient endpoints.
  */
 export function computeLinearGradientCoords(
@@ -258,16 +341,141 @@ export function computeLinearGradientCoords(
     };
 }
 
+export type DrawRect = {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+};
+
+/**
+ * Computes object-fit: cover destination draw coordinates so a backdrop image fills
+ * the target canvas cleanly without distortion, centered along both axes.
+ */
+export function computeCoverDrawRect(
+    srcWidth: number,
+    srcHeight: number,
+    dstWidth: number,
+    dstHeight: number
+): DrawRect {
+    if (
+        !Number.isFinite(srcWidth) ||
+        !Number.isFinite(srcHeight) ||
+        !Number.isFinite(dstWidth) ||
+        !Number.isFinite(dstHeight) ||
+        srcWidth <= 0 ||
+        srcHeight <= 0 ||
+        dstWidth <= 0 ||
+        dstHeight <= 0
+    ) {
+        throw new Error("Source and destination dimensions must be positive numbers.");
+    }
+
+    const scale = Math.max(dstWidth / srcWidth, dstHeight / srcHeight);
+    const width = srcWidth * scale;
+    const height = srcHeight * scale;
+    const roundZero = (n: number) => (Math.abs(n) < 1e-9 ? 0 : n);
+
+    return {
+        x: roundZero((dstWidth - width) / 2),
+        y: roundZero((dstHeight - height) / 2),
+        width,
+        height,
+    };
+}
+
+export type BoundingBox = {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    hasForeground: boolean;
+};
+
+/**
+ * Scans RGBA pixel buffers for foreground pixels (alpha > alphaThreshold), computes
+ * the tight bounding box, and expands uniformly by marginRatio (default 4%) + extraPaddingPx,
+ * clamped safely inside [0..imgWidth, 0..imgHeight].
+ */
+export function computeAlphaBoundingBox(
+    rgba: Uint8ClampedArray | Uint8Array,
+    imgWidth: number,
+    imgHeight: number,
+    alphaThreshold = 10,
+    marginRatio = 0.04,
+    extraPaddingPx = 0
+): BoundingBox {
+    if (
+        !Number.isFinite(imgWidth) ||
+        !Number.isFinite(imgHeight) ||
+        imgWidth <= 0 ||
+        imgHeight <= 0
+    ) {
+        throw new Error("Image width and height must be positive numbers.");
+    }
+    const expectedLength = imgWidth * imgHeight * 4;
+    if (rgba.length < expectedLength) {
+        throw new Error("RGBA pixel buffer is smaller than width * height * 4.");
+    }
+
+    let minX = imgWidth;
+    let minY = imgHeight;
+    let maxX = -1;
+    let maxY = -1;
+
+    for (let y = 0; y < imgHeight; y += 1) {
+        const rowOffset = y * imgWidth * 4;
+        for (let x = 0; x < imgWidth; x += 1) {
+            const alpha = rgba[rowOffset + x * 4 + 3];
+            if (alpha > alphaThreshold) {
+                if (x < minX) minX = x;
+                if (x > maxX) maxX = x;
+                if (y < minY) minY = y;
+                if (y > maxY) maxY = y;
+            }
+        }
+    }
+
+    if (maxX < minX || maxY < minY) {
+        return {
+            x: 0,
+            y: 0,
+            width: imgWidth,
+            height: imgHeight,
+            hasForeground: false,
+        };
+    }
+
+    const subjectW = maxX - minX + 1;
+    const subjectH = maxY - minY + 1;
+    const marginPx =
+        Math.round(Math.max(subjectW, subjectH) * Math.max(0, marginRatio)) +
+        Math.max(0, Math.round(extraPaddingPx));
+
+    const left = Math.max(0, minX - marginPx);
+    const top = Math.max(0, minY - marginPx);
+    const right = Math.min(imgWidth, maxX + 1 + marginPx);
+    const bottom = Math.min(imgHeight, maxY + 1 + marginPx);
+
+    return {
+        x: left,
+        y: top,
+        width: right - left,
+        height: bottom - top,
+        hasForeground: true,
+    };
+}
+
 export function buildOutputFilename(
     originalName: string,
     extension: "png" | "webp",
-    hasBackdrop: boolean
+    hasBackdropOrEffects: boolean
 ): string {
     const trimmed = originalName.trim();
     const base =
         trimmed.replace(/\.[^.]+$/, "").replace(/[^a-zA-Z0-9_-]+/g, "-") || "image";
     const cleanBase = base.replace(/^-+|-+$/g, "") || "image";
-    const suffix = hasBackdrop ? "studio" : "nobg";
+    const suffix = hasBackdropOrEffects ? "studio" : "nobg";
     return `${cleanBase}-${suffix}.${extension}`;
 }
 

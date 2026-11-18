@@ -18,22 +18,40 @@ import {
     RefreshCw,
     MoveHorizontal,
     Cpu,
+    Zap,
+    Crop,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
+    type BackgroundOptionType,
     type BackgroundSelection,
+    type BoundingBox,
+    type ComputeDevice,
+    type ModelPrecision,
+    type OutlineThickness,
     type ProcessingMode,
+    type SubjectEffects,
     type TelemetryState,
     ACCEPTED_IMAGE_MIME_TYPES,
+    DEFAULT_PORTRAIT_BLUR_PX,
+    DEFAULT_SUBJECT_EFFECTS,
     GRADIENT_BG_PRESETS,
     MAX_FILE_SIZE_MB,
+    MAX_PORTRAIT_BLUR_PX,
+    MIN_PORTRAIT_BLUR_PX,
+    MODEL_PRECISION_CONFIG,
+    OUTLINE_OPTIONS,
     PROCESSING_MODE_CONFIG,
     SOLID_BG_PRESETS,
     buildOutputFilename,
     calculateConstrainedDimensions,
+    computeAlphaBoundingBox,
+    computeCoverDrawRect,
     computeLinearGradientCoords,
     createTelemetryState,
+    detectWebGpuAvailable,
     formatFileSize,
+    getDefaultModelPrecision,
     getDefaultProcessingMode,
     reduceTelemetryProgress,
     validateImageFile,
@@ -140,7 +158,6 @@ async function generateSyntheticSampleBlob(): Promise<Blob> {
     const ctx = canvas.getContext("2d");
     if (!ctx) throw new Error("Canvas 2D is unavailable.");
 
-    // 1. Scenic golden-hour sky gradient
     const sky = ctx.createLinearGradient(0, 0, 0, size * 0.78);
     sky.addColorStop(0, "#0284c7");
     sky.addColorStop(0.55, "#7dd3fc");
@@ -148,7 +165,6 @@ async function generateSyntheticSampleBlob(): Promise<Blob> {
     ctx.fillStyle = sky;
     ctx.fillRect(0, 0, size, size);
 
-    // 2. Soft sun glow + bokeh circles
     const sun = ctx.createRadialGradient(180, 175, 10, 180, 175, 190);
     sun.addColorStop(0, "rgba(255, 252, 230, 0.95)");
     sun.addColorStop(0.35, "rgba(253, 224, 71, 0.45)");
@@ -168,7 +184,6 @@ async function generateSyntheticSampleBlob(): Promise<Blob> {
         ctx.fill();
     }
 
-    // 3. Distant scenic mountains + foreground meadow
     ctx.beginPath();
     ctx.moveTo(0, 560);
     ctx.quadraticCurveTo(210, 420, 430, 520);
@@ -192,16 +207,13 @@ async function generateSyntheticSampleBlob(): Promise<Blob> {
     ctx.fillStyle = meadow;
     ctx.fill();
 
-    // 4. Foreground Subject: Shaded Studio Portrait Bust (high-contrast edges)
     const cx = 400;
 
-    // Hair back layer
     ctx.beginPath();
     ctx.ellipse(cx, 252, 114, 128, 0, 0, Math.PI * 2);
     ctx.fillStyle = "#1e1b4b";
     ctx.fill();
 
-    // Suit shoulders / blazer
     ctx.beginPath();
     ctx.moveTo(180, 800);
     ctx.quadraticCurveTo(195, 550, 325, 515);
@@ -215,7 +227,6 @@ async function generateSyntheticSampleBlob(): Promise<Blob> {
     ctx.fillStyle = suitGrad;
     ctx.fill();
 
-    // Crisp white inner shirt V-collar
     ctx.beginPath();
     ctx.moveTo(338, 515);
     ctx.lineTo(400, 665);
@@ -224,7 +235,6 @@ async function generateSyntheticSampleBlob(): Promise<Blob> {
     ctx.fillStyle = "#f8fafc";
     ctx.fill();
 
-    // Shirt collar lapels
     ctx.fillStyle = "#334155";
     ctx.beginPath();
     ctx.moveTo(318, 520);
@@ -242,7 +252,6 @@ async function generateSyntheticSampleBlob(): Promise<Blob> {
     ctx.closePath();
     ctx.fill();
 
-    // Neck + chin shadow
     ctx.beginPath();
     ctx.roundRect(356, 412, 88, 120, 28);
     const neckGrad = ctx.createLinearGradient(356, 412, 356, 532);
@@ -251,14 +260,12 @@ async function generateSyntheticSampleBlob(): Promise<Blob> {
     ctx.fillStyle = neckGrad;
     ctx.fill();
 
-    // Ears
     ctx.fillStyle = "#d99b5e";
     ctx.beginPath();
     ctx.ellipse(298, 305, 16, 28, -0.1, 0, Math.PI * 2);
     ctx.ellipse(502, 305, 16, 28, 0.1, 0, Math.PI * 2);
     ctx.fill();
 
-    // Face
     ctx.beginPath();
     ctx.ellipse(cx, 296, 98, 122, 0, 0, Math.PI * 2);
     const faceGrad = ctx.createRadialGradient(380, 265, 20, cx, 296, 130);
@@ -268,7 +275,6 @@ async function generateSyntheticSampleBlob(): Promise<Blob> {
     ctx.fillStyle = faceGrad;
     ctx.fill();
 
-    // Styled hair bangs / crown
     ctx.beginPath();
     ctx.moveTo(295, 280);
     ctx.bezierCurveTo(295, 145, 505, 145, 505, 280);
@@ -278,7 +284,6 @@ async function generateSyntheticSampleBlob(): Promise<Blob> {
     ctx.fillStyle = "#1e1b4b";
     ctx.fill();
 
-    // Facial details (eyebrows, eyes, subtle glasses, warm smile)
     ctx.strokeStyle = "#1e1b4b";
     ctx.lineWidth = 6;
     ctx.lineCap = "round";
@@ -295,7 +300,6 @@ async function generateSyntheticSampleBlob(): Promise<Blob> {
     ctx.arc(439, 294, 7, 0, Math.PI * 2);
     ctx.fill();
 
-    // Modern eyewear frames
     ctx.strokeStyle = "#0f172a";
     ctx.lineWidth = 4;
     ctx.beginPath();
@@ -305,7 +309,6 @@ async function generateSyntheticSampleBlob(): Promise<Blob> {
     ctx.lineTo(411, 293);
     ctx.stroke();
 
-    // Warm smile
     ctx.strokeStyle = "#9a4a35";
     ctx.lineWidth = 4.5;
     ctx.beginPath();
@@ -325,25 +328,163 @@ async function generateSyntheticSampleBlob(): Promise<Blob> {
 }
 
 /**
- * Renders the transparent cutout blob onto the selected background on an offscreen canvas.
+ * Draws the cutout subject with optional multi-angle alpha sticker outline and soft studio drop shadow
+ * onto a transparent foreground canvas of size (w, h).
  */
-async function compositeToBlob(
-    foregroundBlob: Blob,
-    background: BackgroundSelection,
-    mimeType: "image/png" | "image/webp"
-): Promise<Blob> {
+function buildForegroundSubjectCanvas(
+    fgImg: HTMLImageElement,
+    outlinePx: OutlineThickness,
+    outlineColor: string,
+    dropShadow: boolean
+): HTMLCanvasElement {
+    const w = fgImg.naturalWidth;
+    const h = fgImg.naturalHeight;
+
+    // 1. Compose sticker outline + cutout onto subjectLayer
+    const subjectLayer = document.createElement("canvas");
+    subjectLayer.width = w;
+    subjectLayer.height = h;
+    const sCtx = subjectLayer.getContext("2d");
+    if (!sCtx) throw new Error("Canvas 2D context is not available.");
+
+    sCtx.imageSmoothingEnabled = true;
+    sCtx.imageSmoothingQuality = "high";
+
+    if (outlinePx > 0) {
+        const tintCanvas = document.createElement("canvas");
+        tintCanvas.width = w;
+        tintCanvas.height = h;
+        const tCtx = tintCanvas.getContext("2d");
+        if (!tCtx) throw new Error("Canvas 2D context is not available.");
+
+        tCtx.drawImage(fgImg, 0, 0, w, h);
+        tCtx.globalCompositeOperation = "source-in";
+        tCtx.fillStyle = outlineColor;
+        tCtx.fillRect(0, 0, w, h);
+
+        const radialSteps = Math.max(20, outlinePx * 3);
+        const radii = outlinePx >= 8 ? [outlinePx * 0.55, outlinePx] : [outlinePx];
+
+        for (const r of radii) {
+            for (let i = 0; i < radialSteps; i += 1) {
+                const theta = (i * 2 * Math.PI) / radialSteps;
+                sCtx.drawImage(
+                    tintCanvas,
+                    Math.cos(theta) * r,
+                    Math.sin(theta) * r
+                );
+            }
+        }
+    }
+
+    sCtx.drawImage(fgImg, 0, 0, w, h);
+
+    if (!dropShadow) {
+        return subjectLayer;
+    }
+
+    // 2. Wrap subjectLayer with studio drop shadow so shadow falls behind outline+subject cleanly
+    const shadowLayer = document.createElement("canvas");
+    shadowLayer.width = w;
+    shadowLayer.height = h;
+    const shCtx = shadowLayer.getContext("2d");
+    if (!shCtx) throw new Error("Canvas 2D context is not available.");
+
+    const blurRadius = Math.max(12, Math.round(Math.max(w, h) * 0.022));
+    const offsetY = Math.max(6, Math.round(h * 0.012));
+    shCtx.shadowColor = "rgba(0, 0, 0, 0.48)";
+    shCtx.shadowBlur = blurRadius;
+    shCtx.shadowOffsetX = 0;
+    shCtx.shadowOffsetY = offsetY;
+    shCtx.drawImage(subjectLayer, 0, 0);
+
+    return shadowLayer;
+}
+
+/**
+ * Draws an edge-safe Gaussian-blurred backdrop onto dstCtx with a downscale fallback
+ * for browsers where CanvasRenderingContext2D.filter is unavailable.
+ */
+function drawBlurredBackdrop(
+    dstCtx: CanvasRenderingContext2D,
+    origImg: HTMLImageElement,
+    width: number,
+    height: number,
+    blurPx: number
+) {
+    dstCtx.save();
+    dstCtx.imageSmoothingEnabled = true;
+    dstCtx.imageSmoothingQuality = "high";
+
+    // Draw unblurred base first so transparent Gaussian edge fringes stay opaque
+    dstCtx.drawImage(origImg, 0, 0, width, height);
+
+    if (typeof dstCtx.filter === "string") {
+        const bleed = blurPx * 2;
+        dstCtx.filter = `blur(${blurPx}px)`;
+        dstCtx.drawImage(
+            origImg,
+            -bleed,
+            -bleed,
+            width + bleed * 2,
+            height + bleed * 2
+        );
+    } else {
+        // Fallback pyramid downscale -> upscale for older WebKit browsers without ctx.filter
+        const factor = Math.max(4, Math.round(blurPx * 1.2));
+        const tinyW = Math.max(8, Math.round(width / factor));
+        const tinyH = Math.max(8, Math.round(height / factor));
+        const tinyCanvas = document.createElement("canvas");
+        tinyCanvas.width = tinyW;
+        tinyCanvas.height = tinyH;
+        const tCtx = tinyCanvas.getContext("2d");
+        if (tCtx) {
+            tCtx.imageSmoothingEnabled = true;
+            tCtx.imageSmoothingQuality = "high";
+            tCtx.drawImage(origImg, 0, 0, tinyW, tinyH);
+            dstCtx.drawImage(tinyCanvas, 0, 0, width, height);
+        }
+    }
+
+    dstCtx.restore();
+}
+
+/**
+ * Composites foreground cutout + effects + chosen backdrop on Canvas and crops cleanly
+ * when Auto-Trim is enabled.
+ */
+async function compositeToBlob(params: {
+    foregroundBlob: Blob;
+    background: BackgroundSelection;
+    effects: SubjectEffects;
+    originalSourceBlob: Blob | null;
+    customBackdropBlob: Blob | null;
+    trimBox: BoundingBox | null;
+    mimeType: "image/png" | "image/webp";
+}): Promise<Blob> {
+    const {
+        foregroundBlob,
+        background,
+        effects,
+        originalSourceBlob,
+        customBackdropBlob,
+        trimBox,
+        mimeType,
+    } = params;
+
     const fgImg = await loadImageFromBlob(foregroundBlob);
     const width = fgImg.naturalWidth;
     const height = fgImg.naturalHeight;
 
-    const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext("2d");
+    const fullCanvas = document.createElement("canvas");
+    fullCanvas.width = width;
+    fullCanvas.height = height;
+    const ctx = fullCanvas.getContext("2d");
     if (!ctx) {
         throw new Error("Canvas 2D context is not available.");
     }
 
+    // 1. Paint Background Layer
     if (background.type === "solid") {
         ctx.fillStyle = background.color;
         ctx.fillRect(0, 0, width, height);
@@ -363,16 +504,66 @@ async function compositeToBlob(
         }
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, width, height);
+    } else if (background.type === "blur" && originalSourceBlob) {
+        const origImg = await loadImageFromBlob(originalSourceBlob);
+        drawBlurredBackdrop(ctx, origImg, width, height, background.blurPx);
+    } else if (background.type === "image" && customBackdropBlob) {
+        const bgImg = await loadImageFromBlob(customBackdropBlob);
+        const rect = computeCoverDrawRect(
+            bgImg.naturalWidth,
+            bgImg.naturalHeight,
+            width,
+            height
+        );
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(bgImg, rect.x, rect.y, rect.width, rect.height);
     }
 
+    // 2. Composite Foreground + Studio Effects Layer
+    const subjectCanvas = buildForegroundSubjectCanvas(
+        fgImg,
+        effects.outlinePx,
+        effects.outlineColor,
+        effects.dropShadow
+    );
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = "high";
-    ctx.drawImage(fgImg, 0, 0, width, height);
+    ctx.drawImage(subjectCanvas, 0, 0, width, height);
+
+    // 3. Apply Auto-Trim Cropping if enabled & bounding box is smaller than full frame
+    let exportCanvas = fullCanvas;
+    if (
+        effects.autoTrim &&
+        trimBox &&
+        trimBox.hasForeground &&
+        (trimBox.width < width || trimBox.height < height)
+    ) {
+        const cropped = document.createElement("canvas");
+        cropped.width = trimBox.width;
+        cropped.height = trimBox.height;
+        const cCtx = cropped.getContext("2d");
+        if (!cCtx) throw new Error("Canvas 2D context is not available.");
+        cCtx.imageSmoothingEnabled = true;
+        cCtx.imageSmoothingQuality = "high";
+        cCtx.drawImage(
+            fullCanvas,
+            trimBox.x,
+            trimBox.y,
+            trimBox.width,
+            trimBox.height,
+            0,
+            0,
+            trimBox.width,
+            trimBox.height
+        );
+        exportCanvas = cropped;
+    }
 
     const quality = mimeType === "image/webp" ? 0.92 : undefined;
 
     return new Promise<Blob>((resolve, reject) => {
-        canvas.toBlob(
+        exportCanvas.toBlob(
             (blob) => {
                 if (blob) resolve(blob);
                 else reject(new Error("Failed to encode composited output image."));
@@ -385,10 +576,24 @@ async function compositeToBlob(
 
 export function BackgroundRemoverTool() {
     const [mode, setMode] = useState<ProcessingMode>("high");
+    const [modelPrecision, setModelPrecision] =
+        useState<ModelPrecision>("isnet_fp16");
+    const [webGpuSupported, setWebGpuSupported] = useState(false);
+    const [acceleratorUsed, setAcceleratorUsed] = useState<ComputeDevice | null>(
+        null
+    );
+    const [gpuFallbackNotice, setGpuFallbackNotice] = useState<string | null>(
+        null
+    );
+
     const [sourceBlob, setSourceBlob] = useState<Blob | null>(null);
     const [sourceName, setSourceName] = useState<string>("image.png");
+    const [preprocessedBlob, setPreprocessedBlob] = useState<Blob | null>(null);
     const [originalUrl, setOriginalUrl] = useState<string | null>(null);
     const [processedUrl, setProcessedUrl] = useState<string | null>(null);
+    const [effectsPreviewUrl, setEffectsPreviewUrl] = useState<string | null>(
+        null
+    );
     const [processedBlob, setProcessedBlob] = useState<Blob | null>(null);
 
     const [dimensions, setDimensions] = useState<{
@@ -397,6 +602,10 @@ export function BackgroundRemoverTool() {
         processedWidth: number;
         processedHeight: number;
         wasDownscaled: boolean;
+    } | null>(null);
+    const [lastRunConfig, setLastRunConfig] = useState<{
+        mode: ProcessingMode;
+        model: ModelPrecision;
     } | null>(null);
     const [elapsedMs, setElapsedMs] = useState<number | null>(null);
 
@@ -411,19 +620,42 @@ export function BackgroundRemoverTool() {
         type: "transparent",
     });
     const [customColor, setCustomColor] = useState<string>("#38BDF8");
+    const [blurPx, setBlurPx] = useState<number>(DEFAULT_PORTRAIT_BLUR_PX);
+    const [customBackdropBlob, setCustomBackdropBlob] = useState<Blob | null>(
+        null
+    );
+    const [customBackdropUrl, setCustomBackdropUrl] = useState<string | null>(
+        null
+    );
+    const [customBackdropName, setCustomBackdropName] = useState<string>("");
+
+    // Subject Effects & Auto-Trim
+    const [effects, setEffects] = useState<SubjectEffects>(
+        DEFAULT_SUBJECT_EFFECTS
+    );
+    const [cutoutRgbaCache, setCutoutRgbaCache] = useState<{
+        data: Uint8ClampedArray;
+        width: number;
+        height: number;
+    } | null>(null);
 
     // Interactive Before/After slider
     const [splitPosition, setSplitPosition] = useState<number>(50);
     const [isDraggingSlider, setIsDraggingSlider] = useState(false);
 
     // Export / Clipboard states
-    const [exportingType, setExportingType] = useState<"png" | "webp" | null>(null);
+    const [exportingType, setExportingType] = useState<"png" | "webp" | null>(
+        null
+    );
     const [copyState, setCopyState] = useState<CopyState>("idle");
 
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const backdropInputRef = useRef<HTMLInputElement>(null);
     const sliderRef = useRef<HTMLDivElement>(null);
     const originalUrlRef = useRef<string | null>(null);
     const processedUrlRef = useRef<string | null>(null);
+    const effectsPreviewUrlRef = useRef<string | null>(null);
+    const customBackdropUrlRef = useRef<string | null>(null);
     const runIdRef = useRef<number>(0);
     const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -433,36 +665,56 @@ export function BackgroundRemoverTool() {
         ((key: string, current: number, total: number) => void) | null
     >(null);
 
-    // Viewport-aware default Processing Mode
+    // Viewport-aware defaults & WebGPU capability detection
     useEffect(() => {
         if (typeof window !== "undefined") {
             setMode(getDefaultProcessingMode(window.innerWidth));
+            setModelPrecision(getDefaultModelPrecision(window.innerWidth));
+            setWebGpuSupported(detectWebGpuAvailable());
         }
     }, []);
 
-    // Cleanup object URLs and timers strictly on unmount
+    // Cleanup all temporary object URLs and timers strictly on unmount
     useEffect(() => {
         return () => {
             if (originalUrlRef.current) URL.revokeObjectURL(originalUrlRef.current);
             if (processedUrlRef.current) URL.revokeObjectURL(processedUrlRef.current);
+            if (effectsPreviewUrlRef.current) {
+                URL.revokeObjectURL(effectsPreviewUrlRef.current);
+            }
+            if (customBackdropUrlRef.current) {
+                URL.revokeObjectURL(customBackdropUrlRef.current);
+            }
             if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
         };
     }, []);
 
     const replaceOriginalUrl = useCallback((nextUrl: string | null) => {
-        if (originalUrlRef.current) {
-            URL.revokeObjectURL(originalUrlRef.current);
-        }
+        if (originalUrlRef.current) URL.revokeObjectURL(originalUrlRef.current);
         originalUrlRef.current = nextUrl;
         setOriginalUrl(nextUrl);
     }, []);
 
     const replaceProcessedUrl = useCallback((nextUrl: string | null) => {
-        if (processedUrlRef.current) {
-            URL.revokeObjectURL(processedUrlRef.current);
-        }
+        if (processedUrlRef.current) URL.revokeObjectURL(processedUrlRef.current);
         processedUrlRef.current = nextUrl;
         setProcessedUrl(nextUrl);
+    }, []);
+
+    const replaceEffectsPreviewUrl = useCallback((nextUrl: string | null) => {
+        if (effectsPreviewUrlRef.current) {
+            URL.revokeObjectURL(effectsPreviewUrlRef.current);
+        }
+        effectsPreviewUrlRef.current = nextUrl;
+        setEffectsPreviewUrl(nextUrl);
+    }, []);
+
+    const replaceCustomBackdropUrl = useCallback((nextUrl: string | null) => {
+        if (customBackdropUrlRef.current) {
+            URL.revokeObjectURL(customBackdropUrlRef.current);
+        }
+        customBackdropUrlRef.current = nextUrl;
+        setCustomBackdropUrl(nextUrl);
     }, []);
 
     const scheduleCopyReset = useCallback((ms: number) => {
@@ -471,16 +723,25 @@ export function BackgroundRemoverTool() {
     }, []);
 
     const runPipeline = useCallback(
-        async (blob: Blob, name: string, activeMode: ProcessingMode) => {
+        async (
+            blob: Blob,
+            name: string,
+            activeMode: ProcessingMode,
+            activeModel: ModelPrecision
+        ) => {
             const currentRunId = ++runIdRef.current;
             const startedAt = performance.now();
 
             setError(null);
+            setGpuFallbackNotice(null);
             setElapsedMs(null);
             setSourceBlob(blob);
             setSourceName(name);
+            setPreprocessedBlob(null);
             setProcessedBlob(null);
+            setCutoutRgbaCache(null);
             replaceProcessedUrl(null);
+            replaceEffectsPreviewUrl(null);
             setTelemetry(createTelemetryState());
 
             try {
@@ -492,6 +753,7 @@ export function BackgroundRemoverTool() {
 
                 if (runIdRef.current !== currentRunId) return;
 
+                setPreprocessedBlob(preprocessed.blob);
                 setDimensions({
                     naturalWidth: preprocessed.naturalWidth,
                     naturalHeight: preprocessed.naturalHeight,
@@ -503,18 +765,15 @@ export function BackgroundRemoverTool() {
                 const previewUrl = URL.createObjectURL(preprocessed.blob);
                 replaceOriginalUrl(previewUrl);
 
-                // Transition into Stage 1 (waiting for dynamic import / weights fetch)
                 setTelemetry((prev) => ({
                     ...prev,
                     stage: "downloading",
                     stageNumber: 1,
-                    title: "Loading local AI runtime",
-                    detail:
-                        "Initializing WebAssembly & ONNX weights (cached locally after first run)...",
+                    title: "Downloading AI model weights",
+                    detail: `${MODEL_PRECISION_CONFIG[activeModel].shortLabel} — cached locally in your browser after the first run.`,
                     percent: Math.max(prev.percent, 8),
                 }));
 
-                // Bind active telemetry reducer to stable ref before calling library
                 progressHandlerRef.current = (
                     key: string,
                     current: number,
@@ -533,22 +792,76 @@ export function BackgroundRemoverTool() {
 
                 if (runIdRef.current !== currentRunId) return;
 
-                const cutoutBlob = await removeBackground(preprocessed.blob, {
-                    model: "isnet_fp16",
-                    output: {
-                        format: "image/png",
-                        quality: 1,
-                    },
-                    progress: (key: string, current: number, total: number) => {
-                        progressHandlerRef.current?.(key, current, total);
-                    },
-                });
+                const preferGpu = detectWebGpuAvailable();
+                let usedDevice: ComputeDevice = preferGpu ? "gpu" : "cpu";
+                let cutoutBlob: Blob;
+
+                const runWithDevice = (device: ComputeDevice) =>
+                    removeBackground(preprocessed.blob, {
+                        model: activeModel,
+                        device,
+                        output: {
+                            format: "image/png",
+                            quality: 1,
+                        },
+                        progress: (key: string, current: number, total: number) => {
+                            progressHandlerRef.current?.(key, current, total);
+                        },
+                    });
+
+                try {
+                    cutoutBlob = await runWithDevice(usedDevice);
+                } catch (gpuError) {
+                    if (usedDevice === "gpu") {
+                        // Graceful WebGPU fallback to CPU WebAssembly
+                        usedDevice = "cpu";
+                        if (runIdRef.current !== currentRunId) return;
+                        setGpuFallbackNotice(
+                            "WebGPU initialization failed in this browser — fell back automatically to CPU WebAssembly."
+                        );
+                        setTelemetry((prev) => ({
+                            ...prev,
+                            stage: "inference",
+                            stageNumber: 2,
+                            title: "Running local neural network inference (CPU WASM)",
+                            detail: "100% in-browser — 0 bytes uploaded to any server.",
+                            percent: Math.max(prev.percent, 65),
+                        }));
+                        cutoutBlob = await runWithDevice("cpu");
+                    } else {
+                        throw gpuError;
+                    }
+                }
 
                 if (runIdRef.current !== currentRunId) return;
+
+                // Decode cutout pixel buffer once for zero-latency Auto-Trim bounding box calculations
+                const fgImg = await loadImageFromBlob(cutoutBlob);
+                if (runIdRef.current !== currentRunId) return;
+                const scanCanvas = document.createElement("canvas");
+                scanCanvas.width = fgImg.naturalWidth;
+                scanCanvas.height = fgImg.naturalHeight;
+                const scanCtx = scanCanvas.getContext("2d");
+                if (scanCtx) {
+                    scanCtx.drawImage(fgImg, 0, 0);
+                    const imgData = scanCtx.getImageData(
+                        0,
+                        0,
+                        fgImg.naturalWidth,
+                        fgImg.naturalHeight
+                    );
+                    setCutoutRgbaCache({
+                        data: imgData.data,
+                        width: fgImg.naturalWidth,
+                        height: fgImg.naturalHeight,
+                    });
+                }
 
                 const cutoutUrl = URL.createObjectURL(cutoutBlob);
                 replaceProcessedUrl(cutoutUrl);
                 setProcessedBlob(cutoutBlob);
+                setAcceleratorUsed(usedDevice);
+                setLastRunConfig({ mode: activeMode, model: activeModel });
                 setSplitPosition(50);
                 setElapsedMs(Math.round(performance.now() - startedAt));
                 setTelemetry({
@@ -565,7 +878,7 @@ export function BackgroundRemoverTool() {
                 const message =
                     err instanceof Error && err.message
                         ? err.message
-                        : "Failed to remove background. Try Balanced / Mobile-Safe mode for large photos.";
+                        : "Failed to remove background. Try Balanced / Mobile-Safe mode or Fast (~40 MB) model.";
                 setError(message);
                 setTelemetry((prev) => ({
                     ...prev,
@@ -575,8 +888,52 @@ export function BackgroundRemoverTool() {
                 }));
             }
         },
-        [replaceOriginalUrl, replaceProcessedUrl]
+        [replaceEffectsPreviewUrl, replaceOriginalUrl, replaceProcessedUrl]
     );
+
+    // Render live Canvas effects preview layer (Sticker Outline + Soft Drop Shadow)
+    useEffect(() => {
+        if (!processedBlob) {
+            replaceEffectsPreviewUrl(null);
+            return;
+        }
+        if (effects.outlinePx === 0 && !effects.dropShadow) {
+            replaceEffectsPreviewUrl(null);
+            return;
+        }
+
+        let cancelled = false;
+        (async () => {
+            try {
+                const fgImg = await loadImageFromBlob(processedBlob);
+                if (cancelled) return;
+                const layerCanvas = buildForegroundSubjectCanvas(
+                    fgImg,
+                    effects.outlinePx,
+                    effects.outlineColor,
+                    effects.dropShadow
+                );
+                const blob = await new Promise<Blob | null>((resolve) =>
+                    layerCanvas.toBlob(resolve, "image/png")
+                );
+                if (cancelled || !blob) return;
+                const url = URL.createObjectURL(blob);
+                replaceEffectsPreviewUrl(url);
+            } catch {
+                if (!cancelled) replaceEffectsPreviewUrl(null);
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [
+        effects.dropShadow,
+        effects.outlineColor,
+        effects.outlinePx,
+        processedBlob,
+        replaceEffectsPreviewUrl,
+    ]);
 
     const handleFileSelect = useCallback(
         (file: File) => {
@@ -585,10 +942,78 @@ export function BackgroundRemoverTool() {
                 setError(check.error);
                 return;
             }
-            runPipeline(file, file.name, mode);
+            runPipeline(
+                file,
+                file.name || "pasted-image.png",
+                mode,
+                modelPrecision
+            );
         },
-        [mode, runPipeline]
+        [mode, modelPrecision, runPipeline]
     );
+
+    const handleBackdropFileSelect = useCallback(
+        (file: File) => {
+            const check = validateImageFile(file);
+            if (!check.ok) {
+                setError(check.error);
+                return;
+            }
+            const nextUrl = URL.createObjectURL(file);
+            replaceCustomBackdropUrl(nextUrl);
+            setCustomBackdropBlob(file);
+            setCustomBackdropName(file.name);
+            setBackground({ type: "image" });
+        },
+        [replaceCustomBackdropUrl]
+    );
+
+    // Global Clipboard Paste (Ctrl+V / Cmd+V) listener while mounted
+    useEffect(() => {
+        const handleWindowPaste = (e: ClipboardEvent) => {
+            const target = e.target as HTMLElement | null;
+            if (
+                target &&
+                (target.tagName === "TEXTAREA" ||
+                    target.isContentEditable ||
+                    (target.tagName === "INPUT" &&
+                        ![
+                            "file",
+                            "range",
+                            "color",
+                            "button",
+                            "checkbox",
+                            "radio",
+                        ].includes((target as HTMLInputElement).type)))
+            ) {
+                return;
+            }
+
+            const items = e.clipboardData?.items;
+            if (items) {
+                for (let i = 0; i < items.length; i += 1) {
+                    const item = items[i];
+                    if (item.kind === "file" && item.type.startsWith("image/")) {
+                        const pastedFile = item.getAsFile();
+                        if (pastedFile) {
+                            e.preventDefault();
+                            handleFileSelect(pastedFile);
+                            return;
+                        }
+                    }
+                }
+            }
+
+            const files = e.clipboardData?.files;
+            if (files && files.length > 0 && files[0].type.startsWith("image/")) {
+                e.preventDefault();
+                handleFileSelect(files[0]);
+            }
+        };
+
+        window.addEventListener("paste", handleWindowPaste);
+        return () => window.removeEventListener("paste", handleWindowPaste);
+    }, [handleFileSelect]);
 
     const handleTrySample = useCallback(
         async (e: React.MouseEvent) => {
@@ -596,41 +1021,55 @@ export function BackgroundRemoverTool() {
             setError(null);
             try {
                 const sampleBlob = await generateSyntheticSampleBlob();
-                runPipeline(sampleBlob, "sample-portrait.png", mode);
+                runPipeline(
+                    sampleBlob,
+                    "sample-portrait.png",
+                    mode,
+                    modelPrecision
+                );
             } catch {
                 setError("Could not generate sample portrait image.");
             }
         },
-        [mode, runPipeline]
-    );
-
-    const handleModeSwitch = useCallback(
-        (nextMode: ProcessingMode) => {
-            setMode(nextMode);
-        },
-        []
+        [mode, modelPrecision, runPipeline]
     );
 
     const handleReRun = useCallback(() => {
         if (!sourceBlob) return;
-        runPipeline(sourceBlob, sourceName, mode);
-    }, [mode, runPipeline, sourceBlob, sourceName]);
+        runPipeline(sourceBlob, sourceName, mode, modelPrecision);
+    }, [mode, modelPrecision, runPipeline, sourceBlob, sourceName]);
 
     const handleClear = useCallback(() => {
         runIdRef.current += 1;
         setSourceBlob(null);
         setSourceName("image.png");
+        setPreprocessedBlob(null);
         replaceOriginalUrl(null);
         replaceProcessedUrl(null);
+        replaceEffectsPreviewUrl(null);
+        replaceCustomBackdropUrl(null);
+        setCustomBackdropBlob(null);
+        setCustomBackdropName("");
         setProcessedBlob(null);
+        setCutoutRgbaCache(null);
         setDimensions(null);
+        setLastRunConfig(null);
+        setAcceleratorUsed(null);
+        setGpuFallbackNotice(null);
         setElapsedMs(null);
         setError(null);
         setTelemetry(createTelemetryState());
         setBackground({ type: "transparent" });
+        setEffects(DEFAULT_SUBJECT_EFFECTS);
         setCopyState("idle");
         if (fileInputRef.current) fileInputRef.current.value = "";
-    }, [replaceOriginalUrl, replaceProcessedUrl]);
+        if (backdropInputRef.current) backdropInputRef.current.value = "";
+    }, [
+        replaceCustomBackdropUrl,
+        replaceEffectsPreviewUrl,
+        replaceOriginalUrl,
+        replaceProcessedUrl,
+    ]);
 
     const handleDrop = useCallback(
         (e: React.DragEvent) => {
@@ -671,6 +1110,24 @@ export function BackgroundRemoverTool() {
         }
     };
 
+    // Compute exact trimmed bounding box (with room for active outline/shadow)
+    const trimBox: BoundingBox | null = cutoutRgbaCache
+        ? computeAlphaBoundingBox(
+              cutoutRgbaCache.data,
+              cutoutRgbaCache.width,
+              cutoutRgbaCache.height,
+              10,
+              0.04,
+              effects.outlinePx + (effects.dropShadow ? 18 : 0)
+          )
+        : null;
+
+    const hasStudioBackdropOrEffects =
+        background.type !== "transparent" ||
+        effects.outlinePx > 0 ||
+        effects.dropShadow ||
+        effects.autoTrim;
+
     // ─── Export & Safari-Safe Clipboard Copy ──────────────────────
     const triggerBlobDownload = (blob: Blob, filename: string) => {
         const url = URL.createObjectURL(blob);
@@ -684,18 +1141,26 @@ export function BackgroundRemoverTool() {
     const handleDownload = useCallback(
         async (format: "png" | "webp") => {
             if (!processedBlob) return;
+            if (background.type === "image" && !customBackdropBlob) {
+                setError("Please upload a custom background image or switch backdrop mode.");
+                return;
+            }
             setExportingType(format);
             try {
                 const mimeType = format === "webp" ? "image/webp" : "image/png";
-                const outBlob = await compositeToBlob(
-                    processedBlob,
+                const outBlob = await compositeToBlob({
+                    foregroundBlob: processedBlob,
                     background,
-                    mimeType
-                );
+                    effects,
+                    originalSourceBlob: preprocessedBlob,
+                    customBackdropBlob,
+                    trimBox,
+                    mimeType,
+                });
                 const filename = buildOutputFilename(
                     sourceName,
                     format,
-                    background.type !== "transparent"
+                    hasStudioBackdropOrEffects
                 );
                 triggerBlobDownload(outBlob, filename);
             } catch {
@@ -704,24 +1169,44 @@ export function BackgroundRemoverTool() {
                 setExportingType(null);
             }
         },
-        [background, processedBlob, sourceName]
+        [
+            background,
+            customBackdropBlob,
+            effects,
+            hasStudioBackdropOrEffects,
+            preprocessedBlob,
+            processedBlob,
+            sourceName,
+            trimBox,
+        ]
     );
 
     const handleCopyPng = useCallback(async () => {
         if (!processedBlob) return;
+        if (background.type === "image" && !customBackdropBlob) {
+            setError("Please upload a custom background image or switch backdrop mode.");
+            return;
+        }
         const filename = buildOutputFilename(
             sourceName,
             "png",
-            background.type !== "transparent"
+            hasStudioBackdropOrEffects
         );
+
+        const buildExportBlob = () =>
+            compositeToBlob({
+                foregroundBlob: processedBlob,
+                background,
+                effects,
+                originalSourceBlob: preprocessedBlob,
+                customBackdropBlob,
+                trimBox,
+                mimeType: "image/png",
+            });
 
         if (!navigator.clipboard?.write || typeof ClipboardItem === "undefined") {
             try {
-                const fallbackBlob = await compositeToBlob(
-                    processedBlob,
-                    background,
-                    "image/png"
-                );
+                const fallbackBlob = await buildExportBlob();
                 triggerBlobDownload(fallbackBlob, filename);
                 setCopyState("fallback");
                 scheduleCopyReset(3200);
@@ -734,13 +1219,8 @@ export function BackgroundRemoverTool() {
 
         setCopyState("copying");
         try {
-            // Pass Promise<Blob> synchronously inside ClipboardItem so Safari's user gesture stays valid
-            const blobPromise = compositeToBlob(
-                processedBlob,
-                background,
-                "image/png"
-            );
-
+            // Pass Promise<Blob> synchronously inside ClipboardItem to preserve Safari gesture token
+            const blobPromise = buildExportBlob();
             await navigator.clipboard.write([
                 new ClipboardItem({
                     "image/png": blobPromise,
@@ -750,11 +1230,7 @@ export function BackgroundRemoverTool() {
             scheduleCopyReset(2200);
         } catch {
             try {
-                const fallbackBlob = await compositeToBlob(
-                    processedBlob,
-                    background,
-                    "image/png"
-                );
+                const fallbackBlob = await buildExportBlob();
                 triggerBlobDownload(fallbackBlob, filename);
                 setCopyState("fallback");
                 scheduleCopyReset(3200);
@@ -763,7 +1239,17 @@ export function BackgroundRemoverTool() {
                 scheduleCopyReset(2500);
             }
         }
-    }, [background, processedBlob, scheduleCopyReset, sourceName]);
+    }, [
+        background,
+        customBackdropBlob,
+        effects,
+        hasStudioBackdropOrEffects,
+        preprocessedBlob,
+        processedBlob,
+        scheduleCopyReset,
+        sourceName,
+        trimBox,
+    ]);
 
     const isProcessing =
         telemetry.stage === "preprocessing" ||
@@ -780,14 +1266,18 @@ export function BackgroundRemoverTool() {
               PROCESSING_MODE_CONFIG[mode].maxDimension
           )
         : null;
-    const canReRunAtSelectedMode = Boolean(
+    const canReRunInference = Boolean(
         processedBlob &&
             dimensions &&
-            targetDimsForMode &&
-            targetDimsForMode.width !== dimensions.processedWidth
+            lastRunConfig &&
+            ((targetDimsForMode &&
+                targetDimsForMode.width !== dimensions.processedWidth) ||
+                lastRunConfig.model !== modelPrecision)
     );
 
-    const backdropStyle: React.CSSProperties =
+    const activeForegroundPreviewUrl = effectsPreviewUrl ?? processedUrl;
+
+    const backdropCssStyle: React.CSSProperties =
         background.type === "solid"
             ? { backgroundColor: background.color }
             : background.type === "gradient"
@@ -797,61 +1287,146 @@ export function BackgroundRemoverTool() {
                       GRADIENT_BG_PRESETS[0]
                   ).css,
               }
+            : background.type === "blur" || background.type === "image"
+            ? { backgroundColor: "#0a0a0f" }
             : CHECKERBOARD_STYLE;
 
+    const handleSelectBackgroundTab = (tabId: BackgroundOptionType) => {
+        if (tabId === "transparent") {
+            setBackground({ type: "transparent" });
+        } else if (tabId === "solid") {
+            setBackground({
+                type: "solid",
+                color:
+                    background.type === "solid"
+                        ? background.color
+                        : SOLID_BG_PRESETS[0].color,
+            });
+        } else if (tabId === "gradient") {
+            setBackground({
+                type: "gradient",
+                presetId:
+                    background.type === "gradient"
+                        ? background.presetId
+                        : GRADIENT_BG_PRESETS[0].id,
+            });
+        } else if (tabId === "blur") {
+            setBackground({ type: "blur", blurPx });
+        } else {
+            setBackground({ type: "image" });
+        }
+    };
+
     return (
-        <div className="space-y-5 sm:space-y-6">
-            {/* ─── Processing Mode & Privacy Ribbon ─────────────────── */}
-            <div className="p-3 sm:p-4 rounded-2xl bg-[rgb(14,14,22)] border border-[rgb(38,38,58)] flex flex-col md:flex-row md:items-center justify-between gap-3">
-                <div className="space-y-1.5 min-w-0">
-                    <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-[rgb(140,140,175)]">
-                        <SlidersHorizontal className="w-3.5 h-3.5 text-violet-400 shrink-0" />
-                        <span>Processing Mode</span>
+        <div className="space-y-4 sm:space-y-6">
+            {/* ─── AI Engine Ribbon: Resolution, Model Tier & Accelerator ── */}
+            <div className="p-3 sm:p-4 rounded-2xl bg-[rgb(14,14,22)] border border-[rgb(38,38,58)] space-y-3">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 flex-1 min-w-0">
+                        {/* Processing Resolution Mode */}
+                        <div className="space-y-1.5 min-w-0">
+                            <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[rgb(140,140,175)]">
+                                <SlidersHorizontal className="w-3.5 h-3.5 text-violet-400 shrink-0" />
+                                <span>Resolution Cap</span>
+                            </div>
+                            <div className="flex flex-wrap gap-1.5">
+                                {(["balanced", "high"] as ProcessingMode[]).map((m) => {
+                                    const cfg = PROCESSING_MODE_CONFIG[m];
+                                    const selected = mode === m;
+                                    return (
+                                        <button
+                                            key={m}
+                                            type="button"
+                                            onClick={() => setMode(m)}
+                                            disabled={activeProcessing}
+                                            className={cn(
+                                                "flex-1 min-w-[130px] px-2.5 py-2 rounded-xl text-xs font-semibold transition-all border min-h-[38px] text-center",
+                                                selected
+                                                    ? "bg-violet-600/20 border-violet-500 text-white shadow-sm"
+                                                    : "bg-[rgb(20,20,32)] border-[rgb(45,45,68)] text-[rgb(140,140,175)] hover:text-white",
+                                                activeProcessing && "opacity-60 cursor-not-allowed"
+                                            )}
+                                        >
+                                            <span className="sm:hidden">{cfg.shortLabel}</span>
+                                            <span className="hidden sm:inline">{cfg.label}</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* Model Weight Precision Tier */}
+                        <div className="space-y-1.5 min-w-0">
+                            <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[rgb(140,140,175)]">
+                                <Zap className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                                <span>AI Model Speed Tier</span>
+                            </div>
+                            <div className="flex flex-wrap gap-1.5">
+                                {(["isnet_quint8", "isnet_fp16"] as ModelPrecision[]).map(
+                                    (tier) => {
+                                        const cfg = MODEL_PRECISION_CONFIG[tier];
+                                        const selected = modelPrecision === tier;
+                                        return (
+                                            <button
+                                                key={tier}
+                                                type="button"
+                                                onClick={() => setModelPrecision(tier)}
+                                                disabled={activeProcessing}
+                                                className={cn(
+                                                    "flex-1 min-w-[130px] px-2.5 py-2 rounded-xl text-xs font-semibold transition-all border min-h-[38px] text-center",
+                                                    selected
+                                                        ? "bg-cyan-500/15 border-cyan-500 text-white shadow-sm"
+                                                        : "bg-[rgb(20,20,32)] border-[rgb(45,45,68)] text-[rgb(140,140,175)] hover:text-white",
+                                                    activeProcessing && "opacity-60 cursor-not-allowed"
+                                                )}
+                                            >
+                                                {cfg.label}
+                                            </button>
+                                        );
+                                    }
+                                )}
+                            </div>
+                        </div>
                     </div>
-                    <div className="flex flex-wrap items-center gap-2">
-                        {(["balanced", "high"] as ProcessingMode[]).map((m) => {
-                            const cfg = PROCESSING_MODE_CONFIG[m];
-                            const selected = mode === m;
-                            return (
-                                <button
-                                    key={m}
-                                    type="button"
-                                    onClick={() => handleModeSwitch(m)}
-                                    disabled={activeProcessing}
-                                    className={cn(
-                                        "px-3 py-2 rounded-xl text-xs font-semibold transition-all border min-h-[38px] text-left",
-                                        selected
-                                            ? "bg-violet-600/20 border-violet-500 text-white shadow-sm"
-                                            : "bg-[rgb(20,20,32)] border-[rgb(45,45,68)] text-[rgb(140,140,175)] hover:text-white",
-                                        activeProcessing && "opacity-60 cursor-not-allowed"
-                                    )}
-                                >
-                                    <span className="sm:hidden">{cfg.shortLabel}</span>
-                                    <span className="hidden sm:inline">{cfg.label}</span>
-                                </button>
-                            );
-                        })}
-                        {canReRunAtSelectedMode && (
+
+                    {/* Privacy + WebGPU Telemetry Pill */}
+                    <div className="flex flex-wrap items-center gap-2 self-start lg:self-end shrink-0">
+                        {canReRunInference && (
                             <button
                                 type="button"
                                 onClick={handleReRun}
-                                className="px-3 py-2 rounded-xl text-xs font-semibold bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20 transition-all inline-flex items-center gap-1.5 min-h-[38px]"
-                                title="Re-run AI removal with the currently selected max resolution"
+                                className="px-3 py-2 rounded-xl text-xs font-semibold bg-cyan-500/15 border border-cyan-500/40 text-cyan-200 hover:bg-cyan-500/25 transition-all inline-flex items-center gap-1.5 min-h-[38px]"
+                                title="Re-run background removal with updated model or resolution"
                             >
                                 <RefreshCw className="w-3.5 h-3.5" />
-                                <span>Re-run at {PROCESSING_MODE_CONFIG[mode].maxDimension}px</span>
+                                <span>Re-run AI</span>
                             </button>
                         )}
+                        <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-medium min-h-[38px]">
+                            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                            <span>
+                                {acceleratorUsed === "gpu"
+                                    ? "WebGPU Active · 0 Uploads"
+                                    : acceleratorUsed === "cpu"
+                                    ? "CPU WASM · 0 Uploads"
+                                    : webGpuSupported
+                                    ? "WebGPU Ready · 0 Uploads"
+                                    : "CPU WASM · 0 Uploads"}
+                            </span>
+                        </div>
                     </div>
-                    <p className="text-[11px] text-[rgb(110,110,145)] leading-snug">
-                        {PROCESSING_MODE_CONFIG[mode].hint}
-                    </p>
                 </div>
 
-                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-medium self-start md:self-center shrink-0">
-                    <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span>100% Client-Side AI · Zero Uploads</span>
-                </div>
+                <p className="text-[11px] text-[rgb(110,110,145)] leading-snug">
+                    {PROCESSING_MODE_CONFIG[mode].hint}{" "}
+                    {MODEL_PRECISION_CONFIG[modelPrecision].hint}
+                </p>
+
+                {gpuFallbackNotice && (
+                    <p className="text-[11px] text-amber-300/90 bg-amber-500/10 border border-amber-500/20 rounded-lg px-2.5 py-1.5">
+                        {gpuFallbackNotice}
+                    </p>
+                )}
             </div>
 
             {/* ─── Error Banner ─────────────────────────────────────── */}
@@ -920,7 +1495,7 @@ export function BackgroundRemoverTool() {
 
                         <div className="space-y-1.5">
                             <h3 className="text-base sm:text-xl font-bold text-white">
-                                Drop an image or tap to upload
+                                Drop an image, paste (Ctrl+V), or tap to upload
                             </h3>
                             <p className="text-xs sm:text-sm text-[rgb(130,130,165)]">
                                 Supports PNG, JPG/JPEG, WebP up to {MAX_FILE_SIZE_MB} MB — processed privately in your browser.
@@ -954,7 +1529,7 @@ export function BackgroundRemoverTool() {
 
             {/* ─── Active Workspace (Preview / Progress / Studio) ────── */}
             {originalUrl && (
-                <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-5 sm:gap-6 items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-5 sm:gap-6 items-start">
                     {/* Left: Canvas Comparison & Progress */}
                     <div className="space-y-4 min-w-0">
                         {/* Real-time AI Telemetry Card (Visible while active) */}
@@ -1029,7 +1604,7 @@ export function BackgroundRemoverTool() {
                                 <span className="text-xs font-semibold text-white flex items-center gap-1.5">
                                     <ImageIcon className="w-3.5 h-3.5 text-cyan-400" />
                                     {processedUrl
-                                        ? "Drag slider to compare Original vs Cutout"
+                                        ? "Drag slider to compare Original vs Studio"
                                         : "Source Image Preview"}
                                 </span>
 
@@ -1051,7 +1626,7 @@ export function BackgroundRemoverTool() {
                                 </div>
                             </div>
 
-                            {processedUrl ? (
+                            {activeForegroundPreviewUrl ? (
                                 <>
                                     {/* Tightly Aspect-Preserved Pointer Split Container */}
                                     <div className="w-full flex justify-center bg-black/30 rounded-xl p-1 sm:p-2">
@@ -1076,21 +1651,61 @@ export function BackgroundRemoverTool() {
                                                 }}
                                             />
 
-                                            {/* Right Side: Backdrop + Cutout (clipped split%..100%) */}
+                                            {/* Right Side: Backdrop + Cutout Effects (clipped split%..100%) */}
                                             <div
-                                                className="absolute inset-0 pointer-events-none"
+                                                className="absolute inset-0 pointer-events-none overflow-hidden"
                                                 style={{
-                                                    ...backdropStyle,
+                                                    ...backdropCssStyle,
                                                     clipPath: `inset(0 0 0 ${splitPosition}%)`,
                                                 }}
                                             >
+                                                {background.type === "blur" && (
+                                                    /* eslint-disable-next-line @next/next/no-img-element */
+                                                    <img
+                                                        src={originalUrl}
+                                                        alt="Blurred portrait background"
+                                                        draggable={false}
+                                                        className="absolute inset-0 w-full h-full object-contain scale-105 pointer-events-none"
+                                                        style={{
+                                                            filter: `blur(${background.blurPx}px)`,
+                                                        }}
+                                                    />
+                                                )}
+
+                                                {background.type === "image" && customBackdropUrl && (
+                                                    /* eslint-disable-next-line @next/next/no-img-element */
+                                                    <img
+                                                        src={customBackdropUrl}
+                                                        alt="Custom studio backdrop"
+                                                        draggable={false}
+                                                        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+                                                    />
+                                                )}
+
                                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                                 <img
-                                                    src={processedUrl}
+                                                    src={activeForegroundPreviewUrl}
                                                     alt="Background removed cutout"
                                                     draggable={false}
-                                                    className="w-full h-full object-contain pointer-events-none"
+                                                    className="relative w-full h-full object-contain pointer-events-none"
                                                 />
+
+                                                {/* Visual Crop Frame Guide when Auto-Trim is toggled ON */}
+                                                {effects.autoTrim &&
+                                                    trimBox &&
+                                                    trimBox.hasForeground &&
+                                                    dimensions && (
+                                                        <div
+                                                            aria-hidden="true"
+                                                            className="absolute border-2 border-dashed border-cyan-400/90 shadow-[0_0_0_9999px_rgba(0,0,0,0.35)] pointer-events-none"
+                                                            style={{
+                                                                left: `${(trimBox.x / dimensions.processedWidth) * 100}%`,
+                                                                top: `${(trimBox.y / dimensions.processedHeight) * 100}%`,
+                                                                width: `${(trimBox.width / dimensions.processedWidth) * 100}%`,
+                                                                height: `${(trimBox.height / dimensions.processedHeight) * 100}%`,
+                                                            }}
+                                                        />
+                                                    )}
                                             </div>
 
                                             {/* Labels */}
@@ -1154,13 +1769,15 @@ export function BackgroundRemoverTool() {
                             {dimensions && (
                                 <div className="flex flex-wrap items-center justify-between gap-2 px-1 pt-1 text-[11px] text-[rgb(120,120,160)] border-t border-[rgb(30,30,46)]">
                                     <span className="truncate font-mono">
-                                        {sourceName} · {dimensions.processedWidth}×
-                                        {dimensions.processedHeight}px
+                                        {sourceName} ·{" "}
+                                        {effects.autoTrim && trimBox && trimBox.hasForeground
+                                            ? `${trimBox.width}×${trimBox.height}px (trimmed)`
+                                            : `${dimensions.processedWidth}×${dimensions.processedHeight}px`}
                                     </span>
                                     {dimensions.wasDownscaled ? (
                                         <span className="text-amber-300 font-medium">
-                                            Scaled down from {dimensions.naturalWidth}×
-                                            {dimensions.naturalHeight}px ({mode} mode)
+                                            Scaled from {dimensions.naturalWidth}×
+                                            {dimensions.naturalHeight}px ({mode})
                                         </span>
                                     ) : (
                                         <span className="text-emerald-300/90 font-medium">
@@ -1172,10 +1789,10 @@ export function BackgroundRemoverTool() {
                         </div>
                     </div>
 
-                    {/* Right: Real-Time Background Compositor & Export Studio */}
+                    {/* Right: Real-Time Background Compositor, Effects & Export Studio */}
                     <div className="space-y-4">
                         {/* Background Compositor Card */}
-                        <div className="p-4 sm:p-5 rounded-2xl bg-[rgb(14,14,22)] border border-[rgb(38,38,58)] space-y-4">
+                        <div className="p-3.5 sm:p-5 rounded-2xl bg-[rgb(14,14,22)] border border-[rgb(38,38,58)] space-y-4">
                             <div className="flex items-center justify-between gap-2">
                                 <h3 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-1.5">
                                     <Palette className="w-3.5 h-3.5 text-violet-400" />
@@ -1186,38 +1803,23 @@ export function BackgroundRemoverTool() {
                                 </span>
                             </div>
 
-                            {/* Background Mode Tabs */}
-                            <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-[rgb(20,20,32)] border border-[rgb(40,40,60)]">
+                            {/* Background Mode Tabs (flex-wrap for 360px screens) */}
+                            <div className="flex flex-wrap gap-1.5 p-1 rounded-xl bg-[rgb(20,20,32)] border border-[rgb(40,40,60)]">
                                 {(
                                     [
                                         { id: "transparent", label: "Transparent" },
-                                        { id: "solid", label: "Solid Color" },
+                                        { id: "solid", label: "Solid" },
                                         { id: "gradient", label: "Gradient" },
+                                        { id: "blur", label: "Portrait Blur" },
+                                        { id: "image", label: "Custom Image" },
                                     ] as const
                                 ).map((tab) => (
                                     <button
                                         key={tab.id}
                                         type="button"
-                                        onClick={() => {
-                                            if (tab.id === "transparent") {
-                                                setBackground({ type: "transparent" });
-                                            } else if (tab.id === "solid") {
-                                                setBackground({
-                                                    type: "solid",
-                                                    color:
-                                                        background.type === "solid"
-                                                            ? background.color
-                                                            : SOLID_BG_PRESETS[0].color,
-                                                });
-                                            } else {
-                                                setBackground({
-                                                    type: "gradient",
-                                                    presetId: GRADIENT_BG_PRESETS[0].id,
-                                                });
-                                            }
-                                        }}
+                                        onClick={() => handleSelectBackgroundTab(tab.id)}
                                         className={cn(
-                                            "py-2 px-1.5 rounded-lg text-[11px] font-semibold transition-all text-center",
+                                            "flex-1 min-w-[82px] py-2 px-2 rounded-lg text-[11px] font-semibold transition-all text-center",
                                             background.type === tab.id
                                                 ? "bg-violet-600 text-white shadow"
                                                 : "text-[rgb(130,130,165)] hover:text-white"
@@ -1242,66 +1844,63 @@ export function BackgroundRemoverTool() {
                             )}
 
                             {background.type === "solid" && (
-                                <div className="space-y-3">
-                                    <div className="flex flex-wrap items-center gap-2.5">
-                                        {SOLID_BG_PRESETS.map((preset) => {
-                                            const active =
-                                                background.type === "solid" &&
-                                                background.color.toUpperCase() ===
-                                                    preset.color.toUpperCase();
-                                            return (
-                                                <button
-                                                    key={preset.id}
-                                                    type="button"
-                                                    onClick={() =>
-                                                        setBackground({
-                                                            type: "solid",
-                                                            color: preset.color,
-                                                        })
-                                                    }
-                                                    aria-label={`Solid color ${preset.label}`}
-                                                    title={preset.label}
-                                                    className={cn(
-                                                        "w-9 h-9 rounded-xl border transition-all",
-                                                        active
-                                                            ? "ring-2 ring-violet-400 ring-offset-2 ring-offset-[rgb(14,14,22)] border-white scale-105"
-                                                            : "border-white/25 hover:scale-105"
-                                                    )}
-                                                    style={{ backgroundColor: preset.color }}
-                                                />
-                                            );
-                                        })}
-
-                                        {/* Custom Native Color Picker */}
-                                        <label
-                                            className="flex items-center gap-2 px-2.5 h-9 rounded-xl bg-[rgb(20,20,32)] border border-[rgb(45,45,68)] hover:border-violet-500/40 cursor-pointer text-[11px] font-semibold text-white"
-                                            title="Pick custom background color"
-                                        >
-                                            <input
-                                                type="color"
-                                                value={
-                                                    background.type === "solid"
-                                                        ? background.color
-                                                        : customColor
-                                                }
-                                                onChange={(e) => {
-                                                    setCustomColor(e.target.value);
+                                <div className="flex flex-wrap items-center gap-2.5">
+                                    {SOLID_BG_PRESETS.map((preset) => {
+                                        const active =
+                                            background.type === "solid" &&
+                                            background.color.toUpperCase() ===
+                                                preset.color.toUpperCase();
+                                        return (
+                                            <button
+                                                key={preset.id}
+                                                type="button"
+                                                onClick={() =>
                                                     setBackground({
                                                         type: "solid",
-                                                        color: e.target.value,
-                                                    });
-                                                }}
-                                                aria-label="Custom solid background color"
-                                                className="w-5 h-5 rounded border-0 bg-transparent cursor-pointer p-0"
+                                                        color: preset.color,
+                                                    })
+                                                }
+                                                aria-label={`Solid color ${preset.label}`}
+                                                title={preset.label}
+                                                className={cn(
+                                                    "w-9 h-9 rounded-xl border transition-all",
+                                                    active
+                                                        ? "ring-2 ring-violet-400 ring-offset-2 ring-offset-[rgb(14,14,22)] border-white scale-105"
+                                                        : "border-white/25 hover:scale-105"
+                                                )}
+                                                style={{ backgroundColor: preset.color }}
                                             />
-                                            <span className="font-mono text-[11px]">
-                                                {(background.type === "solid"
+                                        );
+                                    })}
+
+                                    <label
+                                        className="flex items-center gap-2 px-2.5 h-9 rounded-xl bg-[rgb(20,20,32)] border border-[rgb(45,45,68)] hover:border-violet-500/40 cursor-pointer text-[11px] font-semibold text-white"
+                                        title="Pick custom background color"
+                                    >
+                                        <input
+                                            type="color"
+                                            value={
+                                                background.type === "solid"
                                                     ? background.color
                                                     : customColor
-                                                ).toUpperCase()}
-                                            </span>
-                                        </label>
-                                    </div>
+                                            }
+                                            onChange={(e) => {
+                                                setCustomColor(e.target.value);
+                                                setBackground({
+                                                    type: "solid",
+                                                    color: e.target.value,
+                                                });
+                                            }}
+                                            aria-label="Custom solid background color"
+                                            className="w-5 h-5 rounded border-0 bg-transparent cursor-pointer p-0"
+                                        />
+                                        <span className="font-mono text-[11px]">
+                                            {(background.type === "solid"
+                                                ? background.color
+                                                : customColor
+                                            ).toUpperCase()}
+                                        </span>
+                                    </label>
                                 </div>
                             )}
 
@@ -1348,10 +1947,213 @@ export function BackgroundRemoverTool() {
                                     })}
                                 </div>
                             )}
+
+                            {background.type === "blur" && (
+                                <div className="p-3 rounded-xl bg-[rgb(20,20,32)] border border-[rgb(38,38,58)] space-y-2.5">
+                                    <div className="flex items-center justify-between text-xs">
+                                        <span className="font-semibold text-white">
+                                            DSLR Bokeh Blur Radius
+                                        </span>
+                                        <span className="font-mono text-cyan-300 font-bold">
+                                            {blurPx}px
+                                        </span>
+                                    </div>
+                                    <input
+                                        type="range"
+                                        min={MIN_PORTRAIT_BLUR_PX}
+                                        max={MAX_PORTRAIT_BLUR_PX}
+                                        step={1}
+                                        value={blurPx}
+                                        onChange={(e) => {
+                                            const val = Number(e.target.value);
+                                            setBlurPx(val);
+                                            setBackground({ type: "blur", blurPx: val });
+                                        }}
+                                        aria-label="Portrait background blur radius"
+                                        className="w-full h-2 rounded-lg cursor-pointer accent-cyan-400 bg-[rgb(12,12,20)]"
+                                    />
+                                    <p className="text-[10px] text-[rgb(120,120,160)]">
+                                        Blurs the original scene while keeping your cutout foreground tack-sharp.
+                                    </p>
+                                </div>
+                            )}
+
+                            {background.type === "image" && (
+                                <div className="p-3 rounded-xl bg-[rgb(20,20,32)] border border-[rgb(38,38,58)] space-y-2.5">
+                                    <input
+                                        ref={backdropInputRef}
+                                        type="file"
+                                        accept={ACCEPTED_IMAGE_MIME_TYPES.join(",")}
+                                        onChange={(e) => {
+                                            const f = e.target.files?.[0];
+                                            if (f) handleBackdropFileSelect(f);
+                                        }}
+                                        className="hidden"
+                                    />
+
+                                    {customBackdropUrl ? (
+                                        <div className="flex items-center gap-3">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img
+                                                src={customBackdropUrl}
+                                                alt="Backdrop thumbnail"
+                                                className="w-11 h-11 rounded-lg object-cover border border-white/15 shrink-0"
+                                            />
+                                            <div className="min-w-0 flex-1">
+                                                <p className="text-xs font-semibold text-white truncate">
+                                                    {customBackdropName || "Custom backdrop"}
+                                                </p>
+                                                <p className="text-[10px] text-[rgb(120,120,160)]">
+                                                    Cover-fit canvas backdrop active
+                                                </p>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => backdropInputRef.current?.click()}
+                                                className="px-2.5 py-1.5 rounded-lg bg-[rgb(28,28,44)] border border-[rgb(45,45,68)] text-[11px] font-semibold text-white hover:border-violet-500/40 shrink-0"
+                                            >
+                                                Change
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            onClick={() => backdropInputRef.current?.click()}
+                                            className="w-full py-3 px-3 rounded-xl border border-dashed border-[rgb(55,55,80)] hover:border-violet-500/50 bg-[rgb(14,14,22)] text-xs font-semibold text-violet-300 flex items-center justify-center gap-2 transition-all"
+                                        >
+                                            <Upload className="w-4 h-4" />
+                                            <span>Upload Backdrop Photo</span>
+                                        </button>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Subject Effects & Auto-Trim Controls */}
+                        <div className="p-3.5 sm:p-5 rounded-2xl bg-[rgb(14,14,22)] border border-[rgb(38,38,58)] space-y-4">
+                            <h3 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-1.5">
+                                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                                <span>Effects &amp; Framing</span>
+                            </h3>
+
+                            {/* Sticker Outline */}
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between gap-2">
+                                    <span className="text-xs font-semibold text-[rgb(190,190,220)]">
+                                        Sticker Outline
+                                    </span>
+                                    {effects.outlinePx > 0 && (
+                                        <label
+                                            className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-[rgb(20,20,32)] border border-[rgb(45,45,68)] cursor-pointer text-[10px] font-mono text-white"
+                                            title="Sticker outline color"
+                                        >
+                                            <input
+                                                type="color"
+                                                value={effects.outlineColor}
+                                                onChange={(e) =>
+                                                    setEffects((prev) => ({
+                                                        ...prev,
+                                                        outlineColor: e.target.value,
+                                                    }))
+                                                }
+                                                aria-label="Sticker outline color"
+                                                className="w-4 h-4 rounded border-0 bg-transparent cursor-pointer p-0"
+                                            />
+                                            <span>{effects.outlineColor.toUpperCase()}</span>
+                                        </label>
+                                    )}
+                                </div>
+
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                                    {OUTLINE_OPTIONS.map((opt) => {
+                                        const active = effects.outlinePx === opt.value;
+                                        return (
+                                            <button
+                                                key={opt.value}
+                                                type="button"
+                                                onClick={() =>
+                                                    setEffects((prev) => ({
+                                                        ...prev,
+                                                        outlinePx: opt.value,
+                                                    }))
+                                                }
+                                                className={cn(
+                                                    "py-2 px-2 rounded-lg text-[11px] font-semibold border transition-all min-h-[36px]",
+                                                    active
+                                                        ? "bg-violet-600/20 border-violet-500 text-white"
+                                                        : "bg-[rgb(20,20,32)] border-[rgb(40,40,60)] text-[rgb(130,130,165)] hover:text-white"
+                                                )}
+                                            >
+                                                {opt.label}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            {/* Drop Shadow & Auto-Trim Toggles */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setEffects((prev) => ({
+                                            ...prev,
+                                            dropShadow: !prev.dropShadow,
+                                        }))
+                                    }
+                                    aria-pressed={effects.dropShadow}
+                                    className={cn(
+                                        "px-3 py-2.5 rounded-xl border text-xs font-semibold flex items-center justify-between gap-2 transition-all min-h-[40px]",
+                                        effects.dropShadow
+                                            ? "bg-violet-600/20 border-violet-500 text-white"
+                                            : "bg-[rgb(20,20,32)] border-[rgb(40,40,60)] text-[rgb(140,140,175)] hover:text-white"
+                                    )}
+                                >
+                                    <span>Drop Shadow</span>
+                                    <span
+                                        className={cn(
+                                            "w-2 h-2 rounded-full",
+                                            effects.dropShadow
+                                                ? "bg-emerald-400"
+                                                : "bg-[rgb(70,70,100)]"
+                                        )}
+                                    />
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setEffects((prev) => ({
+                                            ...prev,
+                                            autoTrim: !prev.autoTrim,
+                                        }))
+                                    }
+                                    aria-pressed={effects.autoTrim}
+                                    className={cn(
+                                        "px-3 py-2.5 rounded-xl border text-xs font-semibold flex items-center justify-between gap-2 transition-all min-h-[40px]",
+                                        effects.autoTrim
+                                            ? "bg-cyan-500/15 border-cyan-500 text-cyan-100"
+                                            : "bg-[rgb(20,20,32)] border-[rgb(40,40,60)] text-[rgb(140,140,175)] hover:text-white"
+                                    )}
+                                >
+                                    <span className="inline-flex items-center gap-1.5">
+                                        <Crop className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                                        <span>Auto-Trim 4%</span>
+                                    </span>
+                                    <span
+                                        className={cn(
+                                            "w-2 h-2 rounded-full",
+                                            effects.autoTrim
+                                                ? "bg-cyan-400"
+                                                : "bg-[rgb(70,70,100)]"
+                                        )}
+                                    />
+                                </button>
+                            </div>
                         </div>
 
                         {/* Export Actions Card */}
-                        <div className="p-4 sm:p-5 rounded-2xl bg-[rgb(14,14,22)] border border-[rgb(38,38,58)] space-y-3">
+                        <div className="p-3.5 sm:p-5 rounded-2xl bg-[rgb(14,14,22)] border border-[rgb(38,38,58)] space-y-3">
                             <h3 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-1.5">
                                 <Layers className="w-3.5 h-3.5 text-cyan-400" />
                                 <span>Export Result</span>
@@ -1446,7 +2248,6 @@ export function BackgroundRemoverTool() {
                                 </span>
                             </button>
 
-                            {/* Upload Another */}
                             <button
                                 type="button"
                                 onClick={() => fileInputRef.current?.click()}
@@ -1454,7 +2255,7 @@ export function BackgroundRemoverTool() {
                                 className="w-full h-9 px-3 rounded-xl text-xs font-medium text-[rgb(150,150,185)] hover:text-white bg-[rgb(18,18,28)] border border-[rgb(35,35,55)] hover:border-white/20 transition-all inline-flex items-center justify-center gap-1.5"
                             >
                                 <Upload className="w-3.5 h-3.5" />
-                                <span>Upload Another Image</span>
+                                <span>Upload Another Image (or Paste Ctrl+V)</span>
                             </button>
                             <input
                                 ref={fileInputRef}
@@ -1472,7 +2273,7 @@ export function BackgroundRemoverTool() {
                         <div className="p-3.5 rounded-2xl bg-[rgb(14,14,22)] border border-[rgb(38,38,58)] text-[11px] text-[rgb(120,120,160)] flex items-start gap-2.5">
                             <Cpu className="w-4 h-4 text-violet-400 shrink-0 mt-0.5" />
                             <p className="leading-relaxed">
-                                Background swaps render immediately on HTML5 Canvas without re-running neural network inference.
+                                Background swaps, bokeh blur, sticker outlines, and auto-trim execute instantly on HTML5 Canvas without re-running neural network inference.
                             </p>
                         </div>
                     </div>
