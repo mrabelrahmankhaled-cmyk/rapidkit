@@ -175,7 +175,7 @@ export const BLOG_POSTS: BlogPost[] = [
         title: "How to Compress Images Without Losing Quality (Complete Guide)",
         description: "Learn the best techniques for compressing JPG, PNG, and WebP images to reduce file size while maintaining visual quality — no software required.",
         publishedAt: "2026-02-14",
-        updatedAt: "2026-03-01",
+        updatedAt: "2026-11-18",
         category: "Image Tools",
         tags: ["image compression", "optimize images", "web performance", "jpg", "png"],
         relatedToolSlug: "image-compressor",
@@ -238,6 +238,7 @@ export const BLOG_POSTS: BlogPost[] = [
   <li><strong>Remove metadata:</strong> EXIF data (camera settings, GPS location) can add 10-50KB to photos. Strip it when not needed.</li>
   <li><strong>Use progressive loading for JPEGs:</strong> Progressive JPEGs appear to load faster because they render a low-res version first, then sharpen.</li>
   <li><strong>Convert PNG screenshots to JPG:</strong> If your PNG doesn't have transparency, converting it to JPG can reduce size by 60-70%.</li>
+  <li><strong>Isolate subjects and trim wasted padding:</strong> For e-commerce product shots or YouTube thumbnails, run images through <a href="/tools/image/background-remover">RapidKit's AI Background Remover</a> first — it removes busy backdrops 100% locally in WebAssembly/WebGPU, offers <strong>Portrait Blur</strong> and <strong>Auto-Trim</strong> to strip transparent margins, and pairs cleanly with <a href="/tools/image/webp-converter">WebP conversion</a> for smaller final files.</li>
 </ul>
         `,
     },
@@ -246,7 +247,7 @@ export const BLOG_POSTS: BlogPost[] = [
         title: "JPG to WebP Conversion: Why You Should Switch and How to Do It",
         description: "WebP images are 25-35% smaller than JPG with the same quality. Learn why you should convert and how to do it for free in seconds.",
         publishedAt: "2026-02-16",
-        updatedAt: "2026-03-01",
+        updatedAt: "2026-11-18",
         category: "Image Tools",
         tags: ["webp", "jpg", "png", "image format", "web performance", "core web vitals"],
         relatedToolSlug: "webp-converter",
@@ -295,6 +296,7 @@ export const BLOG_POSTS: BlogPost[] = [
   <li><strong>Use WebP for:</strong> All website images, blog post images, product photos, backgrounds, thumbnails.</li>
   <li><strong>Stick with PNG for:</strong> Images that need to be edited further (lossless source files), favicons, images shared outside the web.</li>
   <li><strong>Stick with JPG for:</strong> Images that will be uploaded to platforms that don't support WebP (some social media, email clients).</li>
+  <li><strong>Transparent cutouts &amp; studio backdrops:</strong> Before encoding product photos or creator thumbnails as lightweight transparent or white-backdrop WebP files, remove cluttered backgrounds locally with <a href="/tools/image/background-remover">RapidKit's AI Background Remover</a> — featuring 100% client-side neural inference, <strong>Portrait Blur</strong> (DSLR bokeh), and <strong>Auto-Trim</strong> to remove dead transparent space.</li>
 </ul>
 
 <h2>How to Implement WebP on Your Website</h2>
@@ -776,6 +778,87 @@ export const BLOG_POSTS: BlogPost[] = [
   <li><strong>When you need transparency:</strong> RGBA or HSLA.</li>
   <li><strong>Never in CSS:</strong> CMYK — browsers don't support it natively.</li>
 </ul>
+        `,
+    },
+    // ─── Client-Side AI & Document Workflows ────────────────────────
+    {
+        slug: "remove-background-from-image-without-uploading",
+        title: "How to Remove Image Backgrounds Without Uploading (WebGPU & WebAssembly)",
+        description: "Learn how client-side AI removes photo backgrounds directly in your browser with zero server uploads, Portrait Blur, Auto-Trim, and fast WebP exports.",
+        publishedAt: "2026-11-18",
+        updatedAt: "2026-11-18",
+        category: "Image Tools",
+        tags: ["background remover", "webgpu", "webassembly", "privacy", "ecommerce", "webp"],
+        relatedToolSlug: "background-remover",
+        relatedToolCategory: "image",
+        readingTime: 6,
+        seo: {
+            title: "Remove Image Backgrounds Without Uploading — Private AI Guide",
+            description: "Discover how browser-based WebGPU and WebAssembly AI removes backgrounds locally without uploading photos, then optimize cutouts for e-commerce and web.",
+            keywords: ["remove background without uploading", "client side ai background removal", "private remove bg alternative", "webassembly background remover", "ecommerce product cutout"],
+        },
+        content: `
+<h2>Why Cloud Background Removers Create Unnecessary Privacy Risk</h2>
+<p>Most online background removers require uploading your full-resolution photo to a third-party server before processing. That creates real exposure for passport and ID headshots, private family portraits, unpublished e-commerce SKU launches, and client design drafts.</p>
+<p>Modern browser APIs solve this completely: <a href="/tools/image/background-remover">RapidKit's AI Background Remover</a> runs an open-source neural segmentation pipeline (ONNX Runtime with automatic WebGPU acceleration and CPU WebAssembly fallback) directly inside your device's RAM. <strong>Zero bytes of your image are ever uploaded.</strong></p>
+
+<h2>How Client-Side Neural Background Removal Works</h2>
+<ol>
+  <li><strong>Zero-cost initial page load:</strong> The AI engine is dynamically imported only when you drop, paste (<code>Ctrl+V</code> / <code>Cmd+V</code>), or test a sample photo — keeping normal page browsing instant.</li>
+  <li><strong>Mobile-safe pre-scaling guard:</strong> Before inference runs, oversized photos are downscaled smoothly on an offscreen HTML5 Canvas (capped at <code>1280px</code> in <em>Balanced / Mobile-Safe</em> mode or <code>2048px</code> in <em>High Resolution</em> mode) so mobile phones do not hit WebAssembly out-of-memory crashes.</li>
+  <li><strong>One-time local model caching:</strong> On your first cutout, the browser downloads and caches the open-source weights (<code>~40 MB</code> for <em>Fast / Lite</em> or <code>~80 MB</code> for <em>High Precision</em>) so subsequent runs start almost immediately.</li>
+  <li><strong>Instant Canvas Studio compositing:</strong> Once the transparent foreground alpha mask is computed, backdrop changes and effects render locally on HTML5 Canvas without re-running neural inference.</li>
+</ol>
+
+<h2>Studio Features for E-Commerce, LinkedIn, and YouTube Thumbnails</h2>
+<ul>
+  <li><strong>E-Commerce Product Cutouts:</strong> Isolate products, toggle <strong>Auto-Trim</strong> to automatically crop excess transparent padding down to a clean 4% margin, and switch to pure <code>#FFFFFF</code> white for marketplace standards.</li>
+  <li><strong>DSLR Portrait Blur (Bokeh):</strong> Keep messy rooms behind your subject out of focus by adjusting the Canvas Gaussian blur slider from <code>4px</code> to <code>24px</code> behind the sharp foreground cutout.</li>
+  <li><strong>Creator Stickers &amp; Custom Backdrops:</strong> Add crisp <code>4px</code>, <code>8px</code>, or <code>14px</code> alpha-contour outlines, toggle a soft studio drop shadow, or swap in a custom background photo.</li>
+</ul>
+
+<h2>Optimizing Cutouts for Faster Page Speed (PNG vs. WebP)</h2>
+<p>Raw high-resolution PNG cutouts can still be heavy on slow connections. Once your cutout looks sharp:</p>
+<ul>
+  <li>Export directly as transparent or composited <strong>WebP</strong> inside the tool, or batch-convert existing assets with <a href="/tools/image/webp-converter">RapidKit's WebP Converter</a> to cut file size by 25–35% while retaining full alpha transparency.</li>
+  <li>Before publishing product galleries or blog banners, run final JPG or PNG exports through <a href="/tools/image/image-compressor">RapidKit's Image Compressor</a> to hit your target Core Web Vitals byte budget locally.</li>
+</ul>
+        `,
+    },
+    {
+        slug: "merge-split-and-sign-pdf-in-browser",
+        title: "How to Merge, Split & Sign PDFs Privately in Your Browser (Zero Uploads)",
+        description: "Combine PDFs, extract custom page ranges, burst pages to ZIP, sign contracts, and strip hidden PDF metadata completely offline in your browser.",
+        publishedAt: "2026-11-18",
+        updatedAt: "2026-11-18",
+        category: "Productivity",
+        tags: ["pdf", "merge pdf", "split pdf", "sign pdf", "privacy", "productivity"],
+        relatedToolSlug: "pdf-studio",
+        relatedToolCategory: "productivity",
+        readingTime: 6,
+        seo: {
+            title: "Merge, Split & Sign PDFs in Your Browser — Private Guide",
+            description: "Learn how to merge, split, rotate, e-sign PDFs, and scrub Author/Creator metadata locally in your browser without uploading sensitive contracts.",
+            keywords: ["merge pdf without uploading", "split pdf privately in browser", "sign pdf online free no upload", "remove pdf metadata", "client side pdf studio"],
+        },
+        content: `
+<h2>Why Contracts, Tax Forms, and IDs Should Never Touch Unknown PDF Servers</h2>
+<p>Every day, people upload signed NDAs, tax returns, bank statements, and offer letters to cloud "free PDF" sites without knowing how long those files are retained or who has server access. Yet modern JavaScript PDF libraries can inspect, assemble, split, sign, and sanitize PDFs entirely inside local browser memory.</p>
+<p>With <a href="/tools/productivity/pdf-studio">RapidKit's PDF Merge, Split &amp; Sign Studio</a>, dynamic browser modules (<code>pdf-lib</code> and <code>JSZip</code>) load only when needed and execute locally on your device — zero document bytes are transmitted over the network.</p>
+
+<h2>4 Essential PDF Workflows You Can Run Offline</h2>
+<h3>1. Merge, Reorder &amp; Rotate Pages</h3>
+<p>Drop up to 20 PDF files (up to 50 MB each) into the <strong>Merge &amp; Organize</strong> queue, inspect page counts and byte sizes locally, reorder documents with mobile-safe up/down controls, and apply <code>0°</code>, <code>90°</code>, <code>180°</code>, or <code>270°</code> page rotation before exporting a single clean PDF.</p>
+
+<h3>2. Extract Custom Ranges or Burst Pages to a ZIP Archive</h3>
+<p>Switch to <strong>Split &amp; Extract</strong> to pull exact pages using human syntax like <code>1-3, 5</code> (with live range validation), or click <strong>Burst All Pages to .ZIP</strong> to package every individual page cleanly as <code>page-01.pdf</code>, <code>page-02.pdf</code>, and so on inside one archive.</p>
+
+<h3>3. Sign PDFs with Transparent Handwriting or PNG Stamps</h3>
+<p>In <strong>Sign &amp; Stamp</strong>, draw smoothly on the touch-friendly HTML5 Canvas pad using Navy Ink or Royal Blue, choose your target pages (First, Last, All, or a custom page number), pick a placement anchor (Bottom Right, Bottom Left, Bottom Center, Top Right, or Center) plus optional date stamping, and embed the transparent signature cleanly into PDF coordinates.</p>
+<p>Need a standalone reusable transparent signature PNG for Word documents, Google Docs, or email footers too? Draw and export a tightly cropped PNG anytime in <a href="/tools/design/signature-pad">RapidKit's Digital Signature Pad</a>, then upload it directly into PDF Studio as a reusable PNG stamp.</p>
+
+<h3>4. Audit &amp; Scrub Hidden PDF Metadata Before Sharing</h3>
+<p>PDFs routinely carry hidden properties such as <code>Author</code>, <code>Creator</code> (software name), <code>Producer</code>, modification timestamps, and embedded XML XMP streams. Use the <strong>Metadata Privacy</strong> tab to inspect those tags and strip all identifying metadata in one click before sending drafts or sensitive records externally.</p>
         `,
     },
 ];

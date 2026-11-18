@@ -61,6 +61,7 @@ const CATEGORY_COLORS: Record<string, string> = {
     "Developer Tools": "text-cyan-400 bg-cyan-500/10 border-cyan-500/20",
     "Text Tools": "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
     Converters: "text-amber-400 bg-amber-500/10 border-amber-500/20",
+    Productivity: "text-orange-400 bg-orange-500/10 border-orange-500/20",
 };
 
 // ─── Page ─────────────────────────────────────────────────────────

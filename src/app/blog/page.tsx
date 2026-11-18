@@ -27,6 +27,7 @@ const CATEGORY_COLORS: Record<string, string> = {
     "Developer Tools": "from-cyan-500/20 to-blue-500/10 text-cyan-400 border-cyan-500/20",
     "Text Tools": "from-emerald-500/20 to-green-500/10 text-emerald-400 border-emerald-500/20",
     Converters: "from-amber-500/20 to-orange-500/10 text-amber-400 border-amber-500/20",
+    Productivity: "from-orange-500/20 to-amber-500/10 text-orange-400 border-orange-500/20",
 };
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -35,6 +36,7 @@ const CATEGORY_ICONS: Record<string, string> = {
     "Developer Tools": "⌨️",
     "Text Tools": "📝",
     Converters: "🔄",
+    Productivity: "📄",
 };
 
 function formatDate(dateStr: string) {
