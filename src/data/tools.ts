@@ -1561,7 +1561,7 @@ export const TOOLS: Tool[] = [
                 answer: "A JPG always has a solid white rectangle background that covers up the signature line or text underneath it on a document, whereas a transparent PNG lets the document lines show cleanly through.",
             },
         ],
-        relatedToolSlugs: ["image-compressor", "webp-converter", "pomodoro-timer"],
+        relatedToolSlugs: ["pdf-studio", "image-compressor", "webp-converter", "pomodoro-timer"],
         affiliateIds: ["notion"],
     },
     {
@@ -2137,6 +2137,81 @@ export const TOOLS: Tool[] = [
         ],
         relatedToolSlugs: ["web-code-playground", "markdown-editor", "utm-builder"],
         affiliateIds: ["beehiiv", "semrush"],
+    },
+    {
+        id: "pdf-studio",
+        name: "PDF Merge, Split & Sign Studio",
+        slug: "pdf-studio",
+        description: "Merge, split, extract pages, sign PDFs, and scrub identifying metadata 100% privately inside your browser.",
+        longDescription:
+            "Combine multiple PDF documents, reorder and rotate pages, extract custom page ranges or burst every page into a ZIP archive, stamp drawn or transparent PNG signatures, and permanently strip hidden PDF metadata tags — all processed locally on your device with zero server uploads.",
+        categoryId: "productivity",
+        icon: "FileCheck",
+        tags: ["pdf", "merge pdf", "split pdf", "sign pdf", "metadata", "privacy", "productivity"],
+        isNew: true,
+        isFeatured: true,
+        isPopular: true,
+        seo: {
+            title: "Free PDF Merger, Splitter & Signer — 100% Private",
+            description:
+                "Merge, split, extract pages, sign contracts, and strip PDF metadata locally in your browser. 100% free, no watermarks, no page limits, and zero uploads.",
+            keywords: [
+                "merge pdf online free no upload",
+                "split pdf pages in browser",
+                "sign pdf online free without uploading",
+                "client side pdf editor",
+                "remove pdf metadata online",
+                "private pdf merger and splitter",
+            ],
+        },
+        howToSteps: [
+            "Choose a studio tab — Merge & Organize, Split & Extract, Sign & Stamp, or Metadata Privacy — or click 'Generate Sample 3-Page Contract PDF' to test offline immediately.",
+            "Load one or multiple PDF documents (up to 50 MB each, and up to 20 files in the Merge queue) directly from your phone or computer with zero network transfers.",
+            "Configure your operation: reorder and rotate pages (0°/90°/180°/270°), type custom page ranges like '1-3, 5' or burst all pages to ZIP, draw/upload a signature stamp with anchor placement, or toggle 'Strip All Identifying Metadata'.",
+            "Click export to assemble and download the final .pdf or .zip file straight from browser memory with no watermarks.",
+        ],
+        useCases: [
+            {
+                title: "Contracts, Leases & NDA Execution",
+                description:
+                    "Sign multi-page agreements on page 1, the last page, or all pages using your finger, mouse, or a transparent PNG signature — with optional date stamping and exact bottom-right/bottom-left placement.",
+            },
+            {
+                title: "Confidential Legal & Tax PDF Merging",
+                description:
+                    "Combine receipts, invoices, ID scans, and tax packets into a single ordered PDF without uploading sensitive financial or personal records to third-party cloud servers.",
+            },
+            {
+                title: "Page Extraction & Invoice Bursting",
+                description:
+                    "Pull just relevant pages (e.g., 1-3, 5) out of bulky manuals or burst a multi-page billing statement into individual page-01.pdf, page-02.pdf files inside one ZIP archive.",
+            },
+            {
+                title: "Anonymous Sharing & Metadata Scrubbing",
+                description:
+                    "Audit hidden Title, Author, Creator, Producer, timestamp, and XMP streams before sharing resumes, whistleblower packets, or draft proposals — and strip them in one click.",
+            },
+        ],
+        faqs: [
+            {
+                question: "Are my PDF contracts or tax files ever uploaded to a server?",
+                answer: "No. RapidKit PDF Studio dynamically loads pdf-lib and JSZip purely inside your browser tab when you process files. Every page copy, rotation, PNG signature embed, ZIP archive, and metadata edit executes in your device's RAM — zero document bytes leave your browser.",
+            },
+            {
+                question: "Does loading this PDF studio slow down initial page visits?",
+                answer: "No. pdf-lib and JSZip are imported dynamically only when you add a PDF, generate the sample contract, or export results, keeping initial page hydration lightweight.",
+            },
+            {
+                question: "How does Metadata Privacy strip identifying PDF tags reliably?",
+                answer: "Unlike default PDF writers that stamp their own generator name and modification timestamps on save, our Metadata cleaner loads documents with updateMetadata: false, clears Info dictionary keys (Title, Author, Subject, Keywords, Creator, Producer, CreationDate, ModDate), removes embedded catalog XMP XML metadata streams, and verifies the exported bytes locally.",
+            },
+            {
+                question: "What file size limits, page limits, and encrypted PDF rules apply?",
+                answer: "There are no artificial daily limits or watermarks. Individual files up to 50 MB (and up to 20 files per Merge queue) are validated to protect mobile browser memory, and password-protected/encrypted PDFs must be unlocked first so client-side parsing can access page trees.",
+            },
+        ],
+        relatedToolSlugs: ["signature-pad", "image-compressor", "background-remover", "word-counter"],
+        affiliateIds: ["notion"],
     },
 ];
 

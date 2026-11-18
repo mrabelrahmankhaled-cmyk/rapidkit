@@ -228,6 +228,11 @@ const BackgroundRemoverTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const PdfStudioTool = dynamic(
+    () => import("@/components/tools/PdfStudioTool").then((m) => ({ default: m.PdfStudioTool })),
+    { loading: Spinner, ssr: false }
+);
+
 // ─── Map slug → Component ────────────────────────────────────────
 const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "youtube-thumbnail-downloader": YoutubeThumbnailTool,
@@ -273,6 +278,7 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "curl-to-code": CurlToCodeTool,
     "css-clamp-generator": CssClampTool,
     "background-remover": BackgroundRemoverTool,
+    "pdf-studio": PdfStudioTool,
 };
 
 type Props = {
