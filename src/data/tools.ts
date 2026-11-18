@@ -237,6 +237,60 @@ export const TOOLS: Tool[] = [
 
     // ─── Image Tools ───────────────────────────────────────────────
     {
+        id: "background-remover",
+        name: "AI Background Remover",
+        slug: "background-remover",
+        description: "Remove backgrounds from photos in your browser using client-side AI with instant solid, gradient, and transparent exports.",
+        longDescription:
+            "Remove image backgrounds automatically with 100% client-side AI running locally in WebAssembly and ONNX Runtime. Erase backgrounds from portraits, products, and graphics with zero server uploads, no watermarks, interactive before/after comparison, and instant solid color or gradient studio replacements.",
+        categoryId: "image",
+        icon: "Scissors",
+        tags: ["image", "ai", "background remover", "transparent png", "privacy", "wasm"],
+        isNew: true,
+        isFeatured: true,
+        isPopular: true,
+        seo: {
+            title: "Free AI Background Remover — 100% Private & No Upload",
+            description:
+                "Remove image backgrounds automatically in your browser with client-side AI (WebAssembly). 100% free, no watermarks, no sign-up, and zero server uploads.",
+            keywords: [
+                "remove bg alternative",
+                "free background remover no upload",
+                "ai background remover online",
+                "transparent background maker",
+                "client side background removal",
+                "remove background from image free",
+            ],
+        },
+        howToSteps: [
+            "Choose Balanced / Mobile-Safe (max 1280px) or High Resolution (max 2048px) depending on your device memory and detail needs.",
+            "Drag and drop a PNG, JPG/JPEG, or WebP photo (up to 15 MB), or click 'Try Sample Portrait / Object' to test the offline studio pipeline immediately.",
+            "Wait a few seconds as WebAssembly downloads and caches the AI segmentation weights locally, runs neural inference in your browser, and composites the alpha mask.",
+            "Scrub the interactive Before/After split slider, apply Transparent, Solid Color, or Studio Gradient backdrops on Canvas, and export as PNG, WebP, or Copy PNG.",
+        ],
+        faqs: [
+            {
+                question: "How does AI background removal work without uploading my photo?",
+                answer: "The tool dynamically loads an open-source image segmentation neural network powered by ONNX Runtime and WebAssembly directly in your browser tab. Pixel inference and alpha matte compositing execute on your own CPU/device memory, so zero bytes of your image ever leave your device.",
+            },
+            {
+                question: "Why does the first image take slightly longer to process?",
+                answer: "To keep initial page loads near-zero KB, the WebAssembly runtime and AI model weights (~80 MB for ISNet FP16) are downloaded only when you start your first cutout and cached automatically by your browser for fast subsequent runs.",
+            },
+            {
+                question: "What is the maximum supported file size and resolution?",
+                answer: "You can upload PNG, JPG/JPEG, or WebP files up to 15 MB. High-resolution photos are cleanly downscaled on an offscreen canvas to 1280px on Balanced / Mobile-Safe mode (default on mobile) or 2048px on High Resolution mode to protect browsers against WebAssembly out-of-memory errors.",
+            },
+            {
+                question: "Can I add a colored or gradient studio background without re-running the AI?",
+                answer: "Yes. Once the transparent alpha cutout is generated, switching between Transparent, Solid Color presets, custom color picker values, and Studio Gradients composites in real time on HTML5 Canvas without re-running neural network inference.",
+            },
+        ],
+        relatedToolSlugs: ["image-compressor", "webp-converter", "favicon-generator", "image-metadata-remover"],
+        affiliateIds: ["adobe_express", "kittl"],
+        relatedAlternativeSlugs: ["canva-alternatives"],
+    },
+    {
         id: "image-compressor",
         name: "Image Compressor",
         slug: "image-compressor",

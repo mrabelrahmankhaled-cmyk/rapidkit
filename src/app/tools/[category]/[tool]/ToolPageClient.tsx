@@ -223,6 +223,11 @@ const CssClampTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
+const BackgroundRemoverTool = dynamic(
+    () => import("@/components/tools/BackgroundRemoverTool").then((m) => ({ default: m.BackgroundRemoverTool })),
+    { loading: Spinner, ssr: false }
+);
+
 // ─── Map slug → Component ────────────────────────────────────────
 const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "youtube-thumbnail-downloader": YoutubeThumbnailTool,
@@ -267,6 +272,7 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "prompt-studio": PromptStudioTool,
     "curl-to-code": CurlToCodeTool,
     "css-clamp-generator": CssClampTool,
+    "background-remover": BackgroundRemoverTool,
 };
 
 type Props = {
