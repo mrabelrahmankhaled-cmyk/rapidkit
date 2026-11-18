@@ -10,7 +10,6 @@
     "test": "node --test test/*.test.ts src/lib/__tests__/*.test.ts"
   },
   "dependencies": {
-    "@imgly/background-removal": "^1.7.0",
     "@supabase/supabase-js": "^2.98.0",
     "clsx": "^2.1.1",
     "diff": "^8.0.3",

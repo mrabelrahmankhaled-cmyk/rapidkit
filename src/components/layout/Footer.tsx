@@ -150,6 +150,7 @@ export function Footer() {
                                 { href: "/contact", label: "Contact" },
                                 { href: "/privacy", label: "Privacy Policy" },
                                 { href: "/terms", label: "Terms of Service" },
+                                { href: "/licenses", label: "Third-Party Licenses" },
                                 { href: "/affiliate-disclosure", label: "Affiliate Disclosure" },
                             ].map((link) => (
                                 <li key={link.href}>

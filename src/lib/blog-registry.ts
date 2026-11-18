@@ -238,7 +238,6 @@ export const BLOG_POSTS: BlogPost[] = [
   <li><strong>Remove metadata:</strong> EXIF data (camera settings, GPS location) can add 10-50KB to photos. Strip it when not needed.</li>
   <li><strong>Use progressive loading for JPEGs:</strong> Progressive JPEGs appear to load faster because they render a low-res version first, then sharpen.</li>
   <li><strong>Convert PNG screenshots to JPG:</strong> If your PNG doesn't have transparency, converting it to JPG can reduce size by 60-70%.</li>
-  <li><strong>Isolate subjects and trim wasted padding:</strong> For e-commerce product shots or YouTube thumbnails, run images through <a href="/tools/image/background-remover">RapidKit's AI Background Remover</a> first — it removes busy backdrops 100% locally in WebAssembly/WebGPU, offers <strong>Portrait Blur</strong> and <strong>Auto-Trim</strong> to strip transparent margins, and pairs cleanly with <a href="/tools/image/webp-converter">WebP conversion</a> for smaller final files.</li>
 </ul>
         `,
     },
@@ -296,7 +295,6 @@ export const BLOG_POSTS: BlogPost[] = [
   <li><strong>Use WebP for:</strong> All website images, blog post images, product photos, backgrounds, thumbnails.</li>
   <li><strong>Stick with PNG for:</strong> Images that need to be edited further (lossless source files), favicons, images shared outside the web.</li>
   <li><strong>Stick with JPG for:</strong> Images that will be uploaded to platforms that don't support WebP (some social media, email clients).</li>
-  <li><strong>Transparent cutouts &amp; studio backdrops:</strong> Before encoding product photos or creator thumbnails as lightweight transparent or white-backdrop WebP files, remove cluttered backgrounds locally with <a href="/tools/image/background-remover">RapidKit's AI Background Remover</a> — featuring 100% client-side neural inference, <strong>Portrait Blur</strong> (DSLR bokeh), and <strong>Auto-Trim</strong> to remove dead transparent space.</li>
 </ul>
 
 <h2>How to Implement WebP on Your Website</h2>
@@ -780,51 +778,7 @@ export const BLOG_POSTS: BlogPost[] = [
 </ul>
         `,
     },
-    // ─── Client-Side AI & Document Workflows ────────────────────────
-    {
-        slug: "remove-background-from-image-without-uploading",
-        title: "How to Remove Image Backgrounds Without Uploading (WebGPU & WebAssembly)",
-        description: "Learn how client-side AI removes photo backgrounds directly in your browser with zero server uploads, Portrait Blur, Auto-Trim, and fast WebP exports.",
-        publishedAt: "2026-11-18",
-        updatedAt: "2026-11-18",
-        category: "Image Tools",
-        tags: ["background remover", "webgpu", "webassembly", "privacy", "ecommerce", "webp"],
-        relatedToolSlug: "background-remover",
-        relatedToolCategory: "image",
-        readingTime: 6,
-        seo: {
-            title: "Remove Image Backgrounds Without Uploading — Private AI Guide",
-            description: "Discover how browser-based WebGPU and WebAssembly AI removes backgrounds locally without uploading photos, then optimize cutouts for e-commerce and web.",
-            keywords: ["remove background without uploading", "client side ai background removal", "private remove bg alternative", "webassembly background remover", "ecommerce product cutout"],
-        },
-        content: `
-<h2>Why Cloud Background Removers Create Unnecessary Privacy Risk</h2>
-<p>Most online background removers require uploading your full-resolution photo to a third-party server before processing. That creates real exposure for passport and ID headshots, private family portraits, unpublished e-commerce SKU launches, and client design drafts.</p>
-<p>Modern browser APIs solve this completely: <a href="/tools/image/background-remover">RapidKit's AI Background Remover</a> runs an open-source neural segmentation pipeline (ONNX Runtime with automatic WebGPU acceleration and CPU WebAssembly fallback) directly inside your device's RAM. <strong>Zero bytes of your image are ever uploaded.</strong></p>
-
-<h2>How Client-Side Neural Background Removal Works</h2>
-<ol>
-  <li><strong>Zero-cost initial page load:</strong> The AI engine is dynamically imported only when you drop, paste (<code>Ctrl+V</code> / <code>Cmd+V</code>), or test a sample photo — keeping normal page browsing instant.</li>
-  <li><strong>Mobile-safe pre-scaling guard:</strong> Before inference runs, oversized photos are downscaled smoothly on an offscreen HTML5 Canvas (capped at <code>1280px</code> in <em>Balanced / Mobile-Safe</em> mode or <code>2048px</code> in <em>High Resolution</em> mode) so mobile phones do not hit WebAssembly out-of-memory crashes.</li>
-  <li><strong>One-time local model caching:</strong> On your first cutout, the browser downloads and caches the open-source weights (<code>~40 MB</code> for <em>Fast / Lite</em> or <code>~80 MB</code> for <em>High Precision</em>) so subsequent runs start almost immediately.</li>
-  <li><strong>Instant Canvas Studio compositing:</strong> Once the transparent foreground alpha mask is computed, backdrop changes and effects render locally on HTML5 Canvas without re-running neural inference.</li>
-</ol>
-
-<h2>Studio Features for E-Commerce, LinkedIn, and YouTube Thumbnails</h2>
-<ul>
-  <li><strong>E-Commerce Product Cutouts:</strong> Isolate products, toggle <strong>Auto-Trim</strong> to automatically crop excess transparent padding down to a clean 4% margin, and switch to pure <code>#FFFFFF</code> white for marketplace standards.</li>
-  <li><strong>DSLR Portrait Blur (Bokeh):</strong> Keep messy rooms behind your subject out of focus by adjusting the Canvas Gaussian blur slider from <code>4px</code> to <code>24px</code> behind the sharp foreground cutout.</li>
-  <li><strong>Creator Stickers &amp; Custom Backdrops:</strong> Add crisp <code>4px</code>, <code>8px</code>, or <code>14px</code> alpha-contour outlines, toggle a soft studio drop shadow, or swap in a custom background photo.</li>
-</ul>
-
-<h2>Optimizing Cutouts for Faster Page Speed (PNG vs. WebP)</h2>
-<p>Raw high-resolution PNG cutouts can still be heavy on slow connections. Once your cutout looks sharp:</p>
-<ul>
-  <li>Export directly as transparent or composited <strong>WebP</strong> inside the tool, or batch-convert existing assets with <a href="/tools/image/webp-converter">RapidKit's WebP Converter</a> to cut file size by 25–35% while retaining full alpha transparency.</li>
-  <li>Before publishing product galleries or blog banners, run final JPG or PNG exports through <a href="/tools/image/image-compressor">RapidKit's Image Compressor</a> to hit your target Core Web Vitals byte budget locally.</li>
-</ul>
-        `,
-    },
+    // ─── Client-Side Document Workflows ─────────────────────────────
     {
         slug: "merge-split-and-sign-pdf-in-browser",
         title: "How to Merge, Split & Sign PDFs Privately in Your Browser (Zero Uploads)",

@@ -42,12 +42,16 @@ test("1. pdf-studio registry entry, SEO metadata constraints, and reciprocal lin
 
     assert.strictEqual(tool.howToSteps.length, 4);
     assert.strictEqual(tool.useCases?.length, 4);
-    assert.strictEqual(tool.faqs.length, 4);
+    assert.strictEqual(tool.faqs.length, 5);
+    assert.ok(
+        tool.faqs.some((f) => /visual signature stamp, not a cryptographic/i.test(f.answer)),
+        "FAQs should disclose visual signature stamp vs cryptographic digital signature"
+    );
 
     assert.deepStrictEqual(tool.relatedToolSlugs, [
         "signature-pad",
         "image-compressor",
-        "background-remover",
+        "image-metadata-remover",
         "word-counter",
     ]);
 

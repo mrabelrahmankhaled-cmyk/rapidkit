@@ -223,11 +223,6 @@ const CssClampTool = dynamic(
     { loading: Spinner, ssr: false }
 );
 
-const BackgroundRemoverTool = dynamic(
-    () => import("@/components/tools/BackgroundRemoverTool").then((m) => ({ default: m.BackgroundRemoverTool })),
-    { loading: Spinner, ssr: false }
-);
-
 const PdfStudioTool = dynamic(
     () => import("@/components/tools/PdfStudioTool").then((m) => ({ default: m.PdfStudioTool })),
     { loading: Spinner, ssr: false }
@@ -277,7 +272,6 @@ const TOOL_COMPONENTS: Record<string, React.ComponentType> = {
     "prompt-studio": PromptStudioTool,
     "curl-to-code": CurlToCodeTool,
     "css-clamp-generator": CssClampTool,
-    "background-remover": BackgroundRemoverTool,
     "pdf-studio": PdfStudioTool,
 };
 

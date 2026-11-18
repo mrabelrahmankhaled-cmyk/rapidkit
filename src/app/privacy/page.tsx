@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     },
 };
 
-const LAST_UPDATED = "March 1, 2026";
+const LAST_UPDATED = "November 18, 2026";
 
 export default function PrivacyPage() {
     return (
@@ -73,7 +73,6 @@ export default function PrivacyPage() {
                     <h3 className="text-base font-semibold text-white mb-2 mt-5">2.3 Tool Execution &amp; Network Requests</h3>
                     <ul className="list-disc pl-5 space-y-1 text-[rgb(120,120,160)]">
                         <li><strong className="text-[rgb(180,180,220)]">Local browser tools (all other tools):</strong> Files, images, and text you process (such as image compression, WebP conversion, EXIF removal, JSON/CSV formatting, PDF merging/splitting/signing, signatures, passwords, and screen recordings) run locally in your browser and <strong className="text-white">never leave your device</strong>.</li>
-                        <li><strong className="text-[rgb(180,180,220)]">Client-side AI tools (AI Background Remover):</strong> Open-source WebAssembly and ONNX model weights are downloaded to your browser cache on first use, while all user images are processed <strong className="text-white">100% locally on your device</strong> and are never uploaded to any server.</li>
                         <li><strong className="text-[rgb(180,180,220)]">YouTube Tag Extractor:</strong> When you submit a video, your browser sends the 11-character YouTube video ID to our server endpoint (<code className="text-violet-300">/api/youtube-tags</code>), which fetches the public YouTube watch page metadata, and your browser loads the preview thumbnail from <code className="text-violet-300">img.youtube.com</code>.</li>
                         <li><strong className="text-[rgb(180,180,220)]">YouTube Thumbnail Downloader:</strong> Extracts the video ID in your browser and fetches public thumbnail files directly from YouTube&apos;s image CDN (<code className="text-violet-300">img.youtube.com</code>).</li>
                         <li><strong className="text-[rgb(180,180,220)]">What Is My IP Address?:</strong> On page load, your browser makes a direct request to <code className="text-violet-300">ipapi.co</code> to detect your public IP address, ISP, and approximate city/country location.</li>
@@ -151,9 +150,10 @@ export default function PrivacyPage() {
                 </Section>
 
                 {/* Back link */}
-                <div className="pt-4 border-t border-[rgb(30,30,46)] flex gap-4">
+                <div className="pt-4 border-t border-[rgb(30,30,46)] flex flex-wrap gap-4">
                     <Link href="/" className="text-sm text-[rgb(60,60,90)] hover:text-white transition-colors">← Back to Home</Link>
                     <Link href="/terms" className="text-sm text-[rgb(60,60,90)] hover:text-white transition-colors">Terms of Service →</Link>
+                    <Link href="/licenses" className="text-sm text-[rgb(60,60,90)] hover:text-white transition-colors">Third-Party Licenses →</Link>
                     <Link href="/affiliate-disclosure" className="text-sm text-[rgb(60,60,90)] hover:text-white transition-colors">Affiliate Disclosure →</Link>
                 </div>
             </div>

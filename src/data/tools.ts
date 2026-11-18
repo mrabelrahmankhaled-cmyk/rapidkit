@@ -237,82 +237,6 @@ export const TOOLS: Tool[] = [
 
     // ─── Image Tools ───────────────────────────────────────────────
     {
-        id: "background-remover",
-        name: "AI Background Remover",
-        slug: "background-remover",
-        description: "Remove backgrounds from photos in your browser using client-side AI with instant solid, gradient, and transparent exports.",
-        longDescription:
-            "Remove image backgrounds automatically with 100% client-side AI running locally in WebAssembly and ONNX Runtime. Erase backgrounds from portraits, products, and graphics with zero server uploads, no watermarks, interactive before/after comparison, and instant solid color or gradient studio replacements.",
-        categoryId: "image",
-        icon: "Scissors",
-        tags: ["image", "ai", "background remover", "transparent png", "privacy", "wasm"],
-        isNew: true,
-        isFeatured: true,
-        isPopular: true,
-        seo: {
-            title: "Free AI Background Remover — 100% Private & No Upload",
-            description:
-                "Remove image backgrounds automatically in your browser with client-side AI (WebAssembly). 100% free, no watermarks, no sign-up, and zero server uploads.",
-            keywords: [
-                "remove bg alternative",
-                "free background remover no upload",
-                "ai background remover online",
-                "transparent background maker",
-                "client side background removal",
-                "remove background from image free",
-            ],
-        },
-        howToSteps: [
-            "Choose Balanced / Mobile-Safe (max 1280px) or High Resolution (max 2048px) and select Fast / Lite (~40 MB) or High Precision (~80 MB) AI weights.",
-            "Drag and drop a PNG, JPG/JPEG, or WebP photo (up to 15 MB), press Ctrl+V / Cmd+V to paste directly, or click 'Try Sample Portrait / Object'.",
-            "Wait a few seconds as WebGPU or WebAssembly downloads and caches the AI weights locally, runs neural inference in your browser, and composites the alpha mask.",
-            "Scrub the interactive Before/After split slider, apply Transparent, Solid Color, Gradient, Portrait Blur, or Custom Image backdrops plus Sticker Outlines and Auto-Trim, and export as PNG, WebP, or Copy PNG.",
-        ],
-        useCases: [
-            {
-                title: "E-Commerce Product Cutouts (Amazon & Shopify)",
-                description:
-                    "Isolate product photos locally, enable Auto-Trim (4% margin) to strip extra transparent space, and apply pure #FFFFFF white backgrounds for marketplace listings.",
-            },
-            {
-                title: "YouTube Thumbnail Stickers & Outlines",
-                description:
-                    "Cut out creator portraits in seconds, add crisp 4px–14px Sticker Outlines and soft drop shadows on Canvas, and copy PNG straight into your thumbnail editor.",
-            },
-            {
-                title: "Portrait Bokeh Blur & LinkedIn Headshots",
-                description:
-                    "Use Portrait Blur (4px–24px DSLR bokeh) to soften cluttered rooms behind your subject or switch cleanly to Slate, Indigo, or Studio Gradient backdrops.",
-            },
-            {
-                title: "ID & Passport Photos with Solid White Backdrops",
-                description:
-                    "Keep sensitive personal headshots 100% private on your device with zero server uploads while creating compliant white or light neutral studio backgrounds.",
-            },
-        ],
-        faqs: [
-            {
-                question: "How does AI background removal work without uploading my photo?",
-                answer: "The tool dynamically loads an open-source image segmentation neural network powered by ONNX Runtime (with automatic WebGPU acceleration and CPU WebAssembly fallback) directly inside your browser tab. Pixel inference and alpha matte compositing stay on your own device, so zero bytes of your image are ever uploaded.",
-            },
-            {
-                question: "Why does the first image take slightly longer to process?",
-                answer: "To keep initial page loads near-zero KB, the WebAssembly runtime and AI model weights (~40 MB for Fast / Lite or ~80 MB for High Precision) are downloaded only on your first cutout and cached automatically by your browser for fast subsequent runs.",
-            },
-            {
-                question: "What is the maximum supported file size and resolution?",
-                answer: "You can upload PNG, JPG/JPEG, or WebP files up to 15 MB (or paste screenshots via Ctrl+V / Cmd+V). High-resolution photos are cleanly downscaled on an offscreen canvas to 1280px on Balanced / Mobile-Safe mode or 2048px on High Resolution mode to protect browsers against WebAssembly out-of-memory errors.",
-            },
-            {
-                question: "Can I add studio effects or blur backgrounds without re-running the AI?",
-                answer: "Yes. Once the transparent alpha cutout is generated, switching between Transparent, Solid Color presets, Gradients, Portrait Blur, Custom Image backdrops, Sticker Outlines, Soft Drop Shadows, and Auto-Trim composites in real time on HTML5 Canvas without re-running neural network inference.",
-            },
-        ],
-        relatedToolSlugs: ["image-compressor", "webp-converter", "favicon-generator", "image-metadata-remover"],
-        affiliateIds: ["adobe_express", "kittl"],
-        relatedAlternativeSlugs: ["canva-alternatives"],
-    },
-    {
         id: "image-compressor",
         name: "Image Compressor",
         slug: "image-compressor",
@@ -350,7 +274,7 @@ export const TOOLS: Tool[] = [
                 answer: "Because processing runs in your browser tab rather than on a remote server queue, there is no server-side file limit; performance depends only on your device's available memory.",
             },
         ],
-        relatedToolSlugs: ["background-remover", "webp-converter", "image-metadata-remover", "aspect-ratio-calculator"],
+        relatedToolSlugs: ["webp-converter", "image-metadata-remover", "favicon-generator", "aspect-ratio-calculator"],
         affiliateIds: ["shortpixel", "optimole"],
         relatedComparisonSlugs: ["hostinger-vs-cloudways"],
         relatedAlternativeSlugs: ["tinypng-alternatives"],
@@ -392,7 +316,7 @@ export const TOOLS: Tool[] = [
                 answer: "No. All image decoding and WebP encoding happen locally in your browser using HTMLImageElement and canvas.toBlob.",
             },
         ],
-        relatedToolSlugs: ["background-remover", "image-compressor", "favicon-generator", "image-metadata-remover"],
+        relatedToolSlugs: ["image-compressor", "favicon-generator", "image-metadata-remover", "aspect-ratio-calculator"],
         affiliateIds: ["shortpixel", "optimole"],
         relatedComparisonSlugs: ["hostinger-vs-cloudways"],
         relatedAlternativeSlugs: ["tinypng-alternatives"],
@@ -434,7 +358,7 @@ export const TOOLS: Tool[] = [
                 answer: "No. The exported image keeps the exact pixel width and height of your original photo.",
             },
         ],
-        relatedToolSlugs: ["background-remover", "image-compressor", "webp-converter", "password-generator"],
+        relatedToolSlugs: ["image-compressor", "webp-converter", "favicon-generator", "password-generator"],
         affiliateIds: ["nordvpn", "onepassword"],
         relatedAlternativeSlugs: ["tinypng-alternatives"],
     },
@@ -2209,8 +2133,12 @@ export const TOOLS: Tool[] = [
                 question: "What file size limits, page limits, and encrypted PDF rules apply?",
                 answer: "There are no artificial daily limits or watermarks. Individual files up to 50 MB (and up to 20 files per Merge queue) are validated to protect mobile browser memory, and password-protected/encrypted PDFs must be unlocked first so client-side parsing can access page trees.",
             },
+            {
+                question: "Is the Sign & Stamp tab a cryptographic digital signature?",
+                answer: "No. Placing a drawn or PNG signature adds a visual signature stamp, not a cryptographic signature — no X.509 certificate or tamper-evident cryptographic digital seal is applied.",
+            },
         ],
-        relatedToolSlugs: ["signature-pad", "image-compressor", "background-remover", "word-counter"],
+        relatedToolSlugs: ["signature-pad", "image-compressor", "image-metadata-remover", "word-counter"],
         affiliateIds: ["notion"],
     },
 ];

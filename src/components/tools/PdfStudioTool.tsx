@@ -2712,6 +2712,14 @@ export function PdfStudioTool() {
                                         <Download className="w-4 h-4 shrink-0" />
                                         <span>Sign &amp; Download PDF</span>
                                     </button>
+
+                                    <p className="text-[11px] text-[rgb(125,125,160)] leading-relaxed px-1">
+                                        Note: Places a{" "}
+                                        <strong className="text-[rgb(190,190,220)]">
+                                            visual signature stamp, not a cryptographic signature
+                                        </strong>{" "}
+                                        (no X.509 certificate or tamper-evident digital seal is attached).
+                                    </p>
                                 </div>
                             </div>
                         </>
